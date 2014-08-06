@@ -4,9 +4,8 @@ update.packages(c('knitr', 'devtools', 'roxygen2'))
 ## Build the ss3sim developement package
 remove.packages("ss3sim")
 ## install whatever branch we are working on
-install_github(repo="ss3sim", username="ss3sim",
-               ref="feature/change_bins")
-library(ss3sim)
+load_all("../ss3sim")
+dev_help
 library(r4ss)
 change_bin
 
