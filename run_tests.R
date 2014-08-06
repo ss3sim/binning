@@ -22,6 +22,7 @@ change_bin(file_in="codOM.dat", file_out="codOM.new.dat", bin_vector = c(20, 26,
 
 ## End of session so clean up
 unlink("cod-om-test", TRUE)
+unlink("cod-om-test-new", TRUE)
 
 ## to check whether the new function works or not
 
