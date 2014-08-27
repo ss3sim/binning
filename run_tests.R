@@ -1,12 +1,17 @@
+## ## Update the development tools, if you haven't recently
+## update.packages(c('r4ss','knitr', 'devtools', 'roxygen2'))
+## Load the neccessary libraries
 library(devtools)
-## Update the development tools, if you haven't recently
-update.packages(c('knitr', 'devtools', 'roxygen2'))
+library(r4ss)
+update_r4ss_files()
 ## Build the ss3sim developement package
 remove.packages("ss3sim")
-## install whatever branch we are working on
-load_all("F:/ss3sim")
-dev_help
-library(r4ss)
+## Install the package from our local git repository, which is usually a
+## development branch. You need to pull down any changes into the branch
+## before running this command.
+load_all("../ss3sim")
+
+
 
 ## to run the base model
 setwd("F:/binning")
