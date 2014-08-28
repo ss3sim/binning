@@ -25,12 +25,33 @@ load_all("../ss3sim")
 
 
 ### ------------------------------------------------------------
+### Preliminary tail compression analysis with cod
+
+## Run the example simulation with tail compression option
+case_folder <- 'cases'
+tc.seq <- seq(0, .2, len=10)
+for(i in 1:length(tc.seq)){
+    tc <- tc.seq[i]
+    x <- c(paste("tail_compression;", tc), "file_in; ss3.dat", "file_out; ss3.dat")
+    writeLines(x, con=paste0(case_folder, "/T",i, "-cod.txt"))
+}
+d <- system.file("extdata", package = "ss3sim")
+om <- paste0(d, "/models/cod-om")
+em <- paste0(d, "/models/cod-em")
+run_ss3sim(iterations = 1, scenarios =
+           c("D0-E0-F0-R0-M0-T0-cod", "D0-E0-F0-R0-M0-T1-cod"),
+           case_folder = case_folder, om_dir = om,
+           em_dir = em, case_files = list(M = "M", F = "F", D =
+    c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
+
+
+
+### ------------------------------------------------------------
 ### Code for testing the change_tail_compression
 ## Test whether cases are parsed correctly
 get_caseargs("cases", scenario = "D0-E0-F0-M0-R0-S0-T0-cod",
              case_files = list(E = "E", D = c("index", "lcomp", "agecomp"), F =
              "F", M = "M", R = "R", S = "S", T="T"))
-
 ## Run the example simulation with tail compression option
 case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
