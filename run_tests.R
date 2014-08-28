@@ -38,12 +38,29 @@ for(i in 1:length(tc.seq)){
 d <- system.file("extdata", package = "ss3sim")
 om <- paste0(d, "/models/cod-om")
 em <- paste0(d, "/models/cod-em")
-run_ss3sim(iterations = 1, scenarios =
-           c("D0-E0-F0-R0-M0-T0-cod", "D0-E0-F0-R0-M0-T1-cod"),
+scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:10), species="cod")
+run_ss3sim(iterations = 1, scenarios = scen[1:3],
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
+## Read in the results and convert to relative error and clean up
+get_results_all(user_scenarios=scen[1:3], over=TRUE)
 
+results <- read.csv("ss3sim_scalar.csv")
+em_names <- names(results)[grep("_em", names(results))]
+results_re <- as.data.frame(
+    sapply(1:length(em_names), function(i)
+           (results[,em_names[i]]- results[,gsub("_em", "_om", em_names[i])])/
+           results[,gsub("_em", "_om", em_names[i])]
+           ))
+names(results_re) <- gsub("_em", "_re", em_names)
+results_re$T <- results$T
+results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
+results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
+results_long <- reshape2::melt(results_re, "T")
+library(ggplot2)
+ggplot(results_long, aes(x=T, y=value))+
+    geom_point()+facet_wrap("variable", scales="free") + ylim(-1,1)
 
 
 ### ------------------------------------------------------------
