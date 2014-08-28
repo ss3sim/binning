@@ -29,7 +29,7 @@ load_all("../ss3sim")
 
 ## Run the example simulation with tail compression option
 case_folder <- 'cases'
-tc.seq <- seq(0, .2, len=10)
+tc.seq <- seq(0, .5, len=10)
 for(i in 1:length(tc.seq)){
     tc <- tc.seq[i]
     x <- c(paste("tail_compression;", tc), "file_in; ss3.dat", "file_out; ss3.dat")
@@ -39,12 +39,26 @@ d <- system.file("extdata", package = "ss3sim")
 om <- paste0(d, "/models/cod-om")
 em <- paste0(d, "/models/cod-em")
 scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:10), species="cod")
-run_ss3sim(iterations = 1, scenarios = scen[1:3],
+## install.packages(c("doParallel", "foreach"))
+require(doParallel)
+registerDoParallel(cores = 4)
+require(foreach)
+getDoParWorkers()
+
+run_ss3sim(iterations = 1, scenarios =
+  c("D0-E0-F0-R0-M0-cod",
+    "D1-E0-F0-R0-M0-cod",
+    "D0-E1-F0-R0-M0-cod",
+    "D1-E1-F0-R0-M0-cod"), parallel=TRUE,
+  case_folder = case_folder, om_dir = om,
+  em_dir = em)
+
+run_ss3sim(iterations = 1, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
 ## Read in the results and convert to relative error and clean up
-get_results_all(user_scenarios=scen[1:3], over=TRUE)
+get_results_all(user_scenarios=scen, over=TRUE)
 
 results <- read.csv("ss3sim_scalar.csv")
 em_names <- names(results)[grep("_em", names(results))]
