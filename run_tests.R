@@ -41,19 +41,29 @@ run_ss3sim(iterations = 1, scenarios =
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
-## quickly grab results to see if any difference
-get_results_all(user_scenarios=
-                c("D0-E0-F0-R0-M0-T0-cod", "D0-E0-F0-R0-M0-T1-cod"))
-
 ## Make sure it runs with no tail compression option
 run_ss3sim(iterations = 1, scenarios =
            c("D0-E0-F0-R0-M0-cod"),
            case_folder = case_folder, om_dir = om,
            em_dir = em)
+## quickly grab results to see if any difference
+get_results_all(user_scenarios=
+                c("D0-E0-F0-R0-M0-T0-cod",
+                  "D0-E0-F0-R0-M0-T1-cod",
+                  "D0-E0-F0-R0-M0-cod" ), over=TRUE)
+results <- read.csv("ss3sim_scalar.csv")
+results$ID <- gsub("D0-E0-F0-R0-M0-|-1", "", as.character(results$ID))
+results.long <- cbind(ID=results$ID, results[,grep("_em", names(results))])
+results.long <- reshape2::melt(results.long, "ID")
+library(ggplot2)
+ggplot(results.long, aes(x=ID, y=value))+
+    geom_point()+facet_wrap("variable", scales="free")
+results.long
 ## End of session so clean up
 unlink("D0-E0-F0-R0-M0-T0-cod", TRUE)
 unlink("D0-E0-F0-R0-M0-T1-cod", TRUE)
 unlink("D0-E0-F0-R0-M0-cod", TRUE)
+file.remove("ss3sim_scalar.csv", "ss3sim_ts.csv")
 ### ------------------------------------------------------------
 
 
