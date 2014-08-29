@@ -1,4 +1,0 @@
-"x"
-"1" "tail_compression; 0"
-"2" "file_in; ss3.dat"
-"3" "file_out; ss3.dat"
