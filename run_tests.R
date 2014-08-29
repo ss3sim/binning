@@ -13,10 +13,20 @@
 ## Load the neccessary libraries
 library(devtools)
 library(r4ss)
+library(ggplot2)
+## install.packages(c("doParallel", "foreach"))
+require(doParallel)
+registerDoParallel(cores = 4)
+require(foreach)
+getDoParWorkers()
 ## Install the package from our local git repository, which is usually a
 ## development branch. You need to pull down any changes into the branch
 ## before running this command.
 load_all("../ss3sim")
+case_folder <- 'cases'
+d <- system.file("extdata", package = "ss3sim")
+om <- paste0(d, "/models/cod-om")
+em <- paste0(d, "/models/cod-em")
 ## ## devtool tasks
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
@@ -26,41 +36,27 @@ load_all("../ss3sim")
 
 ### ------------------------------------------------------------
 ### Preliminary tail compression analysis with cod
-
-## Run the example simulation with tail compression option
-case_folder <- 'cases'
-tc.seq <- seq(0, .5, len=10)
+## WRite the cases to file
+tc.seq <- seq(0, .25, len=10)
 for(i in 1:length(tc.seq)){
     tc <- tc.seq[i]
     x <- c(paste("tail_compression;", tc), "file_in; ss3.dat", "file_out; ss3.dat")
     writeLines(x, con=paste0(case_folder, "/T",i, "-cod.txt"))
 }
-d <- system.file("extdata", package = "ss3sim")
-om <- paste0(d, "/models/cod-om")
-em <- paste0(d, "/models/cod-em")
+scen.df <- data.frame(T.value=c(-.001,tc.seq), T=paste0("T", 0:10))
 scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:10), species="cod")
-## install.packages(c("doParallel", "foreach"))
-require(doParallel)
-registerDoParallel(cores = 4)
-require(foreach)
-getDoParWorkers()
 
-run_ss3sim(iterations = 1, scenarios =
-  c("D0-E0-F0-R0-M0-cod",
-    "D1-E0-F0-R0-M0-cod",
-    "D0-E1-F0-R0-M0-cod",
-    "D1-E1-F0-R0-M0-cod"), parallel=TRUE,
-  case_folder = case_folder, om_dir = om,
-  em_dir = em)
-
-run_ss3sim(iterations = 1, scenarios = scen, parallel=TRUE,
+## Run them in parallel
+run_ss3sim(iterations = 1:20, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
-## Read in the results and convert to relative error and clean up
-get_results_all(user_scenarios=scen, over=TRUE)
 
-results <- read.csv("ss3sim_scalar.csv")
+## Read in the results and convert to relative error in long format
+get_results_all(user_scenarios=scen)
+file.copy("ss3sim_scalar.csv", "results/tc_test1_scalar.csv")
+file.copy("ss3sim_ts.csv", "results/tc_test1_ts.csv")
+results <- read.csv("results/tc_test1_scalar.csv")
 em_names <- names(results)[grep("_em", names(results))]
 results_re <- as.data.frame(
     sapply(1:length(em_names), function(i)
@@ -72,52 +68,18 @@ results_re$T <- results$T
 results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
 results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
 results_long <- reshape2::melt(results_re, "T")
-library(ggplot2)
-ggplot(results_long, aes(x=T, y=value))+
-    geom_point()+facet_wrap("variable", scales="free") + ylim(-1,1)
-
-
+results_long <- merge(scen.df, results_long)
+results_long$T <- factor(results_long$T, levels=paste0("T", 0:10))
+## Make exploratory plots
+ggplot(results_long, aes(x=T, y=value, color=T.value))+
+    geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-1,1)
+ggsave("plots/tc_test1.png", width=10, height=7)
+## Clean up everything
+unlink(scen, TRUE)
+file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
+rm(results, results_re, results_long, scen.df, scen, em_names, tc.seq, tc, x, i)
+## End of tail compression run
 ### ------------------------------------------------------------
-### Code for testing the change_tail_compression
-## Test whether cases are parsed correctly
-get_caseargs("cases", scenario = "D0-E0-F0-M0-R0-S0-T0-cod",
-             case_files = list(E = "E", D = c("index", "lcomp", "agecomp"), F =
-             "F", M = "M", R = "R", S = "S", T="T"))
-## Run the example simulation with tail compression option
-case_folder <- 'cases'
-d <- system.file("extdata", package = "ss3sim")
-om <- paste0(d, "/models/cod-om")
-em <- paste0(d, "/models/cod-em")
-run_ss3sim(iterations = 1, scenarios =
-           c("D0-E0-F0-R0-M0-T0-cod", "D0-E0-F0-R0-M0-T1-cod"),
-           case_folder = case_folder, om_dir = om,
-           em_dir = em, case_files = list(M = "M", F = "F", D =
-    c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
-## Make sure it runs with no tail compression option
-run_ss3sim(iterations = 1, scenarios =
-           c("D0-E0-F0-R0-M0-cod"),
-           case_folder = case_folder, om_dir = om,
-           em_dir = em)
-## quickly grab results to see if any difference
-get_results_all(user_scenarios=
-                c("D0-E0-F0-R0-M0-T0-cod",
-                  "D0-E0-F0-R0-M0-T1-cod",
-                  "D0-E0-F0-R0-M0-cod" ), over=TRUE)
-results <- read.csv("ss3sim_scalar.csv")
-results$ID <- gsub("D0-E0-F0-R0-M0-|-1", "", as.character(results$ID))
-results.long <- cbind(ID=results$ID, results[,grep("_em", names(results))])
-results.long <- reshape2::melt(results.long, "ID")
-library(ggplot2)
-ggplot(results.long, aes(x=ID, y=value))+
-    geom_point()+facet_wrap("variable", scales="free")
-results.long
-## End of session so clean up
-unlink("D0-E0-F0-R0-M0-T0-cod", TRUE)
-unlink("D0-E0-F0-R0-M0-T1-cod", TRUE)
-unlink("D0-E0-F0-R0-M0-cod", TRUE)
-file.remove("ss3sim_scalar.csv", "ss3sim_ts.csv")
-### ------------------------------------------------------------
-
 
 
 ### ------------------------------------------------------------
@@ -141,3 +103,50 @@ bin_new <- c(0.0357928, 0.279938, 0.929293, 1.20612, 0.653397, 0.520722, 1.42684
 plot(1:length(bin_new), bin_or[-1], type="p")
 points(1:length(bin_new), bin_new, col="red")
 ### ------------------------------------------------------------
+
+
+### ------------------------------------------------------------
+### Old testing code, leave here for now, eventually migrate to a testing
+### folder in the package.
+
+
+## ### ------------------------------------------------------------
+## ### Code for testing the change_tail_compression
+## ## Test whether cases are parsed correctly
+## get_caseargs("cases", scenario = "D0-E0-F0-M0-R0-S0-T0-cod",
+##              case_files = list(E = "E", D = c("index", "lcomp", "agecomp"), F =
+##              "F", M = "M", R = "R", S = "S", T="T"))
+## ## Run the example simulation with tail compression option
+## case_folder <- 'cases'
+## d <- system.file("extdata", package = "ss3sim")
+## om <- paste0(d, "/models/cod-om")
+## em <- paste0(d, "/models/cod-em")
+## run_ss3sim(iterations = 1, scenarios =
+##            c("D0-E0-F0-R0-M0-T0-cod", "D0-E0-F0-R0-M0-T1-cod"),
+##            case_folder = case_folder, om_dir = om,
+##            em_dir = em, case_files = list(M = "M", F = "F", D =
+##     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
+## ## Make sure it runs with no tail compression option
+## run_ss3sim(iterations = 1, scenarios =
+##            c("D0-E0-F0-R0-M0-cod"),
+##            case_folder = case_folder, om_dir = om,
+##            em_dir = em)
+## ## quickly grab results to see if any difference
+## get_results_all(user_scenarios=
+##                 c("D0-E0-F0-R0-M0-T0-cod",
+##                   "D0-E0-F0-R0-M0-T1-cod",
+##                   "D0-E0-F0-R0-M0-cod" ), over=TRUE)
+## results <- read.csv("ss3sim_scalar.csv")
+## results$ID <- gsub("D0-E0-F0-R0-M0-|-1", "", as.character(results$ID))
+## results.long <- cbind(ID=results$ID, results[,grep("_em", names(results))])
+## results.long <- reshape2::melt(results.long, "ID")
+## library(ggplot2)
+## ggplot(results.long, aes(x=ID, y=value))+
+##     geom_point()+facet_wrap("variable", scales="free")
+## results.long
+## ## End of session so clean up
+## unlink("D0-E0-F0-R0-M0-T0-cod", TRUE)
+## unlink("D0-E0-F0-R0-M0-T1-cod", TRUE)
+## unlink("D0-E0-F0-R0-M0-cod", TRUE)
+## file.remove("ss3sim_scalar.csv", "ss3sim_ts.csv")
+## ### ------------------------------------------------------------
