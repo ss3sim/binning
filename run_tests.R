@@ -23,6 +23,7 @@ getDoParWorkers()
 ## development branch. You need to pull down any changes into the branch
 ## before running this command.
 load_all("../ss3sim")
+## install('../ss3sim') # may need this for parallel runs??
 case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
 om <- paste0(d, "/models/cod-om")
@@ -45,13 +46,11 @@ for(i in 1:length(tc.seq)){
 }
 scen.df <- data.frame(T.value=c(-.001,tc.seq), T=paste0("T", 0:10))
 scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:10), species="cod")
-
 ## Run them in parallel
 run_ss3sim(iterations = 1:20, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
-
 ## Read in the results and convert to relative error in long format
 get_results_all(user_scenarios=scen)
 file.copy("ss3sim_scalar.csv", "results/tc_test1_scalar.csv")
@@ -78,6 +77,51 @@ ggsave("plots/tc_test1.png", width=10, height=7)
 unlink(scen, TRUE)
 file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
 rm(results, results_re, results_long, scen.df, scen, em_names, tc.seq, tc, x, i)
+## End of tail compression run
+### ------------------------------------------------------------
+
+### ------------------------------------------------------------
+### Preliminary lcomp constant analysis with cod
+## WRite the cases to file
+lc.seq <- seq(0, .25, len=10)
+for(i in 1:length(lc.seq)){
+    lc <- lc.seq[i]
+    x <- c(paste("lcomp_constant;", lc), "file_in; ss3.dat", "file_out; ss3.dat")
+    writeLines(x, con=paste0(case_folder, "/O",i, "-cod.txt"))
+}
+scen.df <- data.frame(O.value=c(-.001,lc.seq), O=paste0("O", 0:10))
+scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, O=0:10), species="cod")
+## Run them in parallel
+run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
+           case_folder = case_folder, om_dir = om,
+           em_dir = em, case_files = list(M = "M", F = "F", D =
+    c("index", "lcomp", "agecomp"), R = "R", E = "E", O="O"))
+## Read in the results and convert to relative error in long format
+get_results_all(user_scenarios=scen)
+file.copy("ss3sim_scalar.csv", "results/lc_test1_scalar.csv")
+file.copy("ss3sim_ts.csv", "results/lc_test1_ts.csv")
+results <- read.csv("results/lc_test1_scalar.csv")
+em_names <- names(results)[grep("_em", names(results))]
+results_re <- as.data.frame(
+    sapply(1:length(em_names), function(i)
+           (results[,em_names[i]]- results[,gsub("_em", "_om", em_names[i])])/
+           results[,gsub("_em", "_om", em_names[i])]
+           ))
+names(results_re) <- gsub("_em", "_re", em_names)
+results_re$O <- results$O
+results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
+results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
+results_long <- reshape2::melt(results_re, "O")
+results_long <- merge(scen.df, results_long)
+results_long$O <- factor(results_long$O, levels=paste0("O", 0:10))
+## Make exploratory plots
+ggplot(results_long, aes(x=O, y=value, color=O.value))+
+    geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-1,1)
+ggsave("plots/lc_test1.png", width=10, height=7)
+## Clean up everything
+unlink(scen, TRUE)
+file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
+rm(results, results_re, results_long, scen.df, scen, em_names, lc.seq, lc, x, i)
 ## End of tail compression run
 ### ------------------------------------------------------------
 
