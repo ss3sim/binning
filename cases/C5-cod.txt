@@ -1,3 +1,3 @@
-lcomp_constant; 0.0445
+lcomp_constant; 0.0444445
 file_in; ss3.dat
 file_out; ss3.dat
