@@ -32,7 +32,7 @@ em <- paste0(d, "/models/cod-em")
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
 ## devtools::check('../ss3sim', cran=TRUE)
-user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.01), nrow=100, ncol=100)
+user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001), nrow=100, ncol=100)
 ### ------------------------------------------------------------
 
 
@@ -49,10 +49,11 @@ for(i in 1:tc.n){
 scen.df <- data.frame(T.value=c(-.001,tc.seq), T=paste0("T", 0:tc.n))
 scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:tc.n), species="cod")
 ## Run them in parallel
-run_ss3sim(iterations = 1:20, scenarios = scen, parallel=TRUE,
+run_ss3sim(iterations = 1:5, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
-    c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
+    c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"),
+           user_recdevs=user.recdevs)
 ## Read in the results and convert to relative error in long format
 get_results_all(user_scenarios=scen)
 file.copy("ss3sim_scalar.csv", "results/tc_test1_scalar.csv")
@@ -95,7 +96,7 @@ for(i in 1:lc.n){
 scen.df <- data.frame(C.value=c(lc.seq), C=paste0("C", 1:lc.n))
 scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, C=1:lc.n), species="cod")
 ## Run them in parallel
-run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
+run_ss3sim(iterations = 1:5, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", C="C"),
