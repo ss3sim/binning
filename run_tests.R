@@ -85,15 +85,15 @@ rm(results, results_re, results_long, scen.df, scen, em_names, tc.seq, tc, x, i)
 ### ------------------------------------------------------------
 ### Preliminary lcomp constant analysis with cod
 ## WRite the cases to file
-lc.n <- 4
-lc.seq <- seq(0, .25, len=lc.n)
+lc.n <- 3
+lc.seq <- seq(0, .1, len=lc.n)
 for(i in 1:lc.n){
     lc <- lc.seq[i]
     x <- c(paste("lcomp_constant;", lc), "file_in; ss3.dat", "file_out; ss3.dat")
     writeLines(x, con=paste0(case_folder, "/C",i, "-cod.txt"))
 }
-scen.df <- data.frame(C.value=c(-.001,lc.seq), C=paste0("C", lc.n))
-scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, C=0:lc.n), species="cod")
+scen.df <- data.frame(C.value=c(lc.seq), C=paste0("C", 1:lc.n))
+scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, C=1:lc.n), species="cod")
 ## Run them in parallel
 run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
@@ -102,8 +102,8 @@ run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
            user_recdevs=user.recdevs)
 ## Read in the results and convert to relative error in long format
 get_results_all(user_scenarios=scen)
-file.copy("ss3sim_scalar.csv", "results/lc_test1_scalar.csv")
-file.copy("ss3sim_ts.csv", "results/lc_test1_ts.csv")
+file.copy("ss3sim_scalar.csv", "results/lc_test1_scalar.csv", over=TRUE)
+file.copy("ss3sim_ts.csv", "results/lc_test1_ts.csv", over=TRUE)
 results <- read.csv("results/lc_test1_scalar.csv")
 em_names <- names(results)[grep("_em", names(results))]
 results_re <- as.data.frame(
@@ -126,7 +126,7 @@ ggsave("plots/lc_test1.png", width=10, height=7)
 unlink(scen, TRUE)
 file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
 rm(results, results_re, results_long, scen.df, scen, em_names, lc.seq, lc, x, i)
-## End of tail compression run
+## End of lcomp constant test run
 ### ------------------------------------------------------------
 
 
