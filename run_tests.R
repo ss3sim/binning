@@ -32,20 +32,22 @@ em <- paste0(d, "/models/cod-em")
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
 ## devtools::check('../ss3sim', cran=TRUE)
+user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.01), nrow=100, ncol=100)
 ### ------------------------------------------------------------
 
 
 ### ------------------------------------------------------------
 ### Preliminary tail compression analysis with cod
 ## WRite the cases to file
-tc.seq <- seq(0, .25, len=10)
-for(i in 1:length(tc.seq)){
+tc.n <- 10
+tc.seq <- seq(0, .25, len=tc.n)
+for(i in 1:tc.n){
     tc <- tc.seq[i]
     x <- c(paste("tail_compression;", tc), "file_in; ss3.dat", "file_out; ss3.dat")
     writeLines(x, con=paste0(case_folder, "/T",i, "-cod.txt"))
 }
-scen.df <- data.frame(T.value=c(-.001,tc.seq), T=paste0("T", 0:10))
-scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:10), species="cod")
+scen.df <- data.frame(T.value=c(-.001,tc.seq), T=paste0("T", 0:tc.n))
+scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:tc.n), species="cod")
 ## Run them in parallel
 run_ss3sim(iterations = 1:20, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
@@ -68,9 +70,9 @@ results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
 results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
 results_long <- reshape2::melt(results_re, "T")
 results_long <- merge(scen.df, results_long)
-results_long$T <- factor(results_long$T, levels=paste0("T", 0:10))
+results_long$T <- factor(results_long$T, levels=paste0("T", 0:tc.n))
 ## Make exploratory plots
-ggplot(results_long, aes(x=T, y=value, color=T.value))+
+ggplot(results_long, aes(x=T, y=value, color=T.value))+ ylab("Relative Error")+
     geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-1,1)
 ggsave("plots/tc_test1.png", width=10, height=7)
 ## Clean up everything
@@ -83,23 +85,25 @@ rm(results, results_re, results_long, scen.df, scen, em_names, tc.seq, tc, x, i)
 ### ------------------------------------------------------------
 ### Preliminary lcomp constant analysis with cod
 ## WRite the cases to file
-lc.seq <- seq(0, .25, len=10)
-for(i in 1:length(lc.seq)){
+lc.n <- 3
+lc.seq <- seq(0, .1, len=lc.n)
+for(i in 1:lc.n){
     lc <- lc.seq[i]
     x <- c(paste("lcomp_constant;", lc), "file_in; ss3.dat", "file_out; ss3.dat")
-    writeLines(x, con=paste0(case_folder, "/O",i, "-cod.txt"))
+    writeLines(x, con=paste0(case_folder, "/C",i, "-cod.txt"))
 }
-scen.df <- data.frame(O.value=c(-.001,lc.seq), O=paste0("O", 0:10))
-scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, O=0:10), species="cod")
+scen.df <- data.frame(C.value=c(lc.seq), C=paste0("C", 1:lc.n))
+scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, C=1:lc.n), species="cod")
 ## Run them in parallel
 run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
-    c("index", "lcomp", "agecomp"), R = "R", E = "E", O="O"))
+    c("index", "lcomp", "agecomp"), R = "R", E = "E", C="C"),
+           user_recdevs=user.recdevs)
 ## Read in the results and convert to relative error in long format
 get_results_all(user_scenarios=scen)
-file.copy("ss3sim_scalar.csv", "results/lc_test1_scalar.csv")
-file.copy("ss3sim_ts.csv", "results/lc_test1_ts.csv")
+file.copy("ss3sim_scalar.csv", "results/lc_test1_scalar.csv", over=TRUE)
+file.copy("ss3sim_ts.csv", "results/lc_test1_ts.csv", over=TRUE)
 results <- read.csv("results/lc_test1_scalar.csv")
 em_names <- names(results)[grep("_em", names(results))]
 results_re <- as.data.frame(
@@ -108,21 +112,21 @@ results_re <- as.data.frame(
            results[,gsub("_em", "_om", em_names[i])]
            ))
 names(results_re) <- gsub("_em", "_re", em_names)
-results_re$O <- results$O
+results_re$C <- results$C
 results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
 results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
-results_long <- reshape2::melt(results_re, "O")
+results_long <- reshape2::melt(results_re, "C")
 results_long <- merge(scen.df, results_long)
-results_long$O <- factor(results_long$O, levels=paste0("O", 0:10))
+results_long$C <- factor(results_long$C, levels=paste0("C", 0:lc.n))
 ## Make exploratory plots
-ggplot(results_long, aes(x=O, y=value, color=O.value))+
+ggplot(results_long, aes(x=C, y=value, color=C.value))+ylab("Relative Error")+
     geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-1,1)
 ggsave("plots/lc_test1.png", width=10, height=7)
 ## Clean up everything
 unlink(scen, TRUE)
 file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
 rm(results, results_re, results_long, scen.df, scen, em_names, lc.seq, lc, x, i)
-## End of tail compression run
+## End of lcomp constant test run
 ### ------------------------------------------------------------
 
 
