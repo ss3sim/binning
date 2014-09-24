@@ -85,8 +85,8 @@ rm(results, results_re, results_long, scen.df, scen, em_names, tc.seq, tc, x, i)
 ### ------------------------------------------------------------
 ### Preliminary lcomp constant analysis with cod
 ## WRite the cases to file
-lc.n <- 3
-lc.seq <- seq(0, .1, len=lc.n)
+lc.n <- 10
+lc.seq <- seq(.0001, .1, len=lc.n)
 for(i in 1:lc.n){
     lc <- lc.seq[i]
     x <- c(paste("lcomp_constant;", lc), "file_in; ss3.dat", "file_out; ss3.dat")
@@ -119,8 +119,8 @@ results_long <- reshape2::melt(results_re, "C")
 results_long <- merge(scen.df, results_long)
 results_long$C <- factor(results_long$C, levels=paste0("C", 0:lc.n))
 ## Make exploratory plots
-ggplot(results_long, aes(x=C, y=value, color=C.value))+ylab("Relative Error")+
-    geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-1,1)
+ggplot(results_long, aes(x=C.value, y=value))+ylab("Relative Error")+
+    geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-.25,.25)
 ggsave("plots/lc_test1.png", width=10, height=7)
 ## Clean up everything
 unlink(scen, TRUE)
