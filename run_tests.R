@@ -49,7 +49,7 @@ for(i in 1:tc.n){
 scen.df <- data.frame(T.value=c(-.001,tc.seq), T=paste0("T", 0:tc.n))
 scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:tc.n), species="cod")
 ## Run them in parallel
-run_ss3sim(iterations = 1:5, scenarios = scen, parallel=TRUE,
+run_ss3sim(iterations = 1:5, scenarios = scen, parallel=FALSE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"),
@@ -87,7 +87,7 @@ rm(results, results_re, results_long, scen.df, scen, em_names, tc.seq, tc, x, i)
 ### Preliminary lcomp constant analysis with cod
 ## WRite the cases to file
 lc.n <- 10
-lc.seq <- seq(.0001, .1, len=lc.n)
+lc.seq <- seq(1e-7, .1, len=lc.n)
 for(i in 1:lc.n){
     lc <- lc.seq[i]
     x <- c(paste("lcomp_constant;", lc), "file_in; ss3.dat", "file_out; ss3.dat")
