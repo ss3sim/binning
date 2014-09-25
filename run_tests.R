@@ -22,8 +22,9 @@ getDoParWorkers()
 ## Install the package from our local git repository, which is usually a
 ## development branch. You need to pull down any changes into the branch
 ## before running this command.
-load_all("../ss3sim")
-## install('../ss3sim') # may need this for parallel runs??
+## load_all("../ss3sim")
+install('../ss3sim') # may need this for parallel runs??
+library(ss3sim)
 case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
 om <- paste0(d, "/models/cod-om")
@@ -34,7 +35,6 @@ em <- paste0(d, "/models/cod-em")
 ## devtools::check('../ss3sim', cran=TRUE)
 user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001), nrow=100, ncol=100)
 ### ------------------------------------------------------------
-get_args("cases/C1-cod.txt")
 
 ### ------------------------------------------------------------
 ### Preliminary tail compression analysis with cod
@@ -50,16 +50,15 @@ scen.df <- data.frame(T.value=c(-.001,tc.seq), T=paste0("T", 0:tc.n))
 scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:tc.n), species="cod")
 ## Run them in parallel
 ## RUns parallel=F but not TRUE??????
-run_ss3sim(iterations = 1, scenarios = scen[1:2], parallel=TRUE,
+run_ss3sim(iterations = 1:5, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"),
            user_recdevs=user.recdevs)
-
 ## Read in the results and convert to relative error in long format
 get_results_all(user_scenarios=scen)
-file.copy("ss3sim_scalar.csv", "results/tc_test1_scalar.csv")
-file.copy("ss3sim_ts.csv", "results/tc_test1_ts.csv")
+file.copy("ss3sim_scalar.csv", "results/tc_test1_scalar.csv", over=TRUE)
+file.copy("ss3sim_ts.csv", "results/tc_test1_ts.csv", over=TRUE)
 results <- read.csv("results/tc_test1_scalar.csv")
 em_names <- names(results)[grep("_em", names(results))]
 results_re <- as.data.frame(
@@ -71,12 +70,14 @@ names(results_re) <- gsub("_em", "_re", em_names)
 results_re$T <- results$T
 results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
 results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
+results_re <- results_re[, names(results_re)[-grep("NLL",names(results_re))]]
 results_long <- reshape2::melt(results_re, "T")
 results_long <- merge(scen.df, results_long)
 results_long$T <- factor(results_long$T, levels=paste0("T", 0:tc.n))
 ## Make exploratory plots
-ggplot(results_long, aes(x=T, y=value, color=T.value))+ ylab("Relative Error")+
-    geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-1,1)
+ggplot(results_long, aes(x=T.value, y=value))+ ylab("relative error")+
+    geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
+    xlab("tail compression value")
 ggsave("plots/tc_test1.png", width=10, height=7)
 ## Clean up everything
 unlink(scen, TRUE)
@@ -112,18 +113,19 @@ em_names <- names(results)[grep("_em", names(results))]
 results_re <- as.data.frame(
     sapply(1:length(em_names), function(i)
            (results[,em_names[i]]- results[,gsub("_em", "_om", em_names[i])])/
-           results[,gsub("_em", "_om", em_names[i])]
-           ))
+           results[,gsub("_em", "_om", em_names[i])]))
 names(results_re) <- gsub("_em", "_re", em_names)
 results_re$C <- results$C
 results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
 results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
+results_re <- results_re[,names(results_re)[-grep("NLL",names(results_re))]]
 results_long <- reshape2::melt(results_re, "C")
 results_long <- merge(scen.df, results_long)
 results_long$C <- factor(results_long$C, levels=paste0("C", 0:lc.n))
 ## Make exploratory plots
-ggplot(results_long, aes(x=C.value, y=value))+ylab("Relative Error")+
-    geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-.25,.25)
+ggplot(results_long, aes(x=C.value, y=value))+ylab("relative error")+
+    geom_jitter()+facet_wrap("variable", scales="fixed") + ylim(-.25,.25) +
+    xlab("robustification constant value")
 ggsave("plots/lc_test1.png", width=10, height=7)
 ## Clean up everything
 unlink(scen, TRUE)
