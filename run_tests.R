@@ -88,6 +88,7 @@ ggplot(subset(results_long, D=="D1"), aes(x=B.value, y=value, colour=D))+ ylab("
     geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
     xlab("bin width")
 ggsave("plots/bin_test_cod_D1.png", width=10, height=7)
+
 ## Clean up everything
 unlink(scen, TRUE)
 file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
