@@ -38,22 +38,23 @@ user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001),
 ### ------------------------------------------------------------
 
 
+
 ### ------------------------------------------------------------
 ### Preliminary bin analysis with cod
 ## WRite the cases to file
 bin.n <- 5
-bin.seq <- seq(2, 10, len=bin.n)
+bin.seq <- seq(2, 15, len=bin.n)
 for(i in 1:bin.n){
-    bin <- seq(20, 150, by=bin.seq[i])
     x <- c(paste("bin_vector; seq(20, 150, by=", bin.seq[i],")"),
-           "file_in; ss3.dat",
-           "file_out; ss3.dat", "type; \"len\"", "pop_bin;NULL", "write_file;1")
+            "type;len", "pop_bin;NULL")
     writeLines(x, con=paste0(case_folder, "/B",i, "-cod.txt"))
 }
-get_args('cases/B1-cod.txt')
+(args <- ss3sim:::get_args('cases/B4-cod.txt'))
+(args <- ss3sim:::get_args('cases/lencomp1-cod.txt'))
 scen.df <- data.frame(B.value=bin.seq, B=paste0("B", 1:bin.n))
-scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, B=1:bin.n), species="cod")
-run_ss3sim(iterations = 1:10, scenarios = scen, parallel=TRUE,
+scen <- expand_scenarios(cases=list(D=0:1, E=0, F=0, R=0,M=0, B=1:bin.n),
+                         species="cod")
+run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", B="B"))
@@ -70,18 +71,23 @@ results_re <- as.data.frame(
             ))
 names(results_re) <- gsub("_em", "_re", em_names)
 results_re$B <- results$B
+results_re$D <- results$D
 results_re$replicate <- results$replicate
 results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
 results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
 results_re <- results_re[, names(results_re)[-grep("NLL",names(results_re))]]
-results_long <- reshape2::melt(results_re, c("B", "replicate"))
+results_long <- reshape2::melt(results_re, c("B", "D","replicate"))
 results_long <- merge(scen.df, results_long)
 results_long$B <- factor(results_long$B, levels=paste0("B", 1:bin.n))
 ## Make exploratory plots
-ggplot(results_long, aes(x=B.value, y=value))+ ylab("relative error")+
+ggplot(subset(results_long, D=="D0"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
     geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
     xlab("bin width")
-ggsave("plots/bin_test1.png", width=10, height=7)
+ggsave("plots/bin_test_cod_D0.png", width=10, height=7)
+ggplot(subset(results_long, D=="D1"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
+    geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
+    xlab("bin width")
+ggsave("plots/bin_test_cod_D1.png", width=10, height=7)
 ## Clean up everything
 unlink(scen, TRUE)
 file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
