@@ -27,8 +27,8 @@ install('../ss3sim') # may need this for parallel runs??
 library(ss3sim)
 case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
-om <- paste0(d, "/models/cod-om")
-em <- paste0(d, "/models/cod-em")
+om <- paste0(d, "/models/fla-om")
+em <- paste0(d, "/models/fla-em")
 ## ## devtool tasks
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
@@ -36,6 +36,76 @@ em <- paste0(d, "/models/cod-em")
 user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001),
                        nrow=100, ncol=100)
 ### ------------------------------------------------------------
+
+### ------------------------------------------------------------
+### Preliminary bin analysis with cod across multiple data types
+## WRite the cases to file
+bin.n <- 2
+bin.seq <- seq(2, 15, len=bin.n)
+for(i in 1:bin.n){
+    x <- c(paste("bin_vector; seq(2, 86, by=", bin.seq[i],")"),
+            "type;len", "pop_bin;NULL")
+    writeLines(x, con=paste0(case_folder, "/B",i, "-fla.txt"))
+}
+scen.df <- data.frame(B.value=bin.seq, B=paste0("B", 1:bin.n))
+scen <- expand_scenarios(cases=list(D=c(2:3), E=0, F=0, R=0,M=0, B=1:bin.n),
+                         species="fla")
+run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
+           case_folder = case_folder, om_dir = om,
+           em_dir = em, case_files = list(M = "M", F = "F", D =
+    c("index", "lcomp", "agecomp"), R = "R", E = "E", B="B"))
+
+## Look at a couple of models closer using r4ss
+res.list <- NULL
+for(i in 1:length(scen)){
+    res.list[[i]] <- SS_output(paste0(scen[i], "/1/em"), covar=FALSE)
+}
+for(i in 1:length(scen)){
+    SSplotComps(res.list[[i]], print=TRUE)
+}
+for(i in 1:length(scen)){
+    SS_plots(res.list[[i]], png=TRUE, uncer=F, html=F)
+}
+
+## Read in the results and convert to relative error in long format
+get_results_all(user_scenarios=scen, over=TRUE)
+file.copy("ss3sim_scalar.csv", "results/bin_datatest_scalar.csv", over=TRUE)
+file.copy("ss3sim_ts.csv", "results/bin_datatest_ts.csv", over=TRUE)
+results <- read.csv("results/bin_datatest_scalar.csv")
+em_names <- names(results)[grep("_em", names(results))]
+results_re <- as.data.frame(
+    sapply(1:length(em_names), function(i)
+           (results[,em_names[i]]- results[,gsub("_em", "_om", em_names[i])])/
+           results[,gsub("_em", "_om", em_names[i])]
+            ))
+names(results_re) <- gsub("_em", "_re", em_names)
+write.csv(results_re, "results_re_datatest.csv")
+results_re$B <- results$B
+results_re$D <- results$D
+results_re$replicate <- results$replicate
+results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
+results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
+results_re <- results_re[, names(results_re)[-grep("NLL",names(results_re))]]
+results_long <- reshape2::melt(results_re, c("B", "D","replicate"))
+results_long <- merge(scen.df, results_long)
+results_long$B <- factor(results_long$B, levels=paste0("B", 1:bin.n))
+## Make exploratory plots
+ggplot(subset(results_long, D=="D0"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
+    geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
+    xlab("bin width")
+ggsave("plots/bin_test_cod_D0.png", width=9, height=5)
+ggplot(subset(results_long, D=="D1"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
+    geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
+    xlab("bin width")
+ggsave("plots/bin_test_cod_D1.png", width=9, height=5)
+
+## Clean up everything
+unlink(scen, TRUE)
+file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
+rm(results, results_re, results_long, scen.df, scen, em_names, bin.seq, bin.n, x, i)
+## End of tail compression run
+### ------------------------------------------------------------
+
 
 
 
@@ -83,11 +153,11 @@ results_long$B <- factor(results_long$B, levels=paste0("B", 1:bin.n))
 ggplot(subset(results_long, D=="D0"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
     geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
     xlab("bin width")
-ggsave("plots/bin_test_cod_D0.png", width=10, height=7)
+ggsave("plots/bin_test_cod_D0.png", width=9, height=5)
 ggplot(subset(results_long, D=="D1"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
     geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
     xlab("bin width")
-ggsave("plots/bin_test_cod_D1.png", width=10, height=7)
+ggsave("plots/bin_test_cod_D1.png", width=9, height=5)
 
 ## Clean up everything
 unlink(scen, TRUE)
