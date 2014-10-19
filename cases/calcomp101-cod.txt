@@ -1,0 +1,4 @@
+Nsamp; list(50)
+fleets; 2
+years; list(1995:2000)
+cv; .2

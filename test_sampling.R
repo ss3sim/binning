@@ -22,8 +22,8 @@ install('../ss3sim') # may need this for parallel runs??
 library(ss3sim)
 case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
-om <- paste0(d, "/models/fla-om")
-em <- paste0(d, "/models/fla-em")
+om <- paste0(d, "/models/cod-om")
+em <- paste0(d, "/models/cod-em")
 ## ## devtool tasks
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
@@ -33,33 +33,46 @@ user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001),
 ### ------------------------------------------------------------
 
 
-## First try it with conditional age-at-length. Make a copy of hte input
-## file to see how the change_bin function works on it.
-file.copy("cod-om/codOM.dat", "codOM.dat")
-dev_help("change_bins")
-
-## Took this manually from the length comps and age comps
-len_vector <- c(10, 53, 70, 83, 94, 101, 107, 111, 114, 117, 120, 123, 125,
-                127, 130, 132, 135, 138, 142, 148, 200)
-age_vector <- as.numeric(1:15)
-change_bin("codOM.dat", "codOM_cal.dat", bin_vector=age_vector,
-           type="cal")
-change_bin("codOM.dat", "codOM_age.dat", bin_vector=age_vector,
-           type="age")
-infile.age <- SS_readdat("codOM_age.dat", verbose=FALSE)
-infile.cal <- SS_readdat("codOM_cal.dat", verbose=FALSE)
-str(infile.age$agecomp)
-str(infile.cal$agecomp)
-
+### ------------------------------------------------------------
+## First try it with conditional age-at-length.
 ## temp values for testing
 fleets <- c(1,2)
 years <- list(c(1998), c(1999,2001))
 Nsamp <- list(50, 15)
 cv <- list(.1,.3)
-## substr_r <- function(x, n){
-##   substr(x, nchar(x)-n+1, nchar(x))
-## }
-
+substr_r <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
 sample_calcomp(infile.cal, outfile="test.dat", fleets=NULL, years=years,
                Nsamp=Nsamp, cv=cv)
-SS_readdat("test.dat")$agecomp
+
+## Now run a test within ss3sim, with and without cal data to make sure
+## it's working.
+scen <- expand_scenarios(cases=list(D=100, E=0, F=0, R=0,M=0, B=100, C=c(100,101)),
+                         species="cod")
+case_files <- list(M = "M", F = "F", D =
+    c("index", "lcomp", "agecomp"), C="calcomp", R = "R", E = "E", B="bin")
+get_caseargs(folder = 'cases', scenario = scen[2],
+                  case_files = case_files)
+run_ss3sim(iterations = 1:5, scenarios = scen, parallel=TRUE,
+           parallel_iterations=TRUE,
+           case_folder = case_folder, om_dir = om,
+           em_dir = em, case_files=case_files)
+get_results_all(user=scen)
+results <- read.csv("ss3sim_scalar.csv")
+results<- within(results,{
+    CV_old_re <- (CV_old_Fem_GP_1_em-CV_old_Fem_GP_1_om)/CV_old_Fem_GP_1_om
+    CV_young_re <- (CV_young_Fem_GP_1_em-CV_young_Fem_GP_1_om)/CV_young_Fem_GP_1_om
+    L_at_Amin_re <- (L_at_Amin_Fem_GP_1_em-L_at_Amin_Fem_GP_1_om)/L_at_Amin_Fem_GP_1_om
+    L_at_Amax_re <- (L_at_Amax_Fem_GP_1_em-L_at_Amax_Fem_GP_1_om)/L_at_Amax_Fem_GP_1_om
+    VonBert_K_re <- (VonBert_K_Fem_GP_1_em-VonBert_K_Fem_GP_1_om)/VonBert_K_Fem_GP_1_om
+})
+results_re <- results[, grep("_re", names(results))]
+results_re$C <- results$C
+## making it long for quick plotting of all params
+results_re <- reshape2::melt(results_re, "C")
+plot_scalar_boxplot(results_re, vert="C", y="value", x="variable", rel=TRUE)
+
+unlink(scen, TRUE)
+file.remove("ss3sim_scalar.csv", "ss3sim_ts.csv")
+### ------------------------------------------------------------
