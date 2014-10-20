@@ -95,7 +95,7 @@ case_files <- list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), C="calcomp", R = "R", E = "E", B="bin")
 get_caseargs(folder = 'cases', scenario = scen[2],
                   case_files = case_files)
-run_ss3sim(iterations = 1:5, scenarios = scen, parallel=TRUE,
+run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
            parallel_iterations=TRUE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files=case_files)
