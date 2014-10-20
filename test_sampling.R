@@ -33,7 +33,7 @@ user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001),
 ## Try it with empirical weight-at-age
 ## temp values for testing
 fleets <- c(1)
-years <- list(-(1:100))
+years <- list(-(1913:2012))
 Nsamp <- list(50)
 cv <- list(.1)
 substr_r <- function(x, n){
@@ -43,16 +43,17 @@ sample_wtatage(infile="wtatage.ss_new", outfile="wtatage_test.dat", fleets=fleet
                Nsamp=Nsamp, cv=cv)
 ## Now run a test within ss3sim, with and without W@A data to make sure
 ## it's working.
-scen <- expand_scenarios(cases=list(D=100, E=0, F=0, R=0,M=0, B=100, W=c(100,101)),
+scen <- expand_scenarios(cases=list(D=100, E=0, F=0, R=0,M=0, W=c(100,101)),
                          species="cod")
 case_files <- list(M = "M", F = "F", D =
-    c("index", "lcomp", "agecomp"), W="wtatage", R = "R", E = "E", B="bin")
+    c("index", "lcomp", "agecomp"), W="wtatage", R = "R", E = "E")
 get_caseargs(folder = 'cases', scenario = scen[2],
-                  case_files = case_files)
+                  case_files = case_files)$wtatage
 run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
            parallel_iterations=FALSE,
            case_folder = case_folder, om_dir = om,
            em_dir = em, case_files=case_files)
+
 get_results_all(user=scen)
 results <- read.csv("ss3sim_scalar.csv")
 results<- within(results,{

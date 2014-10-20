@@ -1,4 +1,4 @@
 fleets; 1
-years; list(-(1:100))
+years; list(-(1913:2012))
 Nsamp; list(50)
 cv; list(.1)
