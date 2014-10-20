@@ -1,0 +1,4 @@
+fleets; NULL
+years; list(-(1:100))
+Nsamp; list(50)
+cv; list(.1)

@@ -6,10 +6,6 @@
 ## ## Update the development tools, if you haven't recently
 ## update.packages(c('r4ss','knitr', 'devtools', 'roxygen2'))
 ## Load the neccessary libraries
-library(devtools)
-library(r4ss)
-library(ggplot2)
-## install.packages(c("doParallel", "foreach"))
 require(doParallel)
 registerDoParallel(cores = 4)
 require(foreach)
@@ -17,8 +13,8 @@ getDoParWorkers()
 ## Install the package from our local git repository, which is usually a
 ## development branch. You need to pull down any changes into the branch
 ## before running this command.
-## load_all("../ss3sim")
-install('../ss3sim') # may need this for parallel runs??
+## devtools::load_all("../ss3sim")
+devtools::install('../ss3sim') # may need this for parallel runs??
 library(ss3sim)
 case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
@@ -34,7 +30,51 @@ user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001),
 
 
 ### ------------------------------------------------------------
-## First try it with conditional age-at-length.
+## Try it with empirical weight-at-age
+## temp values for testing
+fleets <- c(1)
+years <- list(-(1:100))
+Nsamp <- list(50)
+cv <- list(.1)
+substr_r <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+sample_wtatage(infile="wtatage.ss_new", outfile="wtatage_test.dat", fleets=fleets, years=years,
+               Nsamp=Nsamp, cv=cv)
+## Now run a test within ss3sim, with and without W@A data to make sure
+## it's working.
+scen <- expand_scenarios(cases=list(D=100, E=0, F=0, R=0,M=0, B=100, W=c(100,101)),
+                         species="cod")
+case_files <- list(M = "M", F = "F", D =
+    c("index", "lcomp", "agecomp"), W="wtatage", R = "R", E = "E", B="bin")
+get_caseargs(folder = 'cases', scenario = scen[2],
+                  case_files = case_files)
+run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
+           parallel_iterations=FALSE,
+           case_folder = case_folder, om_dir = om,
+           em_dir = em, case_files=case_files)
+get_results_all(user=scen)
+results <- read.csv("ss3sim_scalar.csv")
+results<- within(results,{
+    CV_old_re <- (CV_old_Fem_GP_1_em-CV_old_Fem_GP_1_om)/CV_old_Fem_GP_1_om
+    CV_young_re <- (CV_young_Fem_GP_1_em-CV_young_Fem_GP_1_om)/CV_young_Fem_GP_1_om
+    L_at_Amin_re <- (L_at_Amin_Fem_GP_1_em-L_at_Amin_Fem_GP_1_om)/L_at_Amin_Fem_GP_1_om
+    L_at_Amax_re <- (L_at_Amax_Fem_GP_1_em-L_at_Amax_Fem_GP_1_om)/L_at_Amax_Fem_GP_1_om
+    VonBert_K_re <- (VonBert_K_Fem_GP_1_em-VonBert_K_Fem_GP_1_om)/VonBert_K_Fem_GP_1_om
+})
+results_re <- results[, grep("_re", names(results))]
+results_re$C <- results$C
+## making it long for quick plotting of all params
+results_re <- reshape2::melt(results_re, "C")
+plot_scalar_boxplot(results_re, vert="C", y="value", x="variable", rel=TRUE)
+
+unlink(scen, TRUE)
+file.remove("ss3sim_scalar.csv", "ss3sim_ts.csv")
+### ------------------------------------------------------------
+
+
+### ------------------------------------------------------------
+## Try it with conditional age-at-length.
 ## temp values for testing
 fleets <- c(1,2)
 years <- list(c(1998), c(1999,2001))
@@ -45,7 +85,6 @@ substr_r <- function(x, n){
 }
 sample_calcomp(infile.cal, outfile="test.dat", fleets=NULL, years=years,
                Nsamp=Nsamp, cv=cv)
-
 ## Now run a test within ss3sim, with and without cal data to make sure
 ## it's working.
 scen <- expand_scenarios(cases=list(D=100, E=0, F=0, R=0,M=0, B=100, C=c(100,101)),
@@ -76,3 +115,4 @@ plot_scalar_boxplot(results_re, vert="C", y="value", x="variable", rel=TRUE)
 unlink(scen, TRUE)
 file.remove("ss3sim_scalar.csv", "ss3sim_ts.csv")
 ### ------------------------------------------------------------
+
