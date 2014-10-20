@@ -56,7 +56,7 @@ run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
 
 get_results_all(user=scen)
 results <- read.csv("ss3sim_scalar.csv")
-results<- within(results,{
+results <- within(results,{
     CV_old_re <- (CV_old_Fem_GP_1_em-CV_old_Fem_GP_1_om)/CV_old_Fem_GP_1_om
     CV_young_re <- (CV_young_Fem_GP_1_em-CV_young_Fem_GP_1_om)/CV_young_Fem_GP_1_om
     L_at_Amin_re <- (L_at_Amin_Fem_GP_1_em-L_at_Amin_Fem_GP_1_om)/L_at_Amin_Fem_GP_1_om

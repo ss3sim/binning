@@ -1,10 +1,5 @@
-## This is the central R file for doing tests with ss3sim for the binning
-## group. The idea is that it uses the development branch of ss3sim and any
-## development versions of R functions written here. At the end of the
-## project this file will be converted into one to recreate the entire
-## simulation. Any intermediate code should be saved by commenting it out
-## and putting it at the end of the file. (We might want to incorporate it
-## into a "how to test" type document later, so it's worth saving for now).
+## This is the central R file for running simulations for the binning
+## group.
 
 ### ------------------------------------------------------------
 ## Startup the working environment
@@ -12,9 +7,6 @@
 ## update.packages(c('r4ss','knitr', 'devtools', 'roxygen2'))
 ## Load the neccessary libraries
 library(devtools)
-library(r4ss)
-library(ggplot2)
-## install.packages(c("doParallel", "foreach"))
 require(doParallel)
 registerDoParallel(cores = 4)
 require(foreach)
@@ -27,34 +19,37 @@ install('../ss3sim') # may need this for parallel runs??
 library(ss3sim)
 case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
-om <- paste0(d, "/models/fla-om")
-em <- paste0(d, "/models/fla-em")
+fla.om <- paste0(d, "/models/fla-om")
+fla.em <- paste0(d, "/models/fla-em")
 ## ## devtool tasks
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
 ## devtools::check('../ss3sim', cran=TRUE)
-user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001),
-                       nrow=100, ncol=100)
+## user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001),
+##                        nrow=100, ncol=100)
 ### ------------------------------------------------------------
 
 ### ------------------------------------------------------------
-### Preliminary bin analysis with cod across multiple data types
-## WRite the cases to file
-bin.n <- 2
-bin.seq <- seq(2, 15, len=bin.n)
+## Bin analysis across multiple data types
+## Write the cases to file
+bin.n <- 5
+bin.seq <- floor(seq(8, 40, len=bin.n))
 for(i in 1:bin.n){
-    x <- c(paste("bin_vector; seq(2, 86, by=", bin.seq[i],")"),
+    x <- c(paste("bin_vector; list(len=seq(2, 86, length.out=", bin.seq[i],"))"),
             "type;len", "pop_bin;NULL")
-    writeLines(x, con=paste0(case_folder, "/B",i, "-fla.txt"))
+    writeLines(x, con=paste0(case_folder, "/bin",i, "-fla.txt"))
 }
 scen.df <- data.frame(B.value=bin.seq, B=paste0("B", 1:bin.n))
-scen <- expand_scenarios(cases=list(D=c(2:3), E=0, F=0, R=0,M=0, B=1:bin.n),
+scen <- expand_scenarios(cases=list(D=c(2:3), E=0:1, F=0, R=0,M=0, B=1:bin.n),
                          species="fla")
-run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
-           case_folder = case_folder, om_dir = om,
-           em_dir = em, case_files = list(M = "M", F = "F", D =
-    c("index", "lcomp", "agecomp"), R = "R", E = "E", B="B"))
+case_files <-  list(M = "M", F = "F", D =
+    c("index", "lcomp", "agecomp"), R = "R", E = "E", B="bin")
+get_caseargs(folder = 'cases', scenario = scen[2],
+                  case_files = case_files)
 
+run_ss3sim(iterations = 1:15, scenarios = scen, parallel=TRUE,
+           case_folder = case_folder, om_dir = fla.om,
+           em_dir = fla.em, case_files=case_files)
 ## Look at a couple of models closer using r4ss
 res.list <- NULL
 for(i in 1:length(scen)){
@@ -67,109 +62,54 @@ for(i in 1:length(scen)){
     SS_plots(res.list[[i]], png=TRUE, uncer=F, html=F)
 }
 
-## Read in the results and convert to relative error in long format
-get_results_all(user_scenarios=scen, over=TRUE)
-file.copy("ss3sim_scalar.csv", "results/bin_datatest_scalar.csv", over=TRUE)
-file.copy("ss3sim_ts.csv", "results/bin_datatest_ts.csv", over=TRUE)
-results <- read.csv("results/bin_datatest_scalar.csv")
-em_names <- names(results)[grep("_em", names(results))]
-results_re <- as.data.frame(
-    sapply(1:length(em_names), function(i)
-           (results[,em_names[i]]- results[,gsub("_em", "_om", em_names[i])])/
-           results[,gsub("_em", "_om", em_names[i])]
-            ))
-names(results_re) <- gsub("_em", "_re", em_names)
-write.csv(results_re, "results_re_datatest.csv")
-results_re$B <- results$B
-results_re$D <- results$D
-results_re$replicate <- results$replicate
-results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
-results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
-results_re <- results_re[, names(results_re)[-grep("NLL",names(results_re))]]
-results_long <- reshape2::melt(results_re, c("B", "D","replicate"))
-results_long <- merge(scen.df, results_long)
-results_long$B <- factor(results_long$B, levels=paste0("B", 1:bin.n))
-## Make exploratory plots
-ggplot(subset(results_long, D=="D0"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
-    geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
-    xlab("bin width")
-ggsave("plots/bin_test_cod_D0.png", width=9, height=5)
-ggplot(subset(results_long, D=="D1"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
-    geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
-    xlab("bin width")
-ggsave("plots/bin_test_cod_D1.png", width=9, height=5)
-
-## Clean up everything
-unlink(scen, TRUE)
-file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
-rm(results, results_re, results_long, scen.df, scen, em_names, bin.seq, bin.n, x, i)
-## End of tail compression run
-### ------------------------------------------------------------
-
-
-
-
-### ------------------------------------------------------------
-### Preliminary bin analysis with cod
-## WRite the cases to file
-bin.n <- 5
-bin.seq <- seq(2, 15, len=bin.n)
-for(i in 1:bin.n){
-    x <- c(paste("bin_vector; seq(20, 150, by=", bin.seq[i],")"),
-            "type;len", "pop_bin;NULL")
-    writeLines(x, con=paste0(case_folder, "/B",i, "-cod.txt"))
+for(i in 1:length(scen)){
+    file.copy(paste0(scen[i],
+                     "/1/emcomp_lenfit_sex1mkt0aggregated across time.png"), paste0("plots/lencompfit_", scen[i], ".png"))
+    file.copy(paste0(scen[i],
+                     "/1/em/plots/data_plot.png"), paste0("plots/data_", scen[i], ".png"))
 }
-(args <- ss3sim:::get_args('cases/B4-cod.txt'))
-(args <- ss3sim:::get_args('cases/lencomp1-cod.txt'))
-scen.df <- data.frame(B.value=bin.seq, B=paste0("B", 1:bin.n))
-scen <- expand_scenarios(cases=list(D=0:1, E=0, F=0, R=0,M=0, B=1:bin.n),
-                         species="cod")
-run_ss3sim(iterations = 1:1, scenarios = scen, parallel=TRUE,
-           case_folder = case_folder, om_dir = om,
-           em_dir = em, case_files = list(M = "M", F = "F", D =
-    c("index", "lcomp", "agecomp"), R = "R", E = "E", B="B"))
+
 ## Read in the results and convert to relative error in long format
 get_results_all(user_scenarios=scen, over=TRUE)
-file.copy("ss3sim_scalar.csv", "results/bin_test1_scalar.csv", over=TRUE)
-file.copy("ss3sim_ts.csv", "results/bin_test1_ts.csv", over=TRUE)
-results <- read.csv("results/bin_test1_scalar.csv")
-em_names <- names(results)[grep("_em", names(results))]
-results_re <- as.data.frame(
-    sapply(1:length(em_names), function(i)
-           (results[,em_names[i]]- results[,gsub("_em", "_om", em_names[i])])/
-           results[,gsub("_em", "_om", em_names[i])]
-            ))
-names(results_re) <- gsub("_em", "_re", em_names)
-results_re$B <- results$B
-results_re$D <- results$D
+file.copy("ss3sim_scalar.csv", "results/bin_fla_scalar.csv", over=TRUE)
+file.copy("ss3sim_ts.csv", "results/bin_fla_ts.csv", over=TRUE)
+results <- read.csv("results/bin_fla_scalar.csv")
+results <- within(results,{
+    CV_old_re <- (CV_old_Fem_GP_1_em-CV_old_Fem_GP_1_om)/CV_old_Fem_GP_1_om
+    CV_young_re <- (CV_young_Fem_GP_1_em-CV_young_Fem_GP_1_om)/CV_young_Fem_GP_1_om
+    L_at_Amin_re <- (L_at_Amin_Fem_GP_1_em-L_at_Amin_Fem_GP_1_om)/L_at_Amin_Fem_GP_1_om
+    L_at_Amax_re <- (L_at_Amax_Fem_GP_1_em-L_at_Amax_Fem_GP_1_om)/L_at_Amax_Fem_GP_1_om
+    VonBert_K_re <- (VonBert_K_Fem_GP_1_em-VonBert_K_Fem_GP_1_om)/VonBert_K_Fem_GP_1_om
+    depletion_re <- (depletion_em-depletion_om)/depletion_om
+})
+results_re <- calculate_re(results, FALSE)
+results_re <- results[, grep("_re", names(results))]
+results_re$B <- results$B;results_re$D <- results$D;results_re$E <- results$E
 results_re$replicate <- results$replicate
-results_re <- results_re[sapply(results_re, function(x) any(is.finite(x)))]
-results_re <- results_re[sapply(results_re, function(x) !all(x==0))]
-results_re <- results_re[, names(results_re)[-grep("NLL",names(results_re))]]
-results_long <- reshape2::melt(results_re, c("B", "D","replicate"))
+results_long <- reshape2::melt(results_re, c("E","B", "D","replicate"))
 results_long <- merge(scen.df, results_long)
-results_long$B <- factor(results_long$B, levels=paste0("B", 1:bin.n))
+results_long$B.value <- factor(results_long$B.value, levels=bin.seq)
 ## Make exploratory plots
-ggplot(subset(results_long, D=="D0"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
-    geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
-    xlab("bin width")
-ggsave("plots/bin_test_cod_D0.png", width=9, height=5)
-ggplot(subset(results_long, D=="D1"), aes(x=B.value, y=value, colour=D))+ ylab("relative error")+
-    geom_line(aes(group=replicate))+facet_wrap("variable", scales="fixed") + ylim(-1,1) +
-    xlab("bin width")
-ggsave("plots/bin_test_cod_D1.png", width=9, height=5)
+plot_scalar_boxplot(results_long, x="B.value", y="value", vert="variable", horiz2="D",
+                   horiz="E", rel=F, axes.free=TRUE) + xlab("# of length bins") +
+                                         ylab("relative error")+ ylim(-.7, .-3)
+
+ggsave("plots/bin_fla.png", width=9, height=5)
+
 
 ## Clean up everything
 unlink(scen, TRUE)
 file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
 rm(results, results_re, results_long, scen.df, scen, em_names, bin.seq, bin.n, x, i)
-## End of tail compression run
+## End of bin structure runs
 ### ------------------------------------------------------------
 
 
 
+
+
 ### ------------------------------------------------------------
-### Preliminary tail compression analysis with cod
+### Tail compression analysis with cod
 ## WRite the cases to file
 tc.n <- 10
 tc.seq <- seq(0, .25, len=tc.n)
@@ -183,8 +123,8 @@ scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, T=0:tc.n), species="
 ## Run them in parallel
 ## RUns parallel=F but not TRUE??????
 run_ss3sim(iterations = 1:10, scenarios = scen, parallel=TRUE,
-           case_folder = case_folder, om_dir = om,
-           em_dir = em, case_files = list(M = "M", F = "F", D =
+           case_folder = case_folder, om_dir = fla.om,
+           em_dir = fla.em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
 ## Read in the results and convert to relative error in long format
 get_results_all(user_scenarios=scen)
@@ -234,8 +174,8 @@ scen.df <- data.frame(C.value=c(lc.seq), C=paste0("C", 1:lc.n))
 scen <- expand_scenarios(cases=list(D=0, E=0, F=0, R=0,M=0, C=1:lc.n), species="cod")
 ## Run them in parallel
 run_ss3sim(iterations = 1:10, scenarios = scen, parallel=TRUE,
-           case_folder = case_folder, om_dir = om,
-           em_dir = em, case_files = list(M = "M", F = "F", D =
+           case_folder = case_folder, om_dir = fla.om,
+           em_dir = fla.em, case_files = list(M = "M", F = "F", D =
     c("index", "lcomp", "agecomp"), R = "R", E = "E", C="C"))
 ## Read in the results and convert to relative error in long format
 get_results_all(user_scenarios=scen)
@@ -267,52 +207,3 @@ file.remove(c("ss3sim_scalar.csv", "ss3sim_ts.csv"))
 rm(results, results_re, results_long, scen.df, scen, em_names, lc.seq, lc, x, i)
 ## End of lcomp constant test run
 ### ------------------------------------------------------------
-
-
-
-
-### ------------------------------------------------------------
-### Old testing code, leave here for now, eventually migrate to a testing
-### folder in the package.
-
-
-## ### ------------------------------------------------------------
-## ### Code for testing the change_tail_compression
-## ## Test whether cases are parsed correctly
-## get_caseargs("cases", scenario = "D0-E0-F0-M0-R0-S0-T0-cod",
-##              case_files = list(E = "E", D = c("index", "lcomp", "agecomp"), F =
-##              "F", M = "M", R = "R", S = "S", T="T"))
-## ## Run the example simulation with tail compression option
-## case_folder <- 'cases'
-## d <- system.file("extdata", package = "ss3sim")
-## om <- paste0(d, "/models/cod-om")
-## em <- paste0(d, "/models/cod-em")
-## run_ss3sim(iterations = 1, scenarios =
-##            c("D0-E0-F0-R0-M0-T0-cod", "D0-E0-F0-R0-M0-T1-cod"),
-##            case_folder = case_folder, om_dir = om,
-##            em_dir = em, case_files = list(M = "M", F = "F", D =
-##     c("index", "lcomp", "agecomp"), R = "R", E = "E", T="T"))
-## ## Make sure it runs with no tail compression option
-## run_ss3sim(iterations = 1, scenarios =
-##            c("D0-E0-F0-R0-M0-cod"),
-##            case_folder = case_folder, om_dir = om,
-##            em_dir = em)
-## ## quickly grab results to see if any difference
-## get_results_all(user_scenarios=
-##                 c("D0-E0-F0-R0-M0-T0-cod",
-##                   "D0-E0-F0-R0-M0-T1-cod",
-##                   "D0-E0-F0-R0-M0-cod" ), over=TRUE)
-## results <- read.csv("ss3sim_scalar.csv")
-## results$ID <- gsub("D0-E0-F0-R0-M0-|-1", "", as.character(results$ID))
-## results.long <- cbind(ID=results$ID, results[,grep("_em", names(results))])
-## results.long <- reshape2::melt(results.long, "ID")
-## library(ggplot2)
-## ggplot(results.long, aes(x=ID, y=value))+
-##     geom_point()+facet_wrap("variable", scales="free")
-## results.long
-## ## End of session so clean up
-## unlink("D0-E0-F0-R0-M0-T0-cod", TRUE)
-## unlink("D0-E0-F0-R0-M0-T1-cod", TRUE)
-## unlink("D0-E0-F0-R0-M0-cod", TRUE)
-## file.remove("ss3sim_scalar.csv", "ss3sim_ts.csv")
-## ### ------------------------------------------------------------
