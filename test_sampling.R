@@ -84,6 +84,7 @@ cv <- list(.1,.3)
 substr_r <- function(x, n){
   substr(x, nchar(x)-n+1, nchar(x))
 }
+infile.cal <- SS_readdat("cod-om/codOM.dat", ver=FALSE)
 sample_calcomp(infile.cal, outfile="test.dat", fleets=NULL, years=years,
                Nsamp=Nsamp, cv=cv)
 ## Now run a test within ss3sim, with and without cal data to make sure
