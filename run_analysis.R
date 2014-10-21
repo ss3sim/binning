@@ -47,23 +47,23 @@ case_files <-  list(F = "F", D =
 get_caseargs(folder = 'cases', scenario = scen[1],
                   case_files = case_files)
 
-run_ss3sim(iterations = 1:15, scenarios = scen, parallel=TRUE,
+run_ss3sim(iterations = 1:15, scenarios = c("B1-D100-E1-F0-fla", "B2-D100-E1-F0-fla"), parallel=TRUE,
            parallel_iterations=TRUE,
            case_folder = case_folder, om_dir = fla.om,
            em_dir = fla.em, case_files=case_files)
 ## Look at a couple of models closer using r4ss
 res.list <- NULL
-for(i in 1:length(scen)){
-    res.list[[i]] <- SS_output(paste0(scen[i], "/1/em"), covar=FALSE)
+for(i in 1:length(temp.scen)){
+    res.list[[i]] <- SS_output(paste0(temp.scen[i], "/1/em"), covar=FALSE)
 }
-for(i in 1:length(scen)){
+for(i in 1:length(res.list)){
     SSplotComps(res.list[[i]], print=TRUE)
 }
-for(i in 1:length(scen)){
+for(i in 1:length(res.list)){
     SS_plots(res.list[[i]], png=TRUE, uncer=F, html=F)
 }
 
-for(i in 1:length(scen)){
+for(i in 1:length(res.list)){
     file.copy(paste0(scen[i],
                      "/1/emcomp_lenfit_sex1mkt0aggregated across time.png"), paste0("plots/lencompfit_", scen[i], ".png"))
     file.copy(paste0(scen[i],
@@ -71,7 +71,10 @@ for(i in 1:length(scen)){
 }
 
 ## Read in the results and convert to relative error in long format
+temp.scen <- scen[scen %in% dir(getwd())]
+temp.scen <- temp.scen[-grep("D103", temp.scen)]
 get_results_all(user_scenarios=scen, over=TRUE)
+
 file.copy("ss3sim_scalar.csv", "results/bin_fla_scalar.csv", over=TRUE)
 file.copy("ss3sim_ts.csv", "results/bin_fla_ts.csv", over=TRUE)
 results <- read.csv("results/bin_fla_scalar.csv")
@@ -91,10 +94,10 @@ results_long <- reshape2::melt(results_re, c("E","B", "D","replicate"))
 results_long <- merge(scen.df, results_long)
 results_long$B.value <- factor(results_long$B.value, levels=bin.seq)
 ## Make exploratory plots
-plot_scalar_boxplot(results_long, x="B.value", y="value", vert="variable", horiz2="D",
+library(ggplot2)
+plot_scalar_boxplot(subset(results_long, E=="E0"), x="B.value", y="value", vert="variable", horiz2="D",
                    horiz="E", rel=F, axes.free=TRUE) + xlab("# of length bins") +
                                          ylab("relative error")+ ylim(-.7, .-3)
-
 ggsave("plots/bin_fla.png", width=9, height=5)
 
 
