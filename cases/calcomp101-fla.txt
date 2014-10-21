@@ -1,0 +1,4 @@
+Nsamp; list(50)
+fleets; NULL
+years; list(seq(1988,2012,by=2))
+cv; c(.2)

@@ -1,4 +1,0 @@
-Nsamp; 50
-fleets; NULL
-years; list(1970:2013)
-cv; .2

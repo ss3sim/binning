@@ -36,18 +36,19 @@ bin.n <- 5
 bin.seq <- floor(seq(8, 40, len=bin.n))
 for(i in 1:bin.n){
     x <- c(paste("bin_vector; list(len=seq(2, 86, length.out=", bin.seq[i],"))"),
-            "type;len", "pop_bin;NULL")
+            "type;c('len', 'cal')", "pop_bin;NULL")
     writeLines(x, con=paste0(case_folder, "/bin",i, "-fla.txt"))
 }
 scen.df <- data.frame(B.value=bin.seq, B=paste0("B", 1:bin.n))
-scen <- expand_scenarios(cases=list(D=c(2:3), E=0:1, F=0, R=0,M=0, B=1:bin.n),
+scen <- expand_scenarios(cases=list(D=100:103, E=0:1, F=0, B=1:bin.n),
                          species="fla")
-case_files <-  list(M = "M", F = "F", D =
-    c("index", "lcomp", "agecomp"), R = "R", E = "E", B="bin")
-get_caseargs(folder = 'cases', scenario = scen[2],
+case_files <-  list(F = "F", D =
+    c("index", "lcomp", "agecomp", "calcomp"), E = "E", B="bin")
+get_caseargs(folder = 'cases', scenario = scen[1],
                   case_files = case_files)
 
 run_ss3sim(iterations = 1:15, scenarios = scen, parallel=TRUE,
+           parallel_iterations=TRUE,
            case_folder = case_folder, om_dir = fla.om,
            em_dir = fla.em, case_files=case_files)
 ## Look at a couple of models closer using r4ss
