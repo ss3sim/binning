@@ -1,3 +1,0 @@
-bin_vector; list(len=seq(2, 86, length.out= 40 ))
-type;c('len', 'cal')
-pop_bin;NULL
