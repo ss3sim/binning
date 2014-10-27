@@ -392,6 +392,9 @@
 #  1 1 1 1 #_agecomp:_1
 #  1 1 1 1 #_agecomp:_2
 #  0 0 0 0 #_agecomp:_3
+#  1 1 1 1 #_size-age:_1
+#  1 1 1 1 #_size-age:_2
+#  1 1 1 1 #_size-age:_3
 #  1 1 1 1 #_init_equ_catch
 #  1 1 1 1 #_recruitments
 #  1 1 1 1 #_parameter-priors
