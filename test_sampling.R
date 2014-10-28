@@ -5,6 +5,56 @@
 source("startup.R")
 
 ### ------------------------------------------------------------
+## Basic tests for sample_calcomp, of the functions external to the package
+devtools::load_all("../ss3sim")
+
+fleets <- c(1,2)
+years <- list(c(91,94, 97), 94)
+substr_r <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
+}
+datfile <- paste0("data.ss_new")
+outfile <- paste0("data_test.dat")
+sample_calcomp(datfile=datfile,outfile=outfile,
+               fleets=fleets, years=years)
+
+0x
+## Not ready to run this yet, still broken
+## Now run a test within ss3sim, with and without W@A data to make sure
+## it's working.
+scen <- expand_scenarios(cases=list(D=100, E=0, F=0, B=1),
+                         species="fla")
+case_files <- list(F = "F", B="bin", E="E", D =
+    c("index", "lcomp", "agecomp"))
+get_caseargs(folder = 'test cases', scenario = scen[1],
+                  case_files = case_files)
+run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
+           parallel_iterations=FALSE,
+           case_folder = 'test cases', om_dir = fla_om,
+           em_dir = fla_em, case_files=case_files)
+
+get_results_all(user=scen)
+results <- read.csv("ss3sim_scalar.csv")
+results <- within(results,{
+    CV_old_re <- (CV_old_Fem_GP_1_em-CV_old_Fem_GP_1_om)/CV_old_Fem_GP_1_om
+    CV_young_re <- (CV_young_Fem_GP_1_em-CV_young_Fem_GP_1_om)/CV_young_Fem_GP_1_om
+    L_at_Amin_re <- (L_at_Amin_Fem_GP_1_em-L_at_Amin_Fem_GP_1_om)/L_at_Amin_Fem_GP_1_om
+    L_at_Amax_re <- (L_at_Amax_Fem_GP_1_em-L_at_Amax_Fem_GP_1_om)/L_at_Amax_Fem_GP_1_om
+    VonBert_K_re <- (VonBert_K_Fem_GP_1_em-VonBert_K_Fem_GP_1_om)/VonBert_K_Fem_GP_1_om
+})
+results_re <- results[, grep("_re", names(results))]
+results_re$C <- results$C
+## making it long for quick plotting of all params
+results_re <- reshape2::melt(results_re, "C")
+plot_scalar_boxplot(results_re, vert="C", y="value", x="variable", rel=TRUE)
+unlink(scen, TRUE)
+file.remove("ss3sim_scalar.csv", "ss3sim_ts.csv")
+### ------------------------------------------------------------
+
+
+
+
+### ------------------------------------------------------------
 ## Basic tests for sample_mlacomp, of the functions external to the package
 devtools::load_all("../ss3sim")
 fleets <- c(1)
