@@ -1,3 +1,0 @@
-bin_vector; list("cal"=NULL)
-type;c('cal')
-pop_bin;NULL

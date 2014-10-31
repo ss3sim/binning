@@ -16,10 +16,10 @@ devtools::load_all("../ss3sim")
 library(ss3sim)
 case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
-fla_om <- "../age_select/fla-om/"
-fla_em <- "../age_select/fla-em/"
-cod_om <- "../age_select/cod-om/"
-cod_em <- "../age_select/cod-em/"
+fla_om <- "../growth_models/fla-om/"
+fla_em <- "../growth_models/fla-em/"
+cod_om <- "../growth_models/cod-om/"
+cod_em <- "../growth_models/cod-em/"
 ## om <- paste0(d, "/models/cod-om")
 ## em <- paste0(d, "/models/cod-em")
 ## ## devtool tasks

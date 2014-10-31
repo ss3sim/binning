@@ -4,6 +4,34 @@
 ## prepare workspace
 source("startup.R")
 
+## ------------------------------------------------------------
+## Test all of the sampling functions to make sure they're working.
+
+## First just age and length
+scen <- expand_scenarios(cases=list(D=80, E=0, F=0), species="fla")
+case_files <- list(F = "F",  E="E",  D =
+    c("index", "lcomp", "agecomp"))
+get_caseargs(folder = 'data test cases', scenario = scen[1],
+                  case_files = case_files)
+run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
+           parallel_iterations=FALSE,
+           case_folder = 'data test cases', om_dir = fla_om,
+           em_dir = fla_em, case_files=case_files)
+unlink(scen, TRUE)
+## Now add CAL data
+scen <- expand_scenarios(cases=list(D=80, E=0, F=0, X=80), species="fla")
+case_files <- list(F = "F",  E="E",  X="calcomp", D =
+    c("index", "lcomp", "agecomp"))
+get_caseargs(folder = 'data test cases', scenario = scen[1],
+                  case_files = case_files)
+run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
+           parallel_iterations=FALSE,
+           case_folder = 'data test cases', om_dir = fla_om,
+           em_dir = fla_em, case_files=case_files)
+unlink(scen, TRUE)
+
+## ------------------------------------------------------------
+
 ### ------------------------------------------------------------
 ## Basic tests for sample_calcomp, of the functions external to the package
 devtools::load_all("../ss3sim")
@@ -18,11 +46,10 @@ outfile <- paste0("data_test.dat")
 sample_calcomp(datfile=datfile,outfile=outfile,
                fleets=fleets, years=years)
 
-0x
 ## Not ready to run this yet, still broken
 ## Now run a test within ss3sim, with and without W@A data to make sure
 ## it's working.
-scen <- expand_scenarios(cases=list(D=100, E=0, F=0, B=1),
+scen <- expand_scenarios(cases=list(D=100, E=0, F=0),
                          species="fla")
 case_files <- list(F = "F", B="bin", E="E", D =
     c("index", "lcomp", "agecomp"))
