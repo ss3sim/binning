@@ -4,6 +4,59 @@
 ## prepare workspace
 source("startup.R")
 
+## Testing and development of the new change_bin approach
+scen <- expand_scenarios(cases=list(D=80, E=0, F=0), species="fla")
+case_files <- list(F = "F",  E="E",  D =
+    c("index", "lcomp", "agecomp"))
+a <- get_caseargs(folder = 'data test cases', scenario = scen[1],
+                  case_files = case_files)
+index_params   = a$index
+lcomp_params   = a$lcomp
+agecomp_params = a$agecomp
+calcomp_params = a$calcomp
+wtatage_params = a$wtatage
+mlacomp_params = a$mlacomp
+
+
+calculate_data_units <- function(lcomp_params=NULL, agecomp_params=NULL,
+                                 calcomp_params=NULL, mlacomp_params=NULL){
+    sample_args <- list("len"=lcomp_params, "age"=agecomp_params, "cal"=calcomp_params,
+                        "mla"=mlacomp_params)
+    sample_args_null <- vapply(sample_args, is.null, logical(1L))
+    ## Exit if nothing specified to prevent error.
+    if(!any(!sample_args_null)) stop("No data passed: all arguments NULL")
+    ## Get the superset of fleets
+    fleets.all <-
+        as.vector(unlist(lapply(sample_args, function(x) x$fleets)))
+    ## Get the superset of years
+    years.all <-
+        as.vector(unlist(lapply(sample_args, function(x) x$years)))
+    ## Sort them, although might not need to do this?
+    fleets.all <- sort(unique(fleets.all))
+    years.all <- sort(unique(years.all))
+    ## Now figure out which data types need to be in the OM for sampling (but
+    ## not necessarily the EM). For now these are special cases but could be
+    ## different based on different algorithms.
+    types.all <- names(sample_args)[!sample_args_null]
+    if("cal" %in% types.all) types.all <- c(types.all, "len", "age")
+    if("mla" %in% types.all) types.all <- c(types.all, "age")
+    return(list(fleets=fleets.all, years=years.all, types=types.all))
+}
+
+### Examples
+## Should throw error since nothing passed
+calculate_data_units()
+## Only one fleet
+calculate_data_units(lcomp_params=list(fleets=1, years=c(3,4,6)))
+## Add new fleet
+calculate_data_units(lcomp_params=list(fleets=1, years=c(3,4,6)),
+                     agecomp_params=list(fleets=2, years=5))
+## If CAL data called, need other types even if not specified
+calculate_data_units(calcomp_params=list(fleets=1, years=c(3,4,6)))
+
+
+
+
 ## ------------------------------------------------------------
 ## Test all of the sampling functions to make sure they're working.
 
@@ -11,7 +64,7 @@ source("startup.R")
 scen <- expand_scenarios(cases=list(D=80, E=0, F=0), species="fla")
 case_files <- list(F = "F",  E="E",  D =
     c("index", "lcomp", "agecomp"))
-get_caseargs(folder = 'data test cases', scenario = scen[1],
+a <- get_caseargs(folder = 'data test cases', scenario = scen[1],
                   case_files = case_files)
 run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
            parallel_iterations=FALSE,
