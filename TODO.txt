@@ -1,0 +1,5 @@
+renaming:
+conditional_data - calcomp
+infile - datfile or ctlfile
+new.calcomp and new.agecomp - calcomp.new etc.
+make_dummy_dat_agecomp etc - make_dummy_agecomp

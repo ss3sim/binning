@@ -4,55 +4,70 @@
 ## prepare workspace
 source("startup.R")
 
-## Testing and development of the new change_bin approach
+
+
 scen <- expand_scenarios(cases=list(D=80, E=0, F=0), species="fla")
 case_files <- list(F = "F",  E="E",  D =
     c("index", "lcomp", "agecomp"))
 a <- get_caseargs(folder = 'data test cases', scenario = scen[1],
                   case_files = case_files)
-index_params   = a$index
-lcomp_params   = a$lcomp
-agecomp_params = a$agecomp
-calcomp_params = a$calcomp
-wtatage_params = a$wtatage
-mlacomp_params = a$mlacomp
+lcomp_params= a$lcomp
+agecomp_params= a$agecomp
+calcomp_params= a$calcomp
+mlacomp_params= a$mlacomp
 
 
-calculate_data_units <- function(lcomp_params=NULL, agecomp_params=NULL,
-                                 calcomp_params=NULL, mlacomp_params=NULL){
-    sample_args <- list("len"=lcomp_params, "age"=agecomp_params, "cal"=calcomp_params,
-                        "mla"=mlacomp_params)
-    sample_args_null <- vapply(sample_args, is.null, logical(1L))
-    ## Exit if nothing specified to prevent error.
-    if(!any(!sample_args_null)) stop("No data passed: all arguments NULL")
-    ## Get the superset of fleets
-    fleets.all <-
-        as.vector(unlist(lapply(sample_args, function(x) x$fleets)))
-    ## Get the superset of years
-    years.all <-
-        as.vector(unlist(lapply(sample_args, function(x) x$years)))
-    ## Sort them, although might not need to do this?
-    fleets.all <- sort(unique(fleets.all))
-    years.all <- sort(unique(years.all))
-    ## Now figure out which data types need to be in the OM for sampling (but
-    ## not necessarily the EM). For now these are special cases but could be
-    ## different based on different algorithms.
-    types.all <- names(sample_args)[!sample_args_null]
-    if("cal" %in% types.all) types.all <- c(types.all, "len", "age")
-    if("mla" %in% types.all) types.all <- c(types.all, "age")
-    return(list(fleets=fleets.all, years=years.all, types=types.all))
-}
+lcomp_params= list(Nsamp=list(12345), fleets=1, years=list(c(1,5)))
+agecomp_params= list(Nsamp=list(12345), fleets=c(1,2), years=list(2,c(15,16)))
+calcomp_params= list(Nsamp=list(1), fleets=c(1), years=98)
+mlacomp_params= NULL
+d <- system.file("extdata", package = "ss3sim")
+f_in <- paste0(d, "/example-om/data.ss_new")
+datfile <- r4ss::SS_readdat(f_in, section = 2, verbose = FALSE)
+data_units <- calculate_data_units(lcomp_params=lcomp_params,
+                     agecomp_params=agecomp_params,
+                     calcomp_params=calcomp_params,
+                     mlacomp_params=mlacomp_params)
+dat2 <- with(data_units, change_data(datfile=datfile, fleets=fleets, years=years,
+                             types=types, write_file=FALSE))
+dat2 <- change_data(datfile, fleets=c(1,2), years=c(4,5),
+                    types=c("age","len", "mla", "cal"), write_file=FALSE)
+datfile <- dat2
+dat3 <- clean_datfile(datfile=dat2, lcomp_params=lcomp_params,
+                     agecomp_params=agecomp_params,
+                     calcomp_params=calcomp_params,
+                     mlacomp_params=mlacomp_params,
+                      verbose=TRUE)
 
-### Examples
-## Should throw error since nothing passed
-calculate_data_units()
-## Only one fleet
-calculate_data_units(lcomp_params=list(fleets=1, years=c(3,4,6)))
-## Add new fleet
-calculate_data_units(lcomp_params=list(fleets=1, years=c(3,4,6)),
-                     agecomp_params=list(fleets=2, years=5))
-## If CAL data called, need other types even if not specified
-calculate_data_units(calcomp_params=list(fleets=1, years=c(3,4,6)))
+
+fleets <- 1:2
+years <- c(5,10,15)
+types <- c("len", "age")
+d <- system.file("extdata", package = "ss3sim")
+file_in <- paste0(d, "models/cod-om/codOM.dat")
+## Basic test with just length data, default bins
+out <- change_data(file_in,"test.dat", types="len", years=years,
+                   fleets=fleets, write_file=FALSE)
+print(out$lbin_vector)
+print(tail(out$lencomp[, 1:8]))
+## Change the length bins
+out <- change_data(file_in,"test.dat", types="len", years=years,
+                   fleets=fleets, len_bins=3:6, write_file=FALSE)
+print(out$lbin_vector)
+print(tail(out$lencomp[, 1:8]))
+## Change data types
+out <- change_data(file_in,"test.dat", types=c("len", "age"), years=years,
+                   fleets=fleets, len_bins=3:6, age_bins=5:7, write_file=FALSE)
+print(out$agebin_vector)
+print(out$lbin_vector)
+print(names(out$agecomp))
+print(names(out$lencomp))
+
+run_ss3sim(iterations = 1:1, scenarios = scen[1], parallel=FALSE,
+           parallel_iterations=FALSE,
+           case_folder = 'data test cases', om_dir = fla_om,
+           em_dir = fla_em, case_files=case_files)
+
 
 
 
