@@ -4,53 +4,6 @@
 ## prepare workspace
 source("startup.R")
 
-
-
-scen <- expand_scenarios(cases=list(D=80, E=0, F=0), species="fla")
-case_files <- list(F = "F",  E="E",  D =
-    c("index", "lcomp", "agecomp"))
-a <- get_caseargs(folder = 'data test cases', scenario = scen[1],
-                  case_files = case_files)
-lcomp_params= a$lcomp
-agecomp_params= a$agecomp
-calcomp_params= a$calcomp
-mlacomp_params= a$mlacomp
-
-
-
-
-fleets <- 1:2
-years <- c(5,10,15)
-types <- c("len", "age")
-d <- system.file("extdata", package = "ss3sim")
-file_in <- paste0(d, "models/cod-om/codOM.dat")
-## Basic test with just length data, default bins
-out <- change_data(file_in,"test.dat", types="len", years=years,
-                   fleets=fleets, write_file=FALSE)
-print(out$lbin_vector)
-print(tail(out$lencomp[, 1:8]))
-## Change the length bins
-out <- change_data(file_in,"test.dat", types="len", years=years,
-                   fleets=fleets, len_bins=3:6, write_file=FALSE)
-print(out$lbin_vector)
-print(tail(out$lencomp[, 1:8]))
-## Change data types
-out <- change_data(file_in,"test.dat", types=c("len", "age"), years=years,
-                   fleets=fleets, len_bins=3:6, age_bins=5:7, write_file=FALSE)
-print(out$agebin_vector)
-print(out$lbin_vector)
-print(names(out$agecomp))
-print(names(out$lencomp))
-
-run_ss3sim(iterations = 1:1, scenarios = scen[1], parallel=FALSE,
-           parallel_iterations=FALSE,
-           case_folder = 'data test cases', om_dir = fla_om,
-           em_dir = fla_em, case_files=case_files)
-
-
-
-
-
 ## ------------------------------------------------------------
 ## Test all of the sampling functions to make sure they're working.
 
@@ -60,12 +13,15 @@ case_files <- list(F = "F",  E="E",  D =
     c("index", "lcomp", "agecomp"))
 a <- get_caseargs(folder = 'data test cases', scenario = scen[1],
                   case_files = case_files)
+devtools::load_all("../ss3sim")
 run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
            parallel_iterations=FALSE,
            case_folder = 'data test cases', om_dir = fla_om,
            em_dir = fla_em, case_files=case_files)
 unlink(scen, TRUE)
 ## Now add CAL data
+datfile <- SS_readdat("../ss3sim/inst/extdata/example-om/data.ss_new", verb=F)
+SS_writedat(datfile, "test.dat", over=TRUE)
 scen <- expand_scenarios(cases=list(D=80, E=0, F=0, X=80), species="fla")
 case_files <- list(F = "F",  E="E",  X="calcomp", D =
     c("index", "lcomp", "agecomp"))
