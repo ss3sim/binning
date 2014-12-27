@@ -17,27 +17,6 @@ calcomp_params= a$calcomp
 mlacomp_params= a$mlacomp
 
 
-lcomp_params= list(Nsamp=list(12345), fleets=1, years=list(c(1,5)))
-agecomp_params= list(Nsamp=list(12345), fleets=c(1,2), years=list(2,c(15,16)))
-calcomp_params= list(Nsamp=list(1), fleets=c(1), years=98)
-mlacomp_params= NULL
-d <- system.file("extdata", package = "ss3sim")
-f_in <- paste0(d, "/example-om/data.ss_new")
-datfile <- r4ss::SS_readdat(f_in, section = 2, verbose = FALSE)
-data_units <- calculate_data_units(lcomp_params=lcomp_params,
-                     agecomp_params=agecomp_params,
-                     calcomp_params=calcomp_params,
-                     mlacomp_params=mlacomp_params)
-dat2 <- with(data_units, change_data(datfile=datfile, fleets=fleets, years=years,
-                             types=types, write_file=FALSE))
-dat2 <- change_data(datfile, fleets=c(1,2), years=c(4,5),
-                    types=c("age","len", "mla", "cal"), write_file=FALSE)
-datfile <- dat2
-dat3 <- clean_datfile(datfile=dat2, lcomp_params=lcomp_params,
-                     agecomp_params=agecomp_params,
-                     calcomp_params=calcomp_params,
-                     mlacomp_params=mlacomp_params,
-                      verbose=TRUE)
 
 
 fleets <- 1:2
