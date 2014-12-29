@@ -20,19 +20,27 @@ run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
            em_dir = fla_em, case_files=case_files)
 unlink(scen, TRUE)
 ## Now add CAL data
-datfile <- SS_readdat("../ss3sim/inst/extdata/example-om/data.ss_new", verb=F)
-SS_writedat(datfile, "test.dat", over=TRUE)
-scen <- expand_scenarios(cases=list(D=80, E=0, F=0, X=80), species="fla")
+## datfile <- SS_readdat("../ss3sim/inst/extdata/example-om/data.ss_new", verb=F)
+## SS_writedat(datfile, "test.dat", over=TRUE)
+scen <- expand_scenarios(cases=list(D=81, E=0, F=0, X=81), species="fla")
 case_files <- list(F = "F",  E="E",  X="calcomp", D =
     c("index", "lcomp", "agecomp"))
 get_caseargs(folder = 'data test cases', scenario = scen[1],
                   case_files = case_files)
+
+devtools::load_all("../ss3sim")
+unlink(scen, TRUE)
 run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
            parallel_iterations=FALSE,
            case_folder = 'data test cases', om_dir = fla_om,
            em_dir = fla_em, case_files=case_files)
-unlink(scen, TRUE)
 
+xx <- r4ss::SS_readdat("D81-E0-F0-X81-fla/1/om/ss3.dat", ver=FALSE)
+nrow(xx$agecomp)
+xx$N_agecomp
+yy <- change_data(xx, outfile=NULL, fleets=1, years=5,
+                  types=c("len","age","cal"), write=FALSE)
+yy$agecomp
 ## ------------------------------------------------------------
 
 ### ------------------------------------------------------------
