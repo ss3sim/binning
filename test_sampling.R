@@ -1,6 +1,20 @@
 ### Development code for sampling from the new data types. CCM started
 ### 10/16.
 
+
+#### All possible test cases:
+# 1. Length comps
+# 2. Age comps
+# 3. Length + age comps
+# 4. Length + age comps + CAL
+# 5. Length + CAL
+# 6. Age + WatAge
+# 7. Age + MLA
+# 
+
+
+
+
 ## prepare workspace
 source("startup.R")
 
