@@ -10,15 +10,14 @@ source("startup.R")
 
 ## Create some simple, dummy sampling schemes, write them to test folder
 lcomp0 <- c('fleets;NULL', 'years;list(2)', 'Nsamp;list(45)', 'cpar;NULL')
-agecomp0 <- c('fleets;NULL', 'years;list(3)', 'Nsamp;list(55)', 'cpar;NULL')
-mlacomp0 <- c('fleets;NULL', 'Nsamp;65', 'years;list(4)')
+agecomp0 <- c('fleets;NULL', 'years;list(2)', 'Nsamp;list(55)', 'cpar;NULL')
+mlacomp0 <- c('fleets;NULL', 'Nsamp;65', 'years;list(2)')
 calcomp0 <- c('fleets;NULL', 'years;list(5)')
 index1 <- c('fleets;2', 'years;list(25:99)', 'sds_obs;list(.1)')
 lcomp1 <- c('fleets;1', 'years;list(2)', 'Nsamp;list(45)', 'cpar;1')
-agecomp1 <- c('fleets;1', 'years;list(3)', 'Nsamp;list(55)', 'cpar;1')
-mlacomp1 <- c('fleets;2', 'Nsamp;65', 'years;list(4)')
-calcomp1 <- c('fleets;2', 'years;list(5)')
-writeLines(index0, paste0("test cases/index0-fla.txt"))
+agecomp1 <- c('fleets;1', 'years;list(2)', 'Nsamp;list(55)', 'cpar;1')
+mlacomp1 <- c('fleets;1', 'Nsamp;65', 'years;list(2)')
+calcomp1 <- c('fleets;1', 'years;list(2)')
 writeLines(index1, paste0("test cases/index1-fla.txt"))
 writeLines(lcomp0, paste0("test cases/lcomp0-fla.txt"))
 writeLines(lcomp1, paste0("test cases/lcomp1-fla.txt"))
@@ -54,10 +53,10 @@ a <- get_caseargs(folder = 'test cases', scenario = scen[1],
                   case_files = case_files)
 unlink(scen, TRUE)
 devtools::load_all("../ss3sim")
-run_ss3sim(iterations = 1, scenarios = scen, parallel=FALSE,
+run_ss3sim(iterations = 1, scenarios = scen[6], parallel=FALSE,
            case_folder = 'test cases', om_dir = fla_om,
            em_dir = fla_em, case_files=case_files)#, admb_options="-maxph 1")
-
+## not working for Length and CAL only since age comps aren't there for sampling
 x
 
 ## ------------------------------------------------------------
