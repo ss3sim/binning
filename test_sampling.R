@@ -1,8 +1,36 @@
 ### Development code for sampling from the new data types. CCM started
 ### 10/16.
 
+## prepare workspace
+source("startup.R")
 
-#### All possible test cases:
+## ------------------------------------------------------------
+## Test all of the sampling functions to make sure they're working.
+
+
+## Create some simple, dummy sampling schemes, write them to test folder
+lcomp0 <- c('fleets;NULL', 'years;list(2)', 'Nsamp;list(45)', 'cpar;NULL')
+agecomp0 <- c('fleets;NULL', 'years;list(3)', 'Nsamp;list(55)', 'cpar;NULL')
+mlacomp0 <- c('fleets;NULL', 'Nsamp;65', 'years;list(4)')
+calcomp0 <- c('fleets;NULL', 'years;list(5)')
+index1 <- c('fleets;2', 'years;list(25:99)', 'sds_obs;list(.1)')
+lcomp1 <- c('fleets;1', 'years;list(2)', 'Nsamp;list(45)', 'cpar;1')
+agecomp1 <- c('fleets;1', 'years;list(3)', 'Nsamp;list(55)', 'cpar;1')
+mlacomp1 <- c('fleets;2', 'Nsamp;65', 'years;list(4)')
+calcomp1 <- c('fleets;2', 'years;list(5)')
+writeLines(index0, paste0("test cases/index0-fla.txt"))
+writeLines(index1, paste0("test cases/index1-fla.txt"))
+writeLines(lcomp0, paste0("test cases/lcomp0-fla.txt"))
+writeLines(lcomp1, paste0("test cases/lcomp1-fla.txt"))
+writeLines(agecomp0, paste0("test cases/agecomp0-fla.txt"))
+writeLines(agecomp1, paste0("test cases/agecomp1-fla.txt"))
+writeLines(mlacomp0, paste0("test cases/mlacomp0-fla.txt"))
+writeLines(mlacomp1, paste0("test cases/mlacomp1-fla.txt"))
+writeLines(calcomp0, paste0("test cases/calcomp0-fla.txt"))
+writeLines(calcomp1, paste0("test cases/calcomp1-fla.txt"))
+
+### Now make
+## All possible test cases:
 # 1. Length comps
 # 2. Age comps
 # 3. Length + age comps
@@ -10,13 +38,27 @@
 # 5. Length + CAL
 # 6. Age + WatAge
 # 7. Age + MLA
-# 
 
+## ## not all combintions are supported
+## scen <- expand_scenarios(cases=list(E=0, F=0, I=1, L=0:1, A=0:1, M=0:1,
+##                          C=0:1),  species="fla")
+scen <- c("A0-C0-E0-F0-I1-L1-M0-fla",
+          "A1-C0-E0-F0-I1-L0-M0-fla",
+          "A1-C0-E0-F0-I1-L1-M0-fla",
+          "A1-C1-E0-F0-I1-L1-M0-fla",
+          "A0-C1-E0-F0-I1-L1-M0-fla",
+          "A0-C0-E0-F0-I1-L0-M1-fla")
+case_files <- list(F = "F",  E="E",  I ="index", L="lcomp", A="agecomp",
+                   M="mlacomp", C="calcomp")
+a <- get_caseargs(folder = 'test cases', scenario = scen[1],
+                  case_files = case_files)
+unlink(scen, TRUE)
+devtools::load_all("../ss3sim")
+run_ss3sim(iterations = 1, scenarios = scen, parallel=FALSE,
+           case_folder = 'test cases', om_dir = fla_om,
+           em_dir = fla_em, case_files=case_files)#, admb_options="-maxph 1")
 
-
-
-## prepare workspace
-source("startup.R")
+x
 
 ## ------------------------------------------------------------
 ## Test all of the sampling functions to make sure they're working.
