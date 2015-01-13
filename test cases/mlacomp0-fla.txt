@@ -1,2 +1,3 @@
-fleets; NULL
-years; list(seq(76,100,by=2))
+fleets;NULL
+Nsamp;65
+years;list(4)
