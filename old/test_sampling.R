@@ -4,58 +4,68 @@
 ## prepare workspace
 source("startup.R")
 
-## Testing and development of the new change_bin approach
-scen <- expand_scenarios(cases=list(D=80, E=0, F=0), species="fla")
-case_files <- list(F = "F",  E="E",  D =
-    c("index", "lcomp", "agecomp"))
-a <- get_caseargs(folder = 'data test cases', scenario = scen[1],
+## ------------------------------------------------------------
+## Test all of the sampling functions to make sure they're working.
+
+
+## Create some simple, dummy sampling schemes, write them to test folder
+lcomp0 <- c('fleets;NULL', 'years;list(2:3)', 'Nsamp;list(45:46)', 'cpar;NULL')
+agecomp0 <- c('fleets;c(1,2)', 'years;list(2:3, 78:79)',
+              'Nsamp;list(55:56, 4:5)', 'cpar;c(1,1)')
+mlacomp0 <- c('fleets;NULL', 'Nsamp;list(2:3)', 'years;list(2:3)')
+calcomp0 <- c('fleets;NULL', 'years;list(2:3)', 'Nsamp;list(45:46)')
+wtatage0 <- c('fleets;NULL','years;list(2:3)', 'cv_wtatage;.1')
+index1 <- c('fleets;2', 'years;list(25:99)', 'sds_obs;list(.1)')
+lcomp1 <- c('fleets;1', 'years;list(2:3)', 'Nsamp;list(45:46)', 'cpar;c(1,1)')
+agecomp1 <- c('fleets;c(1,2)', 'years;list(2:3, 78:79)', 'Nsamp;list(55:56, 4:5)', 'cpar;c(1,1)')
+mlacomp1 <- c('fleets;1', 'Nsamp;list(2:3)', 'years;list(2:3)')
+calcomp1 <- c('fleets;1', 'years;list(2:3)', 'Nsamp;list(45:46)')
+wtatage1 <- c('fleets;c(1,2)','years;list(2:3, 78:79)', 'cv_wtatage;.1')
+writeLines(index1, paste0("test cases/index1-fla.txt"))
+writeLines(lcomp0, paste0("test cases/lcomp0-fla.txt"))
+writeLines(lcomp1, paste0("test cases/lcomp1-fla.txt"))
+writeLines(agecomp0, paste0("test cases/agecomp0-fla.txt"))
+writeLines(agecomp1, paste0("test cases/agecomp1-fla.txt"))
+writeLines(mlacomp0, paste0("test cases/mlacomp0-fla.txt"))
+writeLines(mlacomp1, paste0("test cases/mlacomp1-fla.txt"))
+writeLines(calcomp0, paste0("test cases/calcomp0-fla.txt"))
+writeLines(calcomp1, paste0("test cases/calcomp1-fla.txt"))
+writeLines(wtatage0, paste0("test cases/wtatage0-fla.txt"))
+writeLines(wtatage1, paste0("test cases/wtatage1-fla.txt"))
+
+### Now make
+## All possible test cases:
+# 1. Length comps
+# 2. Age comps
+# 3. Length + age comps
+# 4. Length + age comps + CAL
+# 5. Length + CAL
+# 6. Age + MLA
+# 7. Age + WatAge
+
+## ## not all combintions are supported
+## scen <- expand_scenarios(cases=list(E=0, F=0, I=1, L=0:1, A=0:1, M=0:1,
+##                          C=0:1),  species="fla")
+scen <- c("A0-C0-E0-W0-F0-I1-L1-M0-fla",
+          "A1-C0-E0-W0-F0-I1-L0-M0-fla",
+          "A1-C0-E0-W0-F0-I1-L1-M0-fla",
+          "A1-C1-E0-W0-F0-I1-L1-M0-fla",
+          "A0-C1-E0-W0-F0-I1-L1-M0-fla",
+          "A0-C0-E0-W0-F0-I1-L0-M1-fla",
+          "A1-C0-E0-W1-F0-I1-L0-M0-fla")
+case_files <- list(F = "F",  E="E",  I ="index", L="lcomp", A="agecomp",
+                   M="mlacomp", C="calcomp", W="wtatage")
+a <- get_caseargs(folder = 'test cases', scenario = scen[7],
                   case_files = case_files)
-index_params   = a$index
-lcomp_params   = a$lcomp
-agecomp_params = a$agecomp
-calcomp_params = a$calcomp
-wtatage_params = a$wtatage
-mlacomp_params = a$mlacomp
 
+unlink(scen[7], TRUE)
+devtools::load_all("../ss3sim")
+run_ss3sim(iterations = 1, scenarios = scen[7], parallel=FALSE,
+           case_folder = 'test cases', om_dir = fla_om,
+           em_dir = fla_em, case_files=case_files)#, admb_options="-maxph 1")
+## not working for Length and CAL only since age comps aren't there for sampling
 
-calculate_data_units <- function(lcomp_params=NULL, agecomp_params=NULL,
-                                 calcomp_params=NULL, mlacomp_params=NULL){
-    sample_args <- list("len"=lcomp_params, "age"=agecomp_params, "cal"=calcomp_params,
-                        "mla"=mlacomp_params)
-    sample_args_null <- vapply(sample_args, is.null, logical(1L))
-    ## Exit if nothing specified to prevent error.
-    if(!any(!sample_args_null)) stop("No data passed: all arguments NULL")
-    ## Get the superset of fleets
-    fleets.all <-
-        as.vector(unlist(lapply(sample_args, function(x) x$fleets)))
-    ## Get the superset of years
-    years.all <-
-        as.vector(unlist(lapply(sample_args, function(x) x$years)))
-    ## Sort them, although might not need to do this?
-    fleets.all <- sort(unique(fleets.all))
-    years.all <- sort(unique(years.all))
-    ## Now figure out which data types need to be in the OM for sampling (but
-    ## not necessarily the EM). For now these are special cases but could be
-    ## different based on different algorithms.
-    types.all <- names(sample_args)[!sample_args_null]
-    if("cal" %in% types.all) types.all <- c(types.all, "len", "age")
-    if("mla" %in% types.all) types.all <- c(types.all, "age")
-    return(list(fleets=fleets.all, years=years.all, types=types.all))
-}
-
-### Examples
-## Should throw error since nothing passed
-calculate_data_units()
-## Only one fleet
-calculate_data_units(lcomp_params=list(fleets=1, years=c(3,4,6)))
-## Add new fleet
-calculate_data_units(lcomp_params=list(fleets=1, years=c(3,4,6)),
-                     agecomp_params=list(fleets=2, years=5))
-## If CAL data called, need other types even if not specified
-calculate_data_units(calcomp_params=list(fleets=1, years=c(3,4,6)))
-
-
-
+x
 
 ## ------------------------------------------------------------
 ## Test all of the sampling functions to make sure they're working.
@@ -66,23 +76,34 @@ case_files <- list(F = "F",  E="E",  D =
     c("index", "lcomp", "agecomp"))
 a <- get_caseargs(folder = 'data test cases', scenario = scen[1],
                   case_files = case_files)
+devtools::load_all("../ss3sim")
 run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
            parallel_iterations=FALSE,
            case_folder = 'data test cases', om_dir = fla_om,
            em_dir = fla_em, case_files=case_files)
 unlink(scen, TRUE)
 ## Now add CAL data
-scen <- expand_scenarios(cases=list(D=80, E=0, F=0, X=80), species="fla")
+## datfile <- SS_readdat("../ss3sim/inst/extdata/example-om/data.ss_new", verb=F)
+## SS_writedat(datfile, "test.dat", over=TRUE)
+scen <- expand_scenarios(cases=list(D=81, E=0, F=0, X=81), species="fla")
 case_files <- list(F = "F",  E="E",  X="calcomp", D =
     c("index", "lcomp", "agecomp"))
 get_caseargs(folder = 'data test cases', scenario = scen[1],
                   case_files = case_files)
+
+devtools::load_all("../ss3sim")
+unlink(scen, TRUE)
 run_ss3sim(iterations = 1:1, scenarios = scen, parallel=FALSE,
            parallel_iterations=FALSE,
            case_folder = 'data test cases', om_dir = fla_om,
            em_dir = fla_em, case_files=case_files)
-unlink(scen, TRUE)
 
+xx <- r4ss::SS_readdat("D81-E0-F0-X81-fla/1/om/ss3.dat", ver=FALSE)
+nrow(xx$agecomp)
+xx$N_agecomp
+yy <- change_data(xx, outfile=NULL, fleets=1, years=5,
+                  types=c("len","age","cal"), write=FALSE)
+yy$agecomp
 ## ------------------------------------------------------------
 
 ### ------------------------------------------------------------
