@@ -1,3 +1,0 @@
-fleets; c(1)
-years; list(c(26))
-write_file; TRUE

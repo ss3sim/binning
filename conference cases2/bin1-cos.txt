@@ -1,3 +1,0 @@
-bin_vector; list(len=seq(20, 150, by= 2 ))
-type;len
-pop_bin;NULL

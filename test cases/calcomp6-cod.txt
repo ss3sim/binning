@@ -1,4 +1,0 @@
-Nsamp; list(100)
-fleets; 2
-years; list(seq(2000,2012,by=2))
-cv; c(.2)

@@ -1,5 +1,0 @@
-Nsamp;list(100,50) 
-fleets; c(1,2)
-years; list(c(60:65), 75:85)
-agebin_vector; NULL
-cpar; c(2,NA)

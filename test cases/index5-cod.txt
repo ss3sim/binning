@@ -1,3 +1,0 @@
-fleets; c(3)
-years; list(seq(1963,2012))
-sds_obs; list(.4)
