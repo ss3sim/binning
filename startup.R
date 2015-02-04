@@ -14,15 +14,11 @@ getDoParWorkers()
 ## devtools::install('../ss3sim') # may need this for parallel runs??
 devtools::load_all("../ss3sim")
 library(ss3sim)
-case_folder <- 'cases'
 d <- system.file("extdata", package = "ss3sim")
 fla_om <- "../growth_models/fla-om/"
 fla_em <- "../growth_models/fla-em/"
 cod_om <- "../growth_models/cod-om/"
 cod_em <- "../growth_models/cod-em/"
-## om <- paste0(d, "/models/cod-om")
-## em <- paste0(d, "/models/cod-em")
-## ## devtool tasks
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
 ## devtools::check('../ss3sim', cran=TRUE)
