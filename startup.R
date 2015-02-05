@@ -11,9 +11,6 @@ getDoParWorkers()
 ## Install the package from our local git repository, which is usually a
 ## development branch. You need to pull down any changes into the branch
 ## before running this command.
-## devtools::install('../ss3sim') # may need this for parallel runs??
-## devtools::load_all("../ss3sim")
-library(ss3sim)
 d <- system.file("extdata", package = "ss3sim")
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")

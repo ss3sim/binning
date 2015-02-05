@@ -7,6 +7,9 @@
 ## Prepare the workspace by loading packages and defining global settings
 ## used throughout
 case_folder <- 'cases'
+devtools::install('../ss3sim') # may need this for parallel runs??
+## devtools::load_all("../ss3sim")
+library(ss3sim)
 source("startup.R")
 ### ------------------------------------------------------------
 
@@ -50,13 +53,13 @@ scenarios.I <- expand_scenarios(cases=list(D=100, E=0, F=1, I=1:2, B=0),
 scenarios <- rbind(scenarios.E, scenarios.I)
 case_files <- list(F="F", E="E", B="em_binning", I="data", D=c("index","lcomp","agecomp","calcomp"))
 devtools::load_all("../ss3sim")
-unlink(scenarios.I, TRUE)
+unlink(scenarios, TRUE)
 run_ss3sim(iterations=1:10, scenarios=scenarios,
            parallel=TRUE, user_recdevs=user.recdevs,
            case_folder=case_folder, om_dir=om.cod,
            em_dir=em.cod, case_files=case_files, call_change_data=TRUE)
 ## Read in results
-get_results_all(dir=getwd(), user_scenarios=scenarios.I, parallel=TRUE, over=TRUE)
+get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=TRUE, over=TRUE)
 det.bin.ts <- calculate_re(read.csv("ss3sim_ts.csv"), add=TRUE)
 det.bin.sc <- calculate_re(read.csv("ss3sim_scalar.csv"), add=TRUE)
 write.csv(det.bin.ts, "results/det.bin.ts.csv")
