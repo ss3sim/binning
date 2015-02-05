@@ -15,13 +15,9 @@ getDoParWorkers()
 devtools::load_all("../ss3sim")
 library(ss3sim)
 d <- system.file("extdata", package = "ss3sim")
-fla_om <- "../growth_models/fla-om/"
-fla_em <- "../growth_models/fla-em/"
-cod_om <- "../growth_models/cod-om/"
-cod_em <- "../growth_models/cod-em/"
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
 ## devtools::check('../ss3sim', cran=TRUE)
-## user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.001),
-##                        nrow=100, ncol=100)
+user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.05),
+                       nrow=100, ncol=100)
 ### ------------------------------------------------------------
