@@ -1,0 +1,2 @@
+lbin_method;NULL
+bin_vector;seq(20,155, by=2)

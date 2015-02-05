@@ -1,4 +1,5 @@
-## Source this file to make the figures
+## Source this file to make the figures for the paper. Figures are just
+## plots that appear in the paper. See also make_plots for more.
 library(ggplot2)
 
 ## global options
