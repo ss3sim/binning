@@ -3,10 +3,6 @@
 
 ## ------------------------------------------------------------
 ## Deterministic cases to prove it's working
-det.data.ts <- read.csv("results/det.data.ts.csv")
-det.data.sc <- read.csv("results/det.data.sc.csv")
-det.bin.ts <- read.csv("results/det.bin.ts.csv")
-det.bin.sc <- read.csv("results/det.bin.sc.csv")
 
 ## ------------------------------------------------------------
 
