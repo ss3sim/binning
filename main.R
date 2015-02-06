@@ -16,7 +16,7 @@ source("startup.R")
 ### ------------------------------------------------------------
 ## Create case files dynamically for reproducibility
 
-species <- 'cod'
+species <- 'cos'
 om.cod <- paste0("../growth_models/", species, "-om/")
 em.cod <- paste0("../growth_models/", species, "-em/")
 source("write_casefiles.R")
@@ -54,7 +54,7 @@ scenarios <- rbind(scenarios.E, scenarios.I)
 case_files <- list(F="F", E="E", B="em_binning", I="data", D=c("index","lcomp","agecomp","calcomp"))
 devtools::load_all("../ss3sim")
 unlink(scenarios, TRUE)
-run_ss3sim(iterations=1:10, scenarios=scenarios,
+run_ss3sim(iterations=1, scenarios=scenarios,
            parallel=TRUE, user_recdevs=user.recdevs,
            case_folder=case_folder, om_dir=om.cod,
            em_dir=em.cod, case_files=case_files, call_change_data=TRUE)
@@ -67,7 +67,11 @@ write.csv(det.bin.sc, "results/det.bin.sc.csv")
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 ### ------------------------------------------------------------
 
-
+plot_ts_lines(det.bin.ts, y='SpawnBio_em', vert='ID')
+plot_ts_lines(det.bin.ts, y='Recruit_0_om', vert='ID')
+library(r4ss)
+xx <- SS_output(dir="B0-D100-E0-F1-I2-cos/1/em", covar=FALSE, forecast=FALSE)
+SS_plots(xx, png=TRUE, uncertainty=FALSE)
 
 source("load_results.R")
 
