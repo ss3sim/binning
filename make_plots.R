@@ -28,9 +28,9 @@ if(! all(exists('det.bin.ts'), exists('det.bin.sc'))) {
 }
 det.bin.ts$bin_method <- ifelse(det.bin.ts$B=="B0", "Internal", "External")
 det.bin.sc$bin_method <- ifelse(det.bin.sc$B=="B0", "Internal", "External")
-det.bin.sc$bin_width <- ifelse(det.bin.sc$B=="I1" | det.bin.sc$B=="B1",
-                               "2cm", "20cm")
-det.bin.ts$bin_width <- ifelse(det.bin.ts$B=="I1" | det.bin.ts$B=="B1", "2cm", "20cm")
+det.bin.sc$bin_width <-
+    ifelse((det.bin.sc$I=="I1" | det.bin.sc$B=="B1"), "2cm", "20cm")
+det.bin.ts$bin_width <- ifelse(det.bin.ts$I=="I1" | det.bin.ts$B=="B1", "2cm", "20cm")
 plot_ts_boxplot(det.bin.ts, y="SpawnBio_re", vert="bin_method", rel=TRUE,
                 horiz="bin_width", axes=FALSE)
 ggsave("plots/det.bin.SSB.png", width=ggwidth, height=ggheight)
@@ -45,7 +45,6 @@ det.bin.growth.long <- reshape2::melt(det.bin.growth, measure.vars=growth.names)
 levels(det.bin.growth.long$variable) <- gsub('_Fem_GP_1', '', x=levels(det.bin.growth.long$variable))
 plot_scalar_boxplot(det.bin.growth.long, horiz='bin_method', vert='variable', y='value', x='bin_width', rel=TRUE)
 ggsave("plots/det.bin.growth.re.png", width=9, height=5)
-
 
 
 ## g <- plot_scalar_points(results, x="B", y="RunTime", color="log_max_grad",

@@ -46,16 +46,14 @@ file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
 ### ------------------------------------------------------------
 ## Deterministic scenarios for data binning cases
-scenarios.E <- expand_scenarios(cases=list(D=100, E=0, F=1, I=0, B=1:2),
-                                species=species)
-scenarios.I <- expand_scenarios(cases=list(D=100, E=0, F=1, I=1:2, B=0),
-                                species=species)
+scenarios.E <- expand_scenarios(cases=list(D=100, E=0, F=1, I=0, B=1:2), species=species)
+scenarios.I <- expand_scenarios(cases=list(D=100, E=0, F=1, I=1:2, B=0), species=species)
 scenarios <- c(scenarios.E, scenarios.I)
 case_files <- list(F="F", E="E", B="em_binning", I="data", D=c("index","lcomp","agecomp","calcomp"))
 devtools::load_all("../ss3sim")
-unlink(scenarios, TRUE)
-run_ss3sim(iterations=1:15, scenarios=scenarios,
-           parallel=F, user_recdevs=user.recdevs,
+## unlink(scenarios, TRUE)
+run_ss3sim(iterations=16:50, scenarios=scenarios,
+           parallel=TRUE, user_recdevs=user.recdevs,
            case_folder=case_folder, om_dir=om.cos,
            em_dir=em.cos, case_files=case_files, call_change_data=TRUE)
 ## Read in results
@@ -70,7 +68,7 @@ file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 plot_ts_lines(det.bin.ts, y='SpawnBio_em', vert='ID')
 plot_ts_lines(det.bin.ts, y='Recruit_0_om', vert='ID')
 library(r4ss)
-xx <- SS_output(dir="B0-D100-E0-F1-I2-cos/1/em", covar=FALSE, forecast=FALSE)
+xx <- SS_output(dir="B0-D100-E0-F1-I1-cos/1/em", covar=FALSE, forecast=FALSE)
 SS_plots(xx, png=TRUE, uncertainty=FALSE)
 
 source("load_results.R")
