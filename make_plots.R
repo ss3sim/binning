@@ -31,19 +31,19 @@ det.bin.sc$bin_method <- ifelse(det.bin.sc$B=="B0", "Internal", "External")
 det.bin.sc$bin_width <- ifelse(det.bin.sc$B=="I1" | det.bin.sc$B=="B1",
                                "2cm", "20cm")
 det.bin.ts$bin_width <- ifelse(det.bin.ts$B=="I1" | det.bin.ts$B=="B1", "2cm", "20cm")
-plot_ts_boxplot(det.bin.ts, y="SpawnBio_re", vert="bin_method", rel=FALSE,
+plot_ts_boxplot(det.bin.ts, y="SpawnBio_re", vert="bin_method", rel=TRUE,
                 horiz="bin_width", axes=FALSE)
 ggsave("plots/det.bin.SSB.png", width=ggwidth, height=ggheight)
 plot_ts_boxplot(det.bin.ts, y="Recruit_0_re", vert="bin_method",
-                horiz="bin_width" , rel=FALSE, axes=FALSE)
+                horiz="bin_width" , rel=TRUE, axes=FALSE)
 ggsave("plots/det.bin.recdevs.png", width=ggwidth, height=ggheight)
-plot_scalar_boxplot(det.bin.sc, x="bin_width", vert="bin_method", y="depletion_re", rel=FALSE)
+plot_scalar_boxplot(det.bin.sc, x="bin_width", vert="bin_method", y="depletion_re", rel=TRUE)
 ggsave("plots/det.bin.depletion.png", width=ggwidth, height=ggheight)
 growth.names <- paste0(c('L_at_Amin', 'L_at_Amax', 'VonBert_K', 'CV_young', 'CV_old'), '_Fem_GP_1_re')
 det.bin.growth <- subset(det.bin.sc, select=c('bin_method', 'bin_width', 'species', growth.names))
 det.bin.growth.long <- reshape2::melt(det.bin.growth, measure.vars=growth.names)
 levels(det.bin.growth.long$variable) <- gsub('_Fem_GP_1', '', x=levels(det.bin.growth.long$variable))
-plot_scalar_boxplot(det.bin.growth.long, vert='bin_method', horiz='variable', y='value', x='bin_width', rel=FALSE)
+plot_scalar_boxplot(det.bin.growth.long, horiz='bin_method', vert='variable', y='value', x='bin_width', rel=TRUE)
 ggsave("plots/det.bin.growth.re.png", width=9, height=5)
 
 
