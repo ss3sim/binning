@@ -28,7 +28,7 @@ source("write_casefiles.R")
 ## Deterministic scenarios for data binning cases
 scenarios.E <- expand_scenarios(cases=list(D=102, F=1, I=0, B=1:2), species=species)
 scenarios.I <- expand_scenarios(cases=list(D=102, F=1, I=1:2, B=0), species=species)
-scenarios <- c(scenarios.E, scenarios.I)[3]
+scenarios <- c(scenarios.E, scenarios.I)[2]
 case_files <- list(F="F", B="em_binning", I="data", D=c("index","lcomp","agecomp","calcomp"))
 devtools::load_all("../ss3sim")
 unlink(scenarios, TRUE)
