@@ -44,17 +44,17 @@ writeLines(calcomp102, con=paste0(case_folder,"/", "calcomp102-", species, ".txt
 ## I is for "internal" which uses the change_bin function. The base case
 ## for I is to do no binning internally, so set these data bins to be 1cm
 ## since binning is done afterward (externally)
-data0 <- c('age_bins; NULL', 'len_bins; seq(20, 155, by=1)',
+data0 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
            'pop_binwidth; 1', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
            'tail_compression; -1')
 writeLines(data0, con=paste0(case_folder,"/", "data0-cos.txt"))
-data1 <- c('age_bins; NULL', 'len_bins; seq(20, 155, by=2)',
+data1 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=2)',
            'pop_binwidth; 2', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
            'tail_compression; -1')
 writeLines(data1, con=paste0(case_folder,"/", "data1-cos.txt"))
-data2 <- c('age_bins; NULL', 'len_bins; seq(20, 155, by=20)',
+data2 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=20)',
            'pop_binwidth; 2', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
            'tail_compression; -1')
@@ -62,11 +62,11 @@ writeLines(data2, con=paste0(case_folder,"/", "data2-cos.txt"))
 ## External binning cases. For this the change_data function shouldn't be
 ## called at all, and instead the generated data should be in 1cm bins
 ## using data0. em_binning0 is to ignore it and leave unchanged for use in internal cases.
-em_binning0 <- c('lbin_method;NULL', 'bin_vector;seq(20,155, by=2)')
+em_binning0 <- c('lbin_method;NULL', 'bin_vector;seq(20,160, by=2)','rebin_cal;TRUE')
 writeLines(em_binning0, con=paste0(case_folder,"/", "em_binning0-cos.txt"))
-em_binning1 <- c('lbin_method;1', 'bin_vector;seq(20,155, by=2)')
+em_binning1 <- c('lbin_method;1', 'bin_vector;seq(20,160, by=2)','rebin_cal;TRUE')
 writeLines(em_binning1, con=paste0(case_folder,"/", "em_binning1-cos.txt"))
-em_binning2 <- c('lbin_method;1', 'bin_vector;seq(20,155, by=20)')
+em_binning2 <- c('lbin_method;1', 'bin_vector;seq(20,160, by=20)','rebin_cal;TRUE')
 writeLines(em_binning2, con=paste0(case_folder,"/", "em_binning2-cos.txt"))
 ## End of binning files
 ### ------------------------------------------------------------

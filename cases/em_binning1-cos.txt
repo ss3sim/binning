@@ -1,2 +1,3 @@
 lbin_method;1
-bin_vector;seq(20,155, by=2)
+bin_vector;seq(20,160, by=2)
+rebin_cal;TRUE
