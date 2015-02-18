@@ -41,6 +41,7 @@ get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=TRUE, over=TRUE)
 write.csv(det.bin.ts, "results/det.bin.ts.csv")
 write.csv(det.bin.sc, "results/det.bin.sc.csv")
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
+
 ## quick plots for checking performance
 det.bin.sc <- subset(calculate_re(read.csv("results/det.bin.sc.csv"), add=TRUE),
        select=c("ID", "species", "D", "replicate", "L_at_Amin_Fem_GP_1_re","L_at_Amax_Fem_GP_1_re",
