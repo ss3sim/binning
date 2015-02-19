@@ -50,22 +50,22 @@ data0 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
            'tail_compression; -1')
 writeLines(data0, con=paste0(case_folder,"/", "data0-cos.txt"))
 data1 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=2)',
-           'pop_binwidth; 2', 'pop_minimum_size; 8',
+           'pop_binwidth; 1', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
            'tail_compression; -1')
 writeLines(data1, con=paste0(case_folder,"/", "data1-cos.txt"))
 data2 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=5)',
-           'pop_binwidth; 2', 'pop_minimum_size; 8',
+           'pop_binwidth; 1', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
            'tail_compression; -1')
 writeLines(data2, con=paste0(case_folder,"/", "data2-cos.txt"))
 data3 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=10)',
-           'pop_binwidth; 2', 'pop_minimum_size; 8',
+           'pop_binwidth; 1', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
            'tail_compression; -1')
 writeLines(data3, con=paste0(case_folder,"/", "data3-cos.txt"))
 data4 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=20)',
-           'pop_binwidth; 2', 'pop_minimum_size; 8',
+           'pop_binwidth; 1', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
            'tail_compression; -1')
 writeLines(data4, con=paste0(case_folder,"/", "data4-cos.txt"))

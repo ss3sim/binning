@@ -33,9 +33,10 @@ scenarios.I <- expand_scenarios(cases=list(D=102, F=1, I=1:4, B=0), species=spec
 scenarios <- c(scenarios.E, scenarios.I)
 case_files <- list(F="F", B="em_binning", I="data", D=c("index","lcomp","agecomp","calcomp"))
 ## devtools::load_all("../ss3sim")
-unlink(scenarios, TRUE)
-run_ss3sim(iterations=1:1, scenarios=scenarios,
-           parallel=TRUE, parallel_iterations=F,
+## unlink(scenarios, TRUE)
+Nsim <- 20
+run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
+           parallel=TRUE, parallel_iterations=TRUE,
            user_recdevs=user.recdevs,
            case_folder=case_folder, om_dir=om.cos,
            em_dir=em.cos, case_files=case_files, call_change_data=TRUE)
@@ -44,6 +45,17 @@ get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=TRUE, over=TRUE)
 file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
           to=c("results/det.bin.ts.csv", "results/det.bin.sc.csv"))
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
+unlink(scenarios, TRUE)
+run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
+           parallel=TRUE, parallel_iterations=TRUE,
+           case_folder=case_folder, om_dir=om.cos,
+           em_dir=em.cos, case_files=case_files, call_change_data=TRUE)
+## Read in results
+get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=TRUE, over=TRUE)
+file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
+          to=c("results/bin.ts.csv", "results/bin.sc.csv"))
+file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
+
 
 ## quick plots for checking performance
 det.bin.sc <- subset(calculate_re(read.csv("results/det.bin.sc.csv"), add=TRUE),
@@ -63,13 +75,58 @@ det.bin.ts.long <- merge(x=det.bin.ts.long, y= subset(det.bin.sc.long,
                          by="ID")
 levels(det.bin.sc.long$variable) <- gsub("_Fem_GP_1_re|_re", "", levels(det.bin.sc.long$variable))
 levels(det.bin.ts.long$variable) <- gsub("_re", "", levels(det.bin.ts.long$variable))
-plot_scalar_points(det.bin.sc.long, x="variable", y='value',
-                   horiz='B', rel=TRUE, color='max_grad')
-ggsave("plots/new_models_scalars.png", width=9, height=7)
-plot_ts_lines(det.bin.ts.long, vert="variable", y='value', horiz='B',
-              rel=TRUE, color="max_grad")
-ggsave("plots/new_models_TS.png", width=9, height=7)
-plyr::ddply(det.bin.sc.long, .(species), summarize,
+g <- plot_scalar_points(subset(det.bin.sc.long, I=="I0"), x="variable", y='value',
+                   horiz='B', rel=TRUE, color='max_grad', horiz2='I')
+g <- g+ggtitle("Deterministic; External Binning")
+ggsave("plots/det.bin.external.sc.png",g, width=9, height=7)
+g <- plot_scalar_points(subset(det.bin.sc.long, I != "I0"), x="variable", y='value',
+                   horiz='B', rel=TRUE, color='max_grad', horiz2='I')
+g <- g+ggtitle("Deterministic; Internal Binning")
+ggsave("plots/det.bin.internal.sc.png",g, width=9, height=7)
+g <- plot_ts_lines(subset(det.bin.ts.long, I=="I0"), vert="variable", y='value', horiz='B',
+              rel=TRUE, color="max_grad", horiz2="I")
+g <- g+ggtitle("Deterministic; External Binning")
+ggsave("plots/det.bin.external.ts.png",g, width=9, height=7)
+g <- plot_ts_lines(subset(det.bin.ts.long, I!="I0"), vert="variable", y='value', horiz='B',
+              rel=TRUE, color="max_grad", horiz2='I')
+g <- g+ggtitle("Deterministic; Internal Binning")
+ggsave("plots/det.bin.internal.ts.png",g, width=9, height=7)
+## Same runs but with given sigmaR
+bin.sc <- subset(calculate_re(read.csv("results/bin.sc.csv"), add=TRUE),
+       select=c("ID", "species", "D","B", "I", "replicate", "L_at_Amin_Fem_GP_1_re","L_at_Amax_Fem_GP_1_re",
+       "VonBert_K_Fem_GP_1_re","CV_young_Fem_GP_1_re", "CV_old_Fem_GP_1_re",
+       "depletion_re", "SSB_MSY_re", "params_on_bound_em", "max_grad") )
+bin.ts <-
+    subset(calculate_re(read.csv("results/bin.ts.csv"), add=TRUE),
+           select=c("ID","species", "D","B","I", "replicate", "year","SpawnBio_re",
+           "Recruit_0_re", "F_re"))
+## Put all data together into long form for plotting
+bin.sc.long <- reshape2::melt(bin.sc, id.vars=
+        c("ID","species", "D","B",'I', "replicate", "max_grad", "params_on_bound_em"))
+bin.ts.long <- melt(bin.ts, id.vars=c("ID","species", "D", 'I', "B", "replicate", "year"))
+bin.ts.long <- merge(x=bin.ts.long, y= subset(bin.sc.long,
+                         select=c("ID", "params_on_bound_em", "max_grad")),
+                         by="ID")
+levels(bin.sc.long$variable) <- gsub("_Fem_GP_1_re|_re", "", levels(bin.sc.long$variable))
+levels(bin.ts.long$variable) <- gsub("_re", "", levels(bin.ts.long$variable))
+g <- plot_scalar_points(subset(bin.sc.long, I=="I0"), x="variable", y='value',
+                   horiz='B', rel=TRUE, color='max_grad', horiz2='I')
+g <- g+ggtitle("Stochastic; External Binning")
+ggsave("plots/bin.external.sc.png",g, width=9, height=7)
+g <- plot_scalar_points(subset(bin.sc.long, I != "I0"), x="variable", y='value',
+                   horiz='B', rel=TRUE, color='max_grad', horiz2='I')
+g <- g+ggtitle("Stochastic; Internal Binning")
+ggsave("plots/bin.internal.sc.png",g, width=9, height=7)
+g <- plot_ts_lines(subset(bin.ts.long, I=="I0"), vert="variable", y='value', horiz='B',
+              rel=TRUE, color="max_grad", horiz2="I")
+g <- g+ggtitle("Stochastic; External Binning")
+ggsave("plots/bin.external.ts.png",g, width=9, height=7)
+g <- plot_ts_lines(subset(bin.ts.long, I!="I0"), vert="variable", y='value', horiz='B',
+              rel=TRUE, color="max_grad", horiz2='I')
+g <- g+ggtitle("Stochastic; Internal Binning")
+ggsave("plots/bin.internal.ts.png",g, width=9, height=7)
+
+plyr::ddply(bin.sc.long, .(species), summarize,
             median.maxgrad=round(median(max_grad),2),
             max.bounds=max(params_on_bound_em))
 ## End of determinstic scenarios with binning functions
