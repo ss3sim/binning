@@ -107,6 +107,3 @@ junk <- lapply(seq_len(3), function(i)
 junk <- lapply(seq_len(3), function(i)
   plot_comp(d[[i]]$agecomp, prefix = "a", main = paste("calcomp", panels[i]),
     xlab = "Age bin index", ylab = "Length bin index"))
-
-#RColorBrewer::brewer.pal(9, "Blues")
-
