@@ -110,7 +110,8 @@ junk <- lapply(seq_len(3), function(i)
     xlab = "Age bin index", ylab = "Length bin index"))
 dev.off()
 
-dif <- select(d[[3]]$lencomp, starts_with("l", ignore.case = FALSE)) -
+#dif <- select(d[[3]]$lencomp, starts_with("l", ignore.case = FALSE)) -
+dif <- select(d[[3]]$lencomp, starts_with("l", ignore.case = FALSE)) /
   select(d[[2]]$lencomp, starts_with("l", ignore.case = FALSE))
 dif <- as.matrix(dif) %>% t
 
@@ -119,4 +120,5 @@ library("ggplot2")
 p <- ggplot(melt(dif), aes(x=Var1, y=Var2, fill=value)) +
   geom_tile() + scale_fill_gradient2() +
   xlab("Length bin") + ylab("Year index")
-ggsave("plots/internal-vs-external-diff.png", width = 5, height = 4)
+#ggsave("plots/internal-vs-external-diff.png", width = 5, height = 4)
+ggsave("plots/internal-vs-external-ratio.png", width = 5, height = 4)
