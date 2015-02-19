@@ -99,11 +99,24 @@ plot_comp <- function(dat, prefix = "l", ...) {
   image(1:nrow(lc), 1:ncol(lc), lc, col = RColorBrewer::brewer.pal(9, "Blues"),
     ...)
 }
+png("plots/internal-vs-external-binning.png", width = 800, height = 500)
 par(mfrow = c(2, 3))
-panels <- c("base", "internal bins", "external bins")
+panels <- c("base", "external bins", "internal bins")
 junk <- lapply(seq_len(3), function(i)
   plot_comp(d[[i]]$lencomp, main = paste("lcomp", panels[i]),
     xlab = "Length bin index", ylab = "ignore me"))
 junk <- lapply(seq_len(3), function(i)
   plot_comp(d[[i]]$agecomp, prefix = "a", main = paste("calcomp", panels[i]),
     xlab = "Age bin index", ylab = "Length bin index"))
+dev.off()
+
+dif <- select(d[[3]]$lencomp, starts_with("l", ignore.case = FALSE)) -
+  select(d[[2]]$lencomp, starts_with("l", ignore.case = FALSE))
+dif <- as.matrix(dif) %>% t
+
+library("reshape2")
+library("ggplot2")
+p <- ggplot(melt(dif), aes(x=Var1, y=Var2, fill=value)) +
+  geom_tile() + scale_fill_gradient2() +
+  xlab("Length bin") + ylab("Year index")
+ggsave("plots/internal-vs-external-diff.png", width = 5, height = 4)
