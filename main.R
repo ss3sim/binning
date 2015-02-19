@@ -7,22 +7,22 @@
 ## Prepare the workspace by loading packages and defining global settings
 ## used throughout
 case_folder <- 'cases'
-devtools::install('../ss3sim') # may need this for parallel runs??
-## devtools::load_all("../ss3sim")
-library(reshape2)
-library(ss3sim)
-library(r4ss)
-source("startup.R")
+## devtools::install_github("ss3sim/ss3sim")
+## devtools::install_github('ss3sim/ss3models')
 ## devtools::install_github("r4ss/r4ss")
+library("ss3sim")
+library("ss3models")
+library("reshape2")
+library("r4ss")
+
+source("startup.R")
 ### ------------------------------------------------------------
 
 ### ------------------------------------------------------------
 ## Create case files dynamically for reproducibility
 ## file.copy(from=paste0("../ss3models/cases/", c("F0-yel", "F1-yel", "F2-yel"), ".txt"),
 ##           to=paste0("cases", c("F0-yel", "F1-yel", "F2-yel"), ".txt"))
-species <- 'cos'
-om.cos <- paste0("../ss3models/", species, "-om/")
-em.cos <- paste0("../ss3models/", species, "-em/")
+species <- 'cod'
 source("write_casefiles.R")
 ### ------------------------------------------------------------
 
@@ -32,14 +32,13 @@ scenarios.E <- expand_scenarios(cases=list(D=102, F=1, I=0, B=1:4), species=spec
 scenarios.I <- expand_scenarios(cases=list(D=102, F=1, I=1:4, B=0), species=species)
 scenarios <- c(scenarios.E, scenarios.I)
 case_files <- list(F="F", B="em_binning", I="data", D=c("index","lcomp","agecomp","calcomp"))
-## devtools::load_all("../ss3sim")
 ## unlink(scenarios, TRUE)
 Nsim <- 20
 run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
            parallel=TRUE, parallel_iterations=TRUE,
            user_recdevs=user.recdevs,
-           case_folder=case_folder, om_dir=om.cos,
-           em_dir=em.cos, case_files=case_files, call_change_data=TRUE)
+           case_folder=case_folder, om_dir=ss3model(species, "om"),
+           em_dir=ss3model(species, "em"), case_files=case_files, call_change_data=TRUE)
 ## Read in results
 get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=TRUE, over=TRUE)
 file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
@@ -48,8 +47,8 @@ file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 unlink(scenarios, TRUE)
 run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
            parallel=TRUE, parallel_iterations=TRUE,
-           case_folder=case_folder, om_dir=om.cos,
-           em_dir=em.cos, case_files=case_files, call_change_data=TRUE)
+           case_folder=case_folder, om_dir=ss3model(species, "om"),
+           em_dir=ss3model(species, "em"), case_files=case_files, call_change_data=TRUE)
 ## Read in results
 get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=TRUE, over=TRUE)
 file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
@@ -158,8 +157,8 @@ source("make_figures.R")
 ## ## unlink(scenarios, TRUE)
 ## run_ss3sim(iterations=1:15, scenarios=scenarios,
 ##            parallel=TRUE, user_recdevs=user.recdevs,
-##            case_folder=case_folder, om_dir=om.cos,
-##            em_dir=em.cos, case_files=case_files)
+##            case_folder=case_folder, om_dir=ss3model(species, "om"),
+##            em_dir=ss3model(species, "em"), case_files=case_files)
 ## ## Read in results
 ## get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=F, over=TRUE)
 ## det.ts <- calculate_re(read.csv("ss3sim_ts.csv"), add=TRUE)
