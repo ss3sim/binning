@@ -5,7 +5,7 @@ message("This file installs the package and libraries, and preps the workspace")
 ## update.packages(c('r4ss','knitr', 'devtools', 'roxygen2'))
 ## Load the neccessary libraries
 library("doParallel")
-registerDoParallel(cores = 4)
+registerDoParallel(cores = 2)
 library("foreach")
 message(paste(getDoParWorkers(), "cores have been registered for",
     "parallel processing."))
