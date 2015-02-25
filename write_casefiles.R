@@ -82,5 +82,12 @@ em_binning3 <- c('lbin_method;1', 'bin_vector;seq(20,160, by=10)')
 writeLines(em_binning3, con=paste0(case_folder,"/", "em_binning3-", species, ".txt"))
 em_binning4 <- c('lbin_method;1', 'bin_vector;seq(20,160, by=20)')
 writeLines(em_binning4, con=paste0(case_folder,"/", "em_binning4-", species, ".txt"))
+
+binning_l0 <- c('lbin_method;1', 'bin_vector;seq(20,160,by=2)')
+writeLines(binning_l0, con=paste0(case_folder,"/","binningl0-", species, ".txt"))
+binning_l1 <- c('lbin_method;1', 'bin_vector;seq(20,160,by=4)')
+writeLines(binning_l1, con=paste0(case_folder,"/","binningl1-", species, ".txt"))
+binning_l2 <- c('lbin_method;1', 'bin_vector;seq(20,160,by=13)')
+writeLines(binning_l2, con=paste0(case_folder,"/","binningl2-", species, ".txt"))
 ## End of binning files
 ### ------------------------------------------------------------
