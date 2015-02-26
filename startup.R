@@ -4,8 +4,13 @@ message("This file installs the package and libraries, and preps the workspace")
 ## ## Update the development tools, if you haven't recently
 ## update.packages(c('r4ss','knitr', 'devtools', 'roxygen2'))
 ## Load the neccessary libraries
+library(ss3sim)
+library(ss3models)
+library(reshape2)
+library(r4ss)
+library(ggplot2)
 library("doParallel")
-registerDoParallel(cores = 2)
+registerDoParallel(cores = 4)
 library("foreach")
 message(paste(getDoParWorkers(), "cores have been registered for",
     "parallel processing."))
@@ -16,6 +21,6 @@ message(paste(getDoParWorkers(), "cores have been registered for",
 ## devtools::document('../ss3sim')
 ## devtools::run_examples("../ss3sim")
 ## devtools::check('../ss3sim', cran=TRUE)
-user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.05),
-                       nrow=100, ncol=100)
+## user.recdevs <- matrix(data=rnorm(100^2, mean=0, sd=.05),
+##                        nrow=100, ncol=100)
 ### ------------------------------------------------------------

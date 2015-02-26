@@ -1,3 +1,0 @@
-
-lbin_method;NULL
-bin_vector;seq(20, 160, by=2)

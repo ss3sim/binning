@@ -7,14 +7,8 @@
 ## Prepare the workspace by loading packages and defining global settings
 ## used throughout
 case_folder <- 'cases'
-## devtools::install_github("ss3sim/ss3sim")
-## devtools::install_github('ss3sim/ss3models')
-## devtools::install_github("r4ss/r4ss")
-library("ss3sim")
-library("ss3models")
-library("reshape2")
-library("r4ss")
-
+devtools::install_github("ss3sim/ss3sim")
+devtools::install_github('ss3sim/ss3models')
 source("startup.R")
 ### ------------------------------------------------------------
 
@@ -22,121 +16,31 @@ source("startup.R")
 ## Create case files dynamically for reproducibility
 ## file.copy(from=paste0("../ss3models/cases/", c("F0-yel", "F1-yel", "F2-yel"), ".txt"),
 ##           to=paste0("cases", c("F0-yel", "F1-yel", "F2-yel"), ".txt"))
-species <- 'cod'
+species <- c('cod')
 source("write_casefiles.R")
 ### ------------------------------------------------------------
 
 ### ------------------------------------------------------------
-## Deterministic scenarios for data binning cases
-scenarios.E <- expand_scenarios(cases=list(D=102, F=1, I=0, B=1:4), species=species)
-scenarios.I <- expand_scenarios(cases=list(D=102, F=1, I=1:4, B=0), species=species)
+## Initial runs for  scenarios for data binning cases
+scenarios.E <- expand_scenarios(cases=list(D=2:6, F=1, I=0, B=1:3, E=991), species=species)
+scenarios.I <- expand_scenarios(cases=list(D=c(3,6), F=1, I=1:3, B=0, E=991), species=species)
 scenarios <- c(scenarios.E, scenarios.I)
-case_files <- list(F="F", B="em_binning", I="data", D=c("index","lcomp","agecomp","calcomp"))
+## scenarios=scenarios.E
+case_files <- list(F="F", B="em_binning", I="data",
+                   D=c("index","lcomp","agecomp","calcomp"), E="E")
 ## unlink(scenarios, TRUE)
 Nsim <- 20
 run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
-           parallel=TRUE, parallel_iterations=TRUE,
-           user_recdevs=user.recdevs,
+           parallel=TRUE, parallel_iterations=FALSE,
            case_folder=case_folder, om_dir=ss3model(species, "om"),
            em_dir=ss3model(species, "em"), case_files=case_files, call_change_data=TRUE)
 ## Read in results
-get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=TRUE, over=TRUE)
+get_results_all(user=scenarios, parallel=TRUE, over=TRUE)
 file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
-          to=c("results/det.bin.ts.csv", "results/det.bin.sc.csv"))
-file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
-unlink(scenarios, TRUE)
-run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
-           parallel=TRUE, parallel_iterations=TRUE,
-           case_folder=case_folder, om_dir=ss3model(species, "om"),
-           em_dir=ss3model(species, "em"), case_files=case_files, call_change_data=TRUE)
-## Read in results
-get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=TRUE, over=TRUE)
-file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
-          to=c("results/bin.ts.csv", "results/bin.sc.csv"))
+          to=c("results/results.ts.csv", "results/results.sc.csv"))
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
 
-## quick plots for checking performance
-det.bin.sc <- subset(calculate_re(read.csv("results/det.bin.sc.csv"), add=TRUE),
-       select=c("ID", "species", "D","B", "I", "replicate", "L_at_Amin_Fem_GP_1_re","L_at_Amax_Fem_GP_1_re",
-       "VonBert_K_Fem_GP_1_re","CV_young_Fem_GP_1_re", "CV_old_Fem_GP_1_re",
-       "depletion_re", "SSB_MSY_re", "params_on_bound_em", "max_grad") )
-det.bin.ts <-
-    subset(calculate_re(read.csv("results/det.bin.ts.csv"), add=TRUE),
-           select=c("ID","species", "D","B","I", "replicate", "year","SpawnBio_re",
-           "Recruit_0_re", "F_re"))
-## Put all data together into long form for plotting
-det.bin.sc.long <- reshape2::melt(det.bin.sc, id.vars=
-        c("ID","species", "D","B",'I', "replicate", "max_grad", "params_on_bound_em"))
-det.bin.ts.long <- melt(det.bin.ts, id.vars=c("ID","species", "D", 'I', "B", "replicate", "year"))
-det.bin.ts.long <- merge(x=det.bin.ts.long, y= subset(det.bin.sc.long,
-                         select=c("ID", "params_on_bound_em", "max_grad")),
-                         by="ID")
-levels(det.bin.sc.long$variable) <- gsub("_Fem_GP_1_re|_re", "", levels(det.bin.sc.long$variable))
-levels(det.bin.ts.long$variable) <- gsub("_re", "", levels(det.bin.ts.long$variable))
-g <- plot_scalar_points(subset(det.bin.sc.long, I=="I0"), x="variable", y='value',
-                   horiz='B', rel=TRUE, color='max_grad', horiz2='I')
-g <- g+ggtitle("Deterministic; External Binning")
-ggsave("plots/det.bin.external.sc.png",g, width=9, height=7)
-g <- plot_scalar_points(subset(det.bin.sc.long, I != "I0"), x="variable", y='value',
-                   horiz='B', rel=TRUE, color='max_grad', horiz2='I')
-g <- g+ggtitle("Deterministic; Internal Binning")
-ggsave("plots/det.bin.internal.sc.png",g, width=9, height=7)
-g <- plot_ts_lines(subset(det.bin.ts.long, I=="I0"), vert="variable", y='value', horiz='B',
-              rel=TRUE, color="max_grad", horiz2="I")
-g <- g+ggtitle("Deterministic; External Binning")
-ggsave("plots/det.bin.external.ts.png",g, width=9, height=7)
-g <- plot_ts_lines(subset(det.bin.ts.long, I!="I0"), vert="variable", y='value', horiz='B',
-              rel=TRUE, color="max_grad", horiz2='I')
-g <- g+ggtitle("Deterministic; Internal Binning")
-ggsave("plots/det.bin.internal.ts.png",g, width=9, height=7)
-## Same runs but with given sigmaR
-bin.sc <- subset(calculate_re(read.csv("results/bin.sc.csv"), add=TRUE),
-       select=c("ID", "species", "D","B", "I", "replicate", "L_at_Amin_Fem_GP_1_re","L_at_Amax_Fem_GP_1_re",
-       "VonBert_K_Fem_GP_1_re","CV_young_Fem_GP_1_re", "CV_old_Fem_GP_1_re",
-       "depletion_re", "SSB_MSY_re", "params_on_bound_em", "max_grad") )
-bin.ts <-
-    subset(calculate_re(read.csv("results/bin.ts.csv"), add=TRUE),
-           select=c("ID","species", "D","B","I", "replicate", "year","SpawnBio_re",
-           "Recruit_0_re", "F_re"))
-## Put all data together into long form for plotting
-bin.sc.long <- reshape2::melt(bin.sc, id.vars=
-        c("ID","species", "D","B",'I', "replicate", "max_grad", "params_on_bound_em"))
-bin.ts.long <- melt(bin.ts, id.vars=c("ID","species", "D", 'I', "B", "replicate", "year"))
-bin.ts.long <- merge(x=bin.ts.long, y= subset(bin.sc.long,
-                         select=c("ID", "params_on_bound_em", "max_grad")),
-                         by="ID")
-levels(bin.sc.long$variable) <- gsub("_Fem_GP_1_re|_re", "", levels(bin.sc.long$variable))
-levels(bin.ts.long$variable) <- gsub("_re", "", levels(bin.ts.long$variable))
-g <- plot_scalar_points(subset(bin.sc.long, I=="I0"), x="variable", y='value',
-                   horiz='B', rel=TRUE, color='max_grad', horiz2='I')
-g <- g+ggtitle("Stochastic; External Binning")
-ggsave("plots/bin.external.sc.png",g, width=9, height=7)
-g <- plot_scalar_points(subset(bin.sc.long, I != "I0"), x="variable", y='value',
-                   horiz='B', rel=TRUE, color='max_grad', horiz2='I')
-g <- g+ggtitle("Stochastic; Internal Binning")
-ggsave("plots/bin.internal.sc.png",g, width=9, height=7)
-g <- plot_ts_lines(subset(bin.ts.long, I=="I0"), vert="variable", y='value', horiz='B',
-              rel=TRUE, color="max_grad", horiz2="I")
-g <- g+ggtitle("Stochastic; External Binning")
-ggsave("plots/bin.external.ts.png",g, width=9, height=7)
-g <- plot_ts_lines(subset(bin.ts.long, I!="I0"), vert="variable", y='value', horiz='B',
-              rel=TRUE, color="max_grad", horiz2='I')
-g <- g+ggtitle("Stochastic; Internal Binning")
-ggsave("plots/bin.internal.ts.png",g, width=9, height=7)
-
-plyr::ddply(bin.sc.long, .(species), summarize,
-            median.maxgrad=round(median(max_grad),2),
-            max.bounds=max(params_on_bound_em))
-## End of determinstic scenarios with binning functions
-### ------------------------------------------------------------
-
-
-
-
-library(r4ss)
-xx <- SS_output(dir="B0-D100-E0-F1-I1-cos/1/em", covar=FALSE, forecast=FALSE)
-SS_plots(xx, png=TRUE, uncertainty=FALSE)
 
 source("load_results.R")
 
@@ -144,26 +48,3 @@ source("make_tables.R")
 source("make_figures.R")
 
 
-
-### ------------------------------------------------------------
-## OLD CODE
-## ### ------------------------------------------------------------
-## ## Deterministic scenarios for data cases used
-## scenarios <- expand_scenarios(cases=list(D=100:102,F=1), species=species)
-## case_files <- list(F="F", E="E", D=c("index","lcomp","agecomp","calcomp"))
-## a <- get_caseargs(folder = case_folder, scenario = scenarios[1], case_files = case_files)
-## ## devtools::load_all("../ss3sim")
-## ## devtools::install("../ss3sim"); library(ss3sim)
-## ## unlink(scenarios, TRUE)
-## run_ss3sim(iterations=1:15, scenarios=scenarios,
-##            parallel=TRUE, user_recdevs=user.recdevs,
-##            case_folder=case_folder, om_dir=ss3model(species, "om"),
-##            em_dir=ss3model(species, "em"), case_files=case_files)
-## ## Read in results
-## get_results_all(dir=getwd(), user_scenarios=scenarios, parallel=F, over=TRUE)
-## det.ts <- calculate_re(read.csv("ss3sim_ts.csv"), add=TRUE)
-## det.sc <- calculate_re(read.csv("ss3sim_scalar.csv"), add=TRUE)
-## write.csv(det.ts, "results/det.ts.csv")
-## write.csv(det.sc, "results/det.sc.csv")
-## file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
-## ### ------------------------------------------------------------
