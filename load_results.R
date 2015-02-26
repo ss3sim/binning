@@ -5,7 +5,7 @@
 ### ------------------------------------------------------------
 ## binning section
 results.sc <- read.csv("results/results.sc.csv")
-ddply(results.sc, .(scenario), summarize, replicates=length(scenario))
+(scenario.counts <- ddply(results.sc, .(scenario), summarize, replicates=length(scenario)))
 results.sc$log_max_grad <- log(results.sc$max_grad)
 results.sc$converged <- ifelse(results.sc$max_grad<.1, "yes", "no")
 results.sc <- calculate_re(results.sc, add=TRUE)
@@ -32,12 +32,12 @@ results.sc.long.management$variable <- gsub("_re", "", results.sc.long.managemen
 
 
 
-results.ts <- read.csv("results/results.ts.csv")
-results.ts.long <- melt(results.ts, id.vars=c("ID","species", "D", 'I', "B", "replicate", "year"))
-results.ts.long <- merge(x=results.ts.long, y= subset(results.sc.long,
-                         select=c("ID", "params_on_bound_em", "max_grad")),
-                         by="ID")
-levels(results.ts.long$variable) <- gsub("_re", "", levels(results.ts.long$variable))
-results.ts$bin_method <- ifelse(results.ts$B=="B0", "Internal", "External")
-results.ts$bin_width <- ifelse(results.ts$I=="I1" | results.ts$B=="B1", "2cm", "20cm")
-## ------------------------------------------------------------
+## results.ts <- read.csv("results/results.ts.csv")
+## results.ts.long <- melt(results.ts, id.vars=c("ID","species", "D", 'I', "B", "replicate", "year"))
+## results.ts.long <- merge(x=results.ts.long, y= subset(results.sc.long,
+##                          select=c("ID", "params_on_bound_em", "max_grad")),
+##                          by="ID")
+## levels(results.ts.long$variable) <- gsub("_re", "", levels(results.ts.long$variable))
+## results.ts$bin_method <- ifelse(results.ts$B=="B0", "Internal", "External")
+## results.ts$bin_width <- ifelse(results.ts$I=="I1" | results.ts$B=="B1", "2cm", "20cm")
+## ## ------------------------------------------------------------
