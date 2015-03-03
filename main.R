@@ -25,13 +25,11 @@ source("write_casefiles.R")
 scenarios.E <- expand_scenarios(cases=list(D=1:6, F=1, I=0, B=1:3, E=991), species=species)
 scenarios.I <- expand_scenarios(cases=list(D=1:6, F=1, I=1:3, B=0, E=991), species=species)
 scenarios <- c(scenarios.E, scenarios.I)
-## scenarios=scenarios.E
-scenarios <- as.character(subset(scenario.counts, replicates==2)$scenario)
 case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
 ## unlink(scenarios, TRUE)
-Nsim <- 10
-run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
+Nsim <- 20
+run_ss3sim(iterations=11:Nsim, scenarios=scenarios,
            parallel=TRUE, parallel_iterations=TRUE,
            case_folder=case_folder, om_dir=ss3model(species, "om"),
            em_dir=ss3model(species, "em"), case_files=case_files, call_change_data=TRUE)
@@ -47,5 +45,6 @@ source("load_results.R")
 source("make_plots.R")
 source("make_tables.R")
 source("make_figures.R")
+
 
 
