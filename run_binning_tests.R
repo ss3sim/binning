@@ -1,3 +1,4 @@
+devtools::install_github("ss3sim/ss3sim")
 source("startup.R")
 ### ------------------------------------------------------------
 ## Develop some code to explore how SS is doing binning and our functions
@@ -6,11 +7,12 @@ bin_width <- 10
 ## run function below first
 data10 <- run_binning_test(10)
 subset(data10, fleet==1 & year==71 & length==80)
+data5 <- run_binning_test(5)
 data13 <- run_binning_test(13)
 g <- ggplot(data10, aes(length, proportion, group=method, color=method))+
     geom_line()+facet_wrap("year")
 ggsave("plots/bin_tests_10cm.png", g, width=12, height=7)
-g <- ggplot(data13, aes(length, proportion, group=method, color=method))+
+g <- ggplot(data5, aes(length, proportion, group=method, color=method))+
     geom_line()+facet_wrap("year")
 ggsave("plots/bin_tests_13cm.png", g, width=12, height=7)
 
@@ -65,7 +67,7 @@ run_binning_test <- function(bin_width){
     ## bins as well as the externally binned
     external.dat <- extract_expected_data2("B100-D1-E991-F1-cod/1/om/data.ss_new")
     len.external <- change_em_binning(datfile=external.dat, file_out="xx", write_file=FALSE,
-                                      bin_vector=seq(20,160, by=10), lbin_method=1)$lencomp
+                                      bin_vector=seq(20,160, by=bin_width), lbin_method=1)$lencomp
     len.truth <- external.dat$lencomp
     ## The internal just has the one case
     internal.dat <- extract_expected_data2("B101-D1-E991-F1-cod/1/om/data.ss_new")
