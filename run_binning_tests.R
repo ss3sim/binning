@@ -109,6 +109,8 @@ for(i in c(1, 2, 5, 10, 13)){ plot.binning.test(i) }
 ## Look at a set of observed samples across iterations and compare between
 ## the methods to see, the ratio should be 1 on average since the expected
 ## values are very close.
+fleet <- 1
+id <- "D1-B3"
 internal.dir <- "B0-D1-E991-F1-I3-cod"
 external.dir <- "B3-D1-E991-F1-I0-cod"
 internal.reps <- list.dirs(internal.dir, recursive=FALSE, full=FALSE)
