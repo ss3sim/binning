@@ -1,48 +1,28 @@
+## Develop some code to explore how SS is doing binning and our functions
+## external case files:
+stop("dont source this file")
 devtools::install_github("ss3sim/ss3sim")
 source("startup.R")
 ### ------------------------------------------------------------
-## Develop some code to explore how SS is doing binning and our functions
-## external case files:
-bin_width <- 10
-## run function below first
-
-plot.binning.test(6)
-
-internal.dir <- "B0-D1-E991-F1-I3-cod"
-external.dir <- "B3-D1-E991-F1-I0-cod"
-
-internal.reps <- list.dirs(internal.dir, recursive=FALSE, full=FALSE)
-external.reps <- list.dirs(external.dir, recursive=FALSE, full=FALSE)
-if(length(external.reps)!=length(internal.reps)) stop("not same reps")
-temp.list <- list()
-for(i in 1:length(internal.reps)){
-    int.temp <- SS_readdat(paste(internal.dir, internal.reps[i], "em", "ss3.dat", sep="/"), verb=FALSE)$lencomp
-    ext.temp <- SS_readdat(paste(external.dir, external.reps[i], "em", "ss3.dat", sep="/"), verb=FALSE)$lencomp
-    ratio.temp <- int.temp[,-(1:6)]/ext.temp[,-(1:6)]
-    temp.list[[i]]<- cbind(replicate=i, int.temp[,1:6], ratio.temp)
-}
-results <- do.call(rbind, temp.list)
-results.long <- melt(subset(df, FltSvy==fleet, select=-c(Seas, Nsamp,
-                                Gender, Part)), id.vars=c("Yr", "FltSvy", 'replicate'))
-results.long$variable <- as.numeric(gsub("l", "", results.long$variable))
-names(results.long) <- c('year', 'fleet', 'replicate', "length", "proportion")
-results.long$proportion[!is.finite(results.long$proportion)] <- NA
-results.long <- ddply(results.long, .(replicate, length), mutate,
-                 mean.proportion=mean(proportion, na.rm=TRUE))
-g <- ggplot(results.long, aes(length, mean.proportion))+
-    geom_line()+ facet_wrap("replicate") + geom_hline(yintercept=1, col=gray(.5))+
-    ggtitle("Ratio of observed internal/external; mean across years")
-ggsave(paste0("plots/ratio_tests_", id, ".png"),g)
-!!!!!left off here need to make above into a function and loop through different
-bin scenarios
-
+## Write some functions that look at expected values for a given bin width
+## between the two methods.
 plot.binning.test <- function(bin_width, fleet=1){
-    df <- run.binning.test.ev(10)
+    df <- run.binning.test.ev(bin_width=bin_width, fleet=fleet)
+    data.wide <- reshape2::dcast(subset(df, method != "truth"), year+fleet+length~method, value.var='proportion')
+    data.wide <- within(data.wide, {
+        difference <- external-internal
+        rel.error <- (external-internal)/internal
+    })
     g <- ggplot(df, aes(length, proportion, group=method, color=method))+
         geom_line()+facet_wrap("year")
-    ggsave(paste0("plots/bin_tests_", bin_width, "cm.png"), g, width=12, height=7)
+    ggsave(paste0("plots/bin_tests_raw_", bin_width, "cm.png"), g, width=12, height=7)
+    g <- ggplot(data.wide, aes(length, difference))+facet_wrap("year")+
+        geom_line() + ggtitle("Raw difference, E-I")
+    ggsave(paste0("plots/bin_tests_differences_", bin_width, "cm.png"), g, width=12, height=7)
+    g <- ggplot(data.wide, aes(length, rel.error))+facet_wrap("year")+
+        geom_line() + ggtitle("Relative error of expected values (E-I)/I")
+    ggsave(paste0("plots/bin_tests_relerror_", bin_width, "cm.png"), g, width=12, height=7)
 }
-
 extract_expected_data2 <- function(data_ss_new = "data.ss_new") {
     ## modified slightly from one in package for temporary external use
     data_file <- readLines(data_ss_new)
@@ -60,7 +40,6 @@ extract_expected_data2 <- function(data_ss_new = "data.ss_new") {
     file.remove("temp.dat")
     return(dat)
 }
-
 melt.length <- function(df, method, fleet){
     df.long <- melt(subset(df, FltSvy==fleet, select=-c(Seas, Nsamp, Gender, Part)), id.vars=c("Yr", "FltSvy"))
     df.long$variable <- as.numeric(gsub("l", "", df.long$variable))
@@ -70,7 +49,6 @@ melt.length <- function(df, method, fleet){
     df.long$method <- method
     return(df.long)
 }
-
 run.binning.test.ev <- function(bin_width, fleet=1){
     case_folder='cases'; species='cod'
     em_binning100 <- c('lbin_method;1', paste0('bin_vector;seq(20,160, by=', bin_width,')'))
@@ -101,24 +79,19 @@ run.binning.test.ev <- function(bin_width, fleet=1){
     ## Get the different length expected values; note need to do the external
     ## binning manually on the ss_new file to get expected values directly and
     ## avoid sampling uncertainty
-
     ## The external case is used to get the "truth" which is the original 1cm
     ## bins as well as the externally binned
     external.dat <- extract_expected_data2("B100-D1-E991-F1-cod/1/om/data.ss_new")
     external <- change_em_binning(datfile=external.dat, file_out="xx", write_file=FALSE,
                                   bin_vector=seq(20,160, by=bin_width), lbin_method=1)$lencomp
     truth <- external.dat$lencomp
-    external.obs <- SS_readdat("B100-D1-E991-F1-cod/1/em/ss3.dat", verb=F)$lencomp
     ## The internal just has the one case
     internal <- extract_expected_data2("B101-D1-E991-F1-cod/1/om/data.ss_new")$lencomp
-    internal.obs <- SS_readdat("B101-D1-E991-F1-cod/1/em/ss3.dat", verb=F)$lencomp
     ## Get ratio of # bins to help scale the proportions later
     num.bins.ratio <- ncol(external[-(1:6),])/ncol(truth[-(1:6),])
     ## Prep them for plotting
     external <- melt.length(external, "external", fleet=fleet)
     internal <- melt.length(internal, "internal", fleet=fleet)
-    external.obs <- melt.length(external.obs, "external.obs", fleet=fleet)
-    internal.obs <- melt.length(internal.obs, "internal.obs", fleet=fleet)
     truth <- melt.length(truth, "truth", fleet=fleet)
     truth$proportion <- truth$proportion/num.bins.ratio
     data <- rbind(external, truth, internal)
@@ -127,3 +100,42 @@ run.binning.test.ev <- function(bin_width, fleet=1){
     file.remove(paste0(case_folder, "/", c("data100-cod.txt", "data101-cod.txt", "em_binning100-cod.txt", "em_binning101-cod.txt")))
     return(invisible(data))
 }
+## Loop through and make plots for a set of bin widths for cod
+for(i in c(1, 2, 5, 10, 13)){ plot.binning.test(i) }
+## End of expected values
+### ------------------------------------------------------------
+
+### ------------------------------------------------------------
+## Look at a set of observed samples across iterations and compare between
+## the methods to see, the ratio should be 1 on average since the expected
+## values are very close.
+internal.dir <- "B0-D1-E991-F1-I3-cod"
+external.dir <- "B3-D1-E991-F1-I0-cod"
+internal.reps <- list.dirs(internal.dir, recursive=FALSE, full=FALSE)
+external.reps <- list.dirs(external.dir, recursive=FALSE, full=FALSE)
+if(length(external.reps)!=length(internal.reps)) stop("not same reps")
+temp.list <- list()
+for(i in 1:length(internal.reps)){
+    int.temp <- SS_readdat(paste(internal.dir, internal.reps[i], "em", "ss3.dat", sep="/"), verb=FALSE)$lencomp
+    ext.temp <- SS_readdat(paste(external.dir, external.reps[i], "em", "ss3.dat", sep="/"), verb=FALSE)$lencomp
+    ratio.temp <- int.temp[,-(1:6)]/ext.temp[,-(1:6)]
+    temp.list[[i]]<- cbind(replicate=i, int.temp[,1:6], ratio.temp)
+}
+results <- do.call(rbind, temp.list)
+results.long <-
+    melt(subset(results, FltSvy==fleet, select=-c(Seas, Nsamp, Gender,
+                         Part)), id.vars=c("Yr", "FltSvy", 'replicate'))
+results.long$variable <- as.numeric(gsub("l", "", results.long$variable))
+names(results.long) <- c('year', 'fleet', 'replicate', "length", "proportion")
+results.long$proportion[!is.finite(results.long$proportion)] <- NA
+results.long.means <- ddply(results.long, .(replicate, length), mutate,
+                 mean.proportion=mean(proportion, na.rm=TRUE))
+g <- ggplot()+  geom_line(data=results.long, aes(length, proportion,
+                          group=year, color=year), alpha=.3)+
+    geom_line(data=results.long.means, aes(length, mean.proportion), lwd=1.5)+
+    facet_wrap("replicate") + geom_hline(yintercept=1, col=gray(.5))+
+    ggtitle("Ratio of observed internal/external; mean across years")
+ggsave(paste0("plots/ratio_tests_", id, ".png"),g, width=12, height=7)
+
+## End of observed ratio tests
+### ------------------------------------------------------------
