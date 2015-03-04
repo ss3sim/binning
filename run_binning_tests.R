@@ -9,12 +9,19 @@ data10 <- run_binning_test(10)
 subset(data10, fleet==1 & year==71 & length==80)
 data5 <- run_binning_test(5)
 data13 <- run_binning_test(13)
-g <- ggplot(data10, aes(length, proportion, group=method, color=method))+
+data2 <- run_binning_test(2)
+g10 <- ggplot(data10, aes(length, proportion, group=method, color=method))+
     geom_line()+facet_wrap("year")
-ggsave("plots/bin_tests_10cm.png", g, width=12, height=7)
-g <- ggplot(data5, aes(length, proportion, group=method, color=method))+
+g5 <- ggplot(data5, aes(length, proportion, group=method, color=method))+
     geom_line()+facet_wrap("year")
-ggsave("plots/bin_tests_13cm.png", g, width=12, height=7)
+g13 <- ggplot(data13, aes(length, proportion, group=method, color=method))+
+    geom_line()+facet_wrap("year")
+g2 <- ggplot(data2, aes(length, proportion, group=method, color=method))+
+    geom_line()+facet_wrap("year")
+ggsave("plots/bin_tests_10cm.png", g10, width=12, height=7)
+ggsave("plots/bin_tests_13cm.png", g13, width=12, height=7)
+ggsave("plots/bin_tests_5cm.png", g5, width=12, height=7)
+ggsave("plots/bin_tests_2cm.png", g2, width=12, height=7)
 
 run_binning_test <- function(bin_width){
     case_folder='cases'; species='cod'
