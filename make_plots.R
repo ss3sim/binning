@@ -8,29 +8,28 @@ library(plyr)
 
 g <- plot_scalar_boxplot(results.sc.long.growth, x="variable", y='value',
                          vert2='species', vert="D", rel=TRUE,
-                         horiz="width", horiz2="method", print=FALSE) +
+                         horiz2="data.binwidth", horiz="pop.binwidth", print=FALSE) +
     theme(axis.text.x=element_text(angle=90))
-ggsave("plots/growth_errors.png",g, width=9, height=7)
-g <- plot_scalar_boxplot(results.sc.long.selex, x="variable", y='value', vert2='species', vert="D", rel=TRUE, horiz="width", horiz2="method", print=FALSE)+
+ggsave("plots/growth_errors.png",g, width=ggwidth, height=ggheight)
+g <- plot_scalar_boxplot(results.sc.long.selex, x="variable", y='value', vert2='species', vert="D", rel=TRUE, horiz2="data.binwidth", horiz="pop.binwidth", print=FALSE)+
     theme(axis.text.x=element_text(angle=90))
-ggsave("plots/selex_errors.png", g, width=9, height=7)
+ggsave("plots/selex_errors.png", g, width=ggwidth, height=ggheight)
 g <- plot_scalar_boxplot(results.sc.long.management, x="variable",
-      y='value', vert2='species', vert="D", rel=TRUE, horiz="width",
-                         horiz2="method", print=FALSE)+
+      y='value', vert2='species', vert="D", rel=TRUE, horiz2="data.binwidth",
+                         horiz="pop.binwidth", print=FALSE)+
     theme(axis.text.x=element_text(angle=90))
-ggsave("plots/management_errors.png",g, width=9, height=7)
-g <- plot_scalar_boxplot(results.sc.long.selex, x="variable", y='value', vert2='species', vert="D", rel=TRUE, horiz="width", horiz2="method", print=FALSE)+
-    theme(axis.text.x=element_text(angle=90))
-ggsave("plots/selex_errors.png", g, width=9, height=7)
-g <- ggplot(results.sc, aes(x=D, y=log_max_grad, fill=params_on_bound_em))+geom_violin()+
-    facet_grid(method+species~width)+
-        geom_hline(yintercept=log(.01), col='red')+ scale_color_brewer()
-ggsave("plots/convergence.png",g, width=9, height=7)
-g <- ggplot(results.sc, aes(x=D, y=runtime, fill=params_on_bound_em))+geom_point()+
-    facet_grid(method+species~width)
-ggsave("plots/runtime.png",g, width=9, height=7)
+ggsave("plots/management_errors.png",g, width=ggwidth, height=ggheight)
+g <- ggplot(results.sc, aes(x=D, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
+    geom_jitter()+
+    facet_grid(species~data.binwidth+pop.binwidth)+
+        geom_hline(yintercept=log(.01), col='red')
+ggsave("plots/convergence.png",g, width=ggwidth, height=ggheight)
+g <- ggplot(results.sc, aes(x=D, y=runtime, size=params_on_bound_em, color=converged))+
+    geom_jitter()+ ylab("Runtime (minutes)")+
+    facet_grid(species~data.binwidth+pop.binwidth)
+ggsave("plots/runtime.png",g, width=ggwidth, height=ggheight)
 ## table of convergence
-plyr::ddply(results.sc.long, .(species, D, I, B), summarize,
+plyr::ddply(results.sc.long, .(species, D, B), summarize,
             median.logmaxgrad=round(median(log_max_grad),2),
             max.stuck.on.bounds=max(params_on_bound_em))
 
@@ -51,10 +50,10 @@ plyr::ddply(results.sc.long, .(species, D, I, B), summarize,
 ##          "log_max_grad", "params_on_bound_em", "year"))
 ## g <- plot_ts_lines(results.ts.long,  y='value', vert="variable", vert2="D",
 ##                    horiz='species', rel=TRUE, color='log_max_grad')
-## ggsave("plots/ts.results.png", g, width=9, height=7)
+## ggsave("plots/ts.results.png", g, width=9, height=ggheight)
 ## g <- plot_ts_lines(results.ts, y="SpawnBio_om", horiz="species",
 ##                    vert="D", color="log_max_grad")
-## ggsave("plots/ts.convergence.png", g, width=9, height=7)
+## ggsave("plots/ts.convergence.png", g, width=9, height=ggheight)
 ## plot_ts_boxplot(results.ts, y="SpawnBio_re", vert="D", rel=TRUE)
 ## ggsave("plots/results.SSB.png", width=ggwidth, height=ggheight)
 ## plot_ts_boxplot(results.ts, y="Recruit_0_re", vert="D", rel=TRUE)
