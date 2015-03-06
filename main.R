@@ -9,6 +9,10 @@
 case_folder <- 'cases'
 devtools::install_github("ss3sim/ss3sim")
 devtools::install_github('ss3sim/ss3models')
+install("../ss3sim")
+install("../ss3models")
+load_all("../ss3sim")
+load_all("../ss3models")
 source("startup.R")
 ### ------------------------------------------------------------
 
@@ -21,16 +25,17 @@ source("write_casefiles.R")
 ### ------------------------------------------------------------
 
 ### ------------------------------------------------------------
-## Initial runs for  scenarios for data binning cases
-scenarios.E <- expand_scenarios(cases=list(D=1:6, F=1, I=0, B=1:3, E=991), species=species)
-scenarios.I <- expand_scenarios(cases=list(D=1:6, F=1, I=1:3, B=0, E=991), species=species)
-scenarios <- c(scenarios.E, scenarios.I)
+## Define scenarios to be run; first the ones with pop bins at 1cm
+## Now the pop bins match teh data bins
+scenarios <- expand_scenarios(cases=list(D=2, F=1, I=0, B=c(3, 13), E=991), species=species)
 case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
 ## unlink(scenarios, TRUE)
-Nsim <- 100
-run_ss3sim(iterations=1:20, scenarios=scenarios[1],
-           parallel=TRUE, parallel_iterations=TRUE,
+Nsim <- 1
+aaa <- get_caseargs(case_folder, scenario=scenarios[2],
+                    case_files=case_files)
+run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
+           parallel=F, parallel_iterations=TRUE,
            case_folder=case_folder, om_dir=ss3model(species, "om"),
            em_dir=ss3model(species, "em"), case_files=case_files, call_change_data=TRUE)
 ## Read in results
