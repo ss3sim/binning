@@ -1,7 +1,11 @@
 ## Develop some code to explore how SS is doing binning and our functions
 ## external case files:
 stop("dont source this file")
-devtools::install_github("ss3sim/ss3sim")
+library(devtools)
+## install_github("ss3sim/ss3sim")
+## install_github("ss3sim/ss3models")
+install("../ss3sim")
+install("../ss3models")
 source("startup.R")
 ### ------------------------------------------------------------
 ## Write some functions that look at expected values for a given bin width
@@ -55,7 +59,7 @@ run.binning.test.ev <- function(bin_width, fleet=1){
     writeLines(em_binning100, con=paste0(case_folder,"/", "em_binning100-cod.txt"))
     data100 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
                  'pop_binwidth; 1', 'pop_minimum_size; 8',
-                 'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
+                 'pop_maximum_size; 202', 'lcomp_constant; 1e-10',
                  'tail_compression; -1')
     writeLines(data100, con=paste0(case_folder,"/", "data100-cod.txt"))
     ## Internal case files:
@@ -63,7 +67,7 @@ run.binning.test.ev <- function(bin_width, fleet=1){
     writeLines(em_binning101, con=paste0(case_folder,"/", "em_binning101-cod.txt"))
     data101 <- c('age_bins; NULL', paste0('len_bins;seq(20,160, by=', bin_width,')'),
                  'pop_binwidth; 1', 'pop_minimum_size; 8',
-                 'pop_maximum_size; 202', 'lcomp_constant; 0.0001',
+                 'pop_maximum_size; 202', 'lcomp_constant; 1e-10',
                  'tail_compression; -1')
     writeLines(data101, con=paste0(case_folder,"/", "data101-cod.txt"))
     case_files <- list(F="F", B=c("em_binning", "data"),
@@ -137,6 +141,7 @@ g <- ggplot()+  geom_line(data=results.long, aes(length, proportion,
     geom_line(data=results.long.means, aes(length, mean.proportion), lwd=1.5)+
     facet_wrap("replicate") + geom_hline(yintercept=1, col=gray(.5))+
     ggtitle("Ratio of observed internal/external; mean across years")
+ggplot(results.long.means, aes(factor(length), mean.proportion))+geom_violin()
 ggsave(paste0("plots/ratio_tests_", id, ".png"),g, width=12, height=7)
 
 ## End of observed ratio tests

@@ -28,8 +28,8 @@ scenarios <- c(scenarios.E, scenarios.I)
 case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
 ## unlink(scenarios, TRUE)
-Nsim <- 20
-run_ss3sim(iterations=11:Nsim, scenarios=scenarios,
+Nsim <- 100
+run_ss3sim(iterations=1:20, scenarios=scenarios[1],
            parallel=TRUE, parallel_iterations=TRUE,
            case_folder=case_folder, om_dir=ss3model(species, "om"),
            em_dir=ss3model(species, "em"), case_files=case_files, call_change_data=TRUE)
