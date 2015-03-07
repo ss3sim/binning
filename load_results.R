@@ -4,8 +4,8 @@
 ## make a table with better names for merging into the main results; used
 ## really only for plotting and needs to be specific for each species
 bin.cases.df <- data.frame(species=c('cod'),
-                           data.binwidth=paste0("data.binwidth=",c(1,2,4,13,2,4,13)),
-                           pop.binwidth=paste0("pop.binwidth=", c(1,1,1,1,2,4,13)),
+                           dat.bin=paste0("dat.bin=",c(1,2,4,13,2,4,13)),
+                           pop.bin=paste0("pop.bin=", c(1,1,1,1,2,4,13)),
                            B=paste0("B",c(0:3, 11:13)))
 
 ### ------------------------------------------------------------
@@ -18,12 +18,13 @@ results.sc <- calculate_re(results.sc, add=TRUE)
 results.sc$runtime <- results.sc$RunTime
 results.sc <- merge(results.sc, bin.cases.df, by=c("species", "B"))
 ## Drop fixed params (columns of zeroes)
+results.sc$RecrDist_GP_1_re <- NULL
 results.sc <- results.sc[,-which(apply(results.sc, 2, function(x) all(x==0)))]
 re.names <- names(results.sc)[grep("_re", names(results.sc))]
 results.sc.long <-
     melt(results.sc, measure.vars=re.names, id.vars=
-         c("species","replicate", "D", "B", "data.binwidth",
-           "pop.binwidth", "log_max_grad", "params_on_bound_em",
+         c("species","replicate", "D", "B", "dat.bin",
+           "pop.bin", "log_max_grad", "params_on_bound_em",
            "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
 results.sc.long.growth <- droplevels(subset(results.sc.long, variable %in% growth.names))

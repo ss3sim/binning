@@ -2,31 +2,31 @@
 ## before sourcing
 
 ggwidth <- 9
-ggheight <- 5
+ggheight <- 7
 library(ggplot2)
 library(plyr)
 
 g <- plot_scalar_boxplot(results.sc.long.growth, x="variable", y='value',
                          vert2='species', vert="D", rel=TRUE,
-                         horiz2="data.binwidth", horiz="pop.binwidth", print=FALSE) +
+                         horiz2="dat.bin", horiz="pop.bin", print=FALSE) +
     theme(axis.text.x=element_text(angle=90))
 ggsave("plots/growth_errors.png",g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(results.sc.long.selex, x="variable", y='value', vert2='species', vert="D", rel=TRUE, horiz2="data.binwidth", horiz="pop.binwidth", print=FALSE)+
+g <- plot_scalar_boxplot(results.sc.long.selex, x="variable", y='value', vert2='species', vert="D", rel=TRUE, horiz2="dat.bin", horiz="pop.bin", print=FALSE)+
     theme(axis.text.x=element_text(angle=90))
 ggsave("plots/selex_errors.png", g, width=ggwidth, height=ggheight)
 g <- plot_scalar_boxplot(results.sc.long.management, x="variable",
-      y='value', vert2='species', vert="D", rel=TRUE, horiz2="data.binwidth",
-                         horiz="pop.binwidth", print=FALSE)+
+      y='value', vert2='species', vert="D", rel=TRUE, horiz2="dat.bin",
+                         horiz="pop.bin", print=FALSE)+
     theme(axis.text.x=element_text(angle=90))
 ggsave("plots/management_errors.png",g, width=ggwidth, height=ggheight)
 g <- ggplot(results.sc, aes(x=D, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
     geom_jitter()+
-    facet_grid(species~data.binwidth+pop.binwidth)+
+    facet_grid(species~dat.bin+pop.bin)+
         geom_hline(yintercept=log(.01), col='red')
 ggsave("plots/convergence.png",g, width=ggwidth, height=ggheight)
 g <- ggplot(results.sc, aes(x=D, y=runtime, size=params_on_bound_em, color=converged))+
     geom_jitter()+ ylab("Runtime (minutes)")+
-    facet_grid(species~data.binwidth+pop.binwidth)
+    facet_grid(species~dat.bin+pop.bin)
 ggsave("plots/runtime.png",g, width=ggwidth, height=ggheight)
 ## table of convergence
 plyr::ddply(results.sc.long, .(species, D, B), summarize,

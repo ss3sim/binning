@@ -28,14 +28,12 @@ source("write_casefiles.R")
 ### ------------------------------------------------------------
 ## Define scenarios to be run; first the ones with pop bins at 1cm
 ## Now the pop bins match teh data bins
-scenarios <- expand_scenarios(cases=list(D=c(2,4), F=1, I=0, B=c(3, 13), E=991), species=species)
+scenarios <- expand_scenarios(cases=list(D=1:6, F=1, I=0, B=c(0:3, 11:13), E=991), species=species)
 case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
 ## unlink(scenarios, TRUE)
 Nsim <- 25
-aaa <- get_caseargs(case_folder, scenario=scenarios[2],
-                    case_files=case_files)
-run_ss3sim(iterations=26:50, scenarios=scenarios,
+run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
            parallel=TRUE, parallel_iterations=FALSE,
            case_folder=case_folder, om_dir=ss3model(species, "om"),
            em_dir=ss3model(species, "em"), case_files=case_files, call_change_data=TRUE)
