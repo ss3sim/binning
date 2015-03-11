@@ -9,11 +9,32 @@ data0 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
            'pop_maximum_size; 202', 'lcomp_constant; 1e-10',
            'tail_compression; -1')
 writeLines(data0, con=paste0(case_folder,"/", "data0-cod.txt"))
-## data1 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=2)',
-##            'pop_binwidth; 1', 'pop_minimum_size; 8',
-##            'pop_maximum_size; 202', 'lcomp_constant; 1e-10',
-##            'tail_compression; -1')
-## writeLines(data1, con=paste0(case_folder,"/", "data1-cod.txt"))
+
+#### For cases with tail compression 
+tc.seq <- c(0.01, seq(0.05, .25, len=5))
+tc.n <- length(tc.seq)
+for(i in 1:tc.n){
+    tc <- tc.seq[i]
+	x <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
+           'pop_binwidth; 1', 'pop_minimum_size; 8',
+           'pop_maximum_size; 202', 'lcomp_constant; 1e-10',
+           paste0("tail_compression; ", tc))
+    writeLines(x, con=paste0(case_folder, "/dataT",i, "-cod.txt"))
+}
+
+#### For cases with robustification constant
+rb.seq <- c(1e-5,1e-4,1e-3,1e-2,1e-1)
+rb.n <-length(rb.seq)
+for(i in 1:rb.n){
+    rb <- rb.seq[i]
+	x <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
+           'pop_binwidth; 1', 'pop_minimum_size; 8',
+           'pop_maximum_size; 202', paste0("lcomp_constant; ", rb), 
+           'tail_compression; -1')
+    writeLines(x, con=paste0(case_folder, "/dataR",i, "-cod.txt"))
+}
+
+
 ## data2 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
 ##            'pop_binwidth; 4', 'pop_minimum_size; 8',
 ##            'pop_maximum_size; 202', 'lcomp_constant; 1e-10',
