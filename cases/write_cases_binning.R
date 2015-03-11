@@ -19,7 +19,7 @@ for(i in 1:tc.n){
            'pop_binwidth; 1', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', 'lcomp_constant; 1e-10',
            paste0("tail_compression; ", tc))
-    writeLines(x, con=paste0(case_folder, "/dataT",i, "-cod.txt"))
+    writeLines(x, con=paste0(case_folder, "/data1",i, "-cod.txt"))
 }
 
 #### For cases with robustification constant
@@ -31,7 +31,7 @@ for(i in 1:rb.n){
            'pop_binwidth; 1', 'pop_minimum_size; 8',
            'pop_maximum_size; 202', paste0("lcomp_constant; ", rb), 
            'tail_compression; -1')
-    writeLines(x, con=paste0(case_folder, "/dataR",i, "-cod.txt"))
+    writeLines(x, con=paste0(case_folder, "/data2",i, "-cod.txt"))
 }
 
 
