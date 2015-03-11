@@ -72,7 +72,7 @@ source("write_casefiles.R")
 	## Read in results
 	get_results_all(user=scenarios, parallel=TRUE, over=TRUE)
 	file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
-						to=c("results/results_tcomp.ts.csv", "results/results_tcomp.sc.csv"))
+						to=c("results/results_robust.ts.csv", "results/results_robust.sc.csv"))
 	file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
 
