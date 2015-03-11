@@ -1,0 +1,4 @@
+fleets;c(1,2)
+years;list(2:3, 78:79)
+Nsamp;list(45:46, 4:5)
+cpar;c(2,1)
