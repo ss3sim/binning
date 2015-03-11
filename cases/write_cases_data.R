@@ -60,3 +60,23 @@ writeLines(index6, con=paste0(case_folder,"/", "index6-", spp, ".txt"))
 writeLines(lcomp6, con=paste0(case_folder,"/", "lcomp6-", spp, ".txt"))
 writeLines(agecomp6, con=paste0(case_folder,"/", "agecomp6-", spp, ".txt"))
 writeLines(calcomp6, con=paste0(case_folder,"/", "calcomp6-", spp, ".txt"))
+
+#Scenario 7:
+index7 <- c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
+lcomp7 <-  c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(50, 50)', 'cpar;c(NA,NA)')
+agecomp7 <-  c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(10, 10)', 'cpar;c(NA,NA)')
+calcomp7 <- c('fleets;NULL')
+writeLines(index7, con=paste0(case_folder,"/", "index7-", spp, ".txt"))
+writeLines(lcomp7, con=paste0(case_folder,"/", "lcomp7-", spp, ".txt"))
+writeLines(agecomp7, con=paste0(case_folder,"/", "agecomp7-", spp, ".txt"))
+writeLines(calcomp7, con=paste0(case_folder,"/", "calcomp7-", spp, ".txt"))
+
+#Scenario 8:
+index8 <-  c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
+lcomp8 <-   c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(50, 50)', 'cpar;c(NA,NA)')
+agecomp8 <-  c('fleets;NULL')
+calcomp8 <-   c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(20, 20)')
+writeLines(index8, con=paste0(case_folder,"/", "index8-", spp, ".txt"))
+writeLines(lcomp8, con=paste0(case_folder,"/", "lcomp8-", spp, ".txt"))
+writeLines(agecomp8, con=paste0(case_folder,"/", "agecomp8-", spp, ".txt"))
+writeLines(calcomp8, con=paste0(case_folder,"/", "calcomp8-", spp, ".txt"))
