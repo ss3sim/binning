@@ -19,31 +19,6 @@ for(spp in species)
 source("cases/write_cases_binning.R")
 #source("cases/write_cases_data.R")
 
-### Function to write binning casefiles - external method
-## BX where X is the bin width, and then B1X for the one with matching pop bin widths
-## binwidth: must be integer
-## lbmin: lowest bin, must be integer
-## lbmax: highest bin, must be integer
-## matchpop: match data bins to population bins, default set to TRUE, 1cm if FALSE
-## pmin: pop minimum size
-## pmax: pop maximum size
-## tc: tail compression, default -1 (OFF)
-## rb: robustification constant, default 1e-10 (very small)
-write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE,
-                            pmin, pmax, tc=-1, rb=1e-10){
-
-  pbins <- ifelse(matchpop, binwidth, 1)
-  write <- c('lbin_method; 2', paste0('pop_binwidth; ', pbins),
-  	paste0('pop_minimum_size; ', pmin), paste0('pop_maximum_size; ', pmax), 
-  	paste0('bin_vector; seq(', lbmin, ",", lbmax, ",by=", binwidth, ")"), 
-    paste0('lcomp_constant; ', rb), paste0('tail_compression; ', tc))
-  if(nchar(binwidth)==1 & matchpop==TRUE) binwidth <- paste0("0", binwidth)
-  if(matchpop==FALSE) name <- paste0("binning", binwidth)
-  if(matchpop==TRUE) name <- paste0("binning1", binwidth)
-  writeLines(write, con=paste0(case_folder, "/", name, "-", species, ".txt"))
-
-}
-
 ### ------------------------------------------------------------
 ## ## Old case files
 ## ## The deterministic cases (not species specific)
