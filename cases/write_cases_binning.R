@@ -58,15 +58,19 @@ write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE,
                             pmin, pmax){
 
   pbins <- ifelse(matchpop, binwidth, 1)
-  write <- c('lbin_method; 2', paste0('pop_binwidth; ', pbins),
-    paste0('pop_minimum_size; ', pmin), paste0('pop_maximum_size; ', pmax), 
-    paste0('bin_vector; seq(', lbmin, ",", lbmax, ",by=", binwidth, ")"))
+  write <- c('lbin_method;2', paste0('pop_binwidth;', pbins),
+    paste0('pop_minimum_size;', pmin), paste0('pop_maximum_size;', pmax), 
+    paste0('bin_vector;seq(', lbmin, ",", lbmax, ",by=", binwidth, ")"))
   if(nchar(binwidth)==1 & matchpop==TRUE) binwidth <- paste0("0", binwidth)
-  if(matchpop==FALSE) name <- paste0("binning", binwidth)
-  if(matchpop==TRUE) name <- paste0("binning1", binwidth)
+  if(matchpop==FALSE) name <- paste0("em_binning", binwidth)
+  if(matchpop==TRUE) name <- paste0("em_binning1", binwidth)
   writeLines(write, con=paste0(case_folder, "/", name, "-", species, ".txt"))
 
 }
+
+write_bincase(species="cod", binwidth=2, lbmin=20, lbmax=160,
+                matchpop=FALSE, pmin=8, pmax=202)
+
 
 ## External binning cases. For this the change_data function shouldn't be
 ## called at all, and instead the generated data should be in 1cm bins
