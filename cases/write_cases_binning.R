@@ -54,10 +54,11 @@ for(i in 1:rb.n){
 ## matchpop: match data bins to population bins, default set to TRUE, 1cm if FALSE
 ## pmin: pop minimum size
 ## pmax: pop maximum size
-write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE,
-                            pmin, pmax){
+write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE, pmin, pmax){
 
   pbins <- ifelse(matchpop, binwidth, 1)
+  pseq <- seq(pmin, pmax, by=pbins)
+
   write <- c('lbin_method;2', paste0('pop_binwidth;', pbins),
     paste0('pop_minimum_size;', pmin), paste0('pop_maximum_size;', pmax), 
     paste0('bin_vector;seq(', lbmin, ",", lbmax, ",by=", binwidth, ")"))
@@ -70,6 +71,20 @@ write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE,
 
 write_bincase(species="cod", binwidth=2, lbmin=20, lbmax=160,
                 matchpop=FALSE, pmin=8, pmax=202)
+write_bincase(species="cod", binwidth=2, lbmin=20, lbmax=160,
+                matchpop=TRUE, pmin=8, pmax=202)
+write_bincase(species="cod", binwidth=4, lbmin=20, lbmax=160,
+                matchpop=FALSE, pmin=8, pmax=202)
+write_bincase(species="cod", binwidth=4, lbmin=20, lbmax=160,
+                matchpop=TRUE, pmin=8, pmax=202)
+write_bincase(species="cod", binwidth=13, lbmin=20, lbmax=160,
+                matchpop=FALSE, pmin=8, pmax=202)
+write_bincase(species="cod", binwidth=13, lbmin=20, lbmax=160,
+                matchpop=TRUE, pmin=8, pmax=202)
+write_bincase(species="cod", binwidth=24, lbmin=20, lbmax=160,
+                matchpop=FALSE, pmin=8, pmax=202)
+write_bincase(species="cod", binwidth=24, lbmin=20, lbmax=160,
+                matchpop=TRUE, pmin=8, pmax=202)
 
 
 ## External binning cases. For this the change_data function shouldn't be
