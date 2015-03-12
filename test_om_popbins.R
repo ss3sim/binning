@@ -1,6 +1,6 @@
 # Test the effect of changing the population bin size on the OM
 
-out <- lapply(seq(1, 20), function(x) {
+out <- lapply(seq(2, 20, 2), function(x) {
   file.copy(ss3models::ss3model("cod", "om"), to = ".", recursive = TRUE)
   file.rename("om", "cod")
   datfile <- SS_readdat("cod/ss3.dat", verbose = FALSE)
@@ -16,7 +16,7 @@ out <- lapply(seq(1, 20), function(x) {
     pop_minimum_size = NULL,
     pop_maximum_size = NULL)
 
-  system("cd cod; ss3_24o_safe -noest")
+  system("cd cod; ss3_24o_safe -nohess")
   o <- r4ss::SS_output("cod", covar = FALSE, verbose = FALSE, compfile = "none",
     forecast = TRUE, warn = TRUE, readwt = FALSE, printstats = FALSE,
     NoCompOK = TRUE, ncols = 300)
@@ -26,5 +26,9 @@ out <- lapply(seq(1, 20), function(x) {
   dq
 })
 
-# library("dplyr")
+library("dplyr")
 # filter(dq, LABEL == "SSB_MSY") %>% select(Value)
+
+lapply(out, function(x) {
+  filter(x, LABEL == "SSB
+})
