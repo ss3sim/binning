@@ -1,6 +1,6 @@
 # Test the effect of changing the population bin size on the OM
 
-pop_bins <- seq(1, 25, 2)
+pop_bins <- seq(1, 25, 1)
 out <- plyr::ldply(pop_bins, function(x) {
   unlink("cod", recursive = TRUE, force = TRUE)
   file.copy(ss3models::ss3model("cod", "om"), to = ".", recursive = TRUE)
@@ -23,7 +23,7 @@ out <- plyr::ldply(pop_bins, function(x) {
     forecast = TRUE, warn = TRUE, readwt = FALSE, printstats = FALSE,
     NoCompOK = TRUE, ncols = 300)
   unlink("cod", recursive = TRUE, force = TRUE)
-  Sys.sleep(1) # give ample time for deletion of folder
+  Sys.sleep(0.5) # give ample time for deletion of folder
   ss3sim::get_results_scalar(o)
 })
 
