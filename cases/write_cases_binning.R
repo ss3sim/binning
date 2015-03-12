@@ -46,6 +46,27 @@ for(i in 1:rb.n){
 ##            'tail_compression; -1')
 ## writeLines(data3, con=paste0(case_folder,"/", "data3-cod.txt"))
 
+### Function to write binning casefiles - external method
+## BX where X is the bin width, and then B1X for the one with matching pop bin widths
+## binwidth: must be integer
+## lbmin: lowest bin, must be integer
+## lbmax: highest bin, must be integer
+## matchpop: match data bins to population bins, default set to TRUE, 1cm if FALSE
+## pmin: pop minimum size
+## pmax: pop maximum size
+write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE,
+                            pmin, pmax){
+
+  pbins <- ifelse(matchpop, binwidth, 1)
+  write <- c('lbin_method; 2', paste0('pop_binwidth; ', pbins),
+    paste0('pop_minimum_size; ', pmin), paste0('pop_maximum_size; ', pmax), 
+    paste0('bin_vector; seq(', lbmin, ",", lbmax, ",by=", binwidth, ")"))
+  if(nchar(binwidth)==1 & matchpop==TRUE) binwidth <- paste0("0", binwidth)
+  if(matchpop==FALSE) name <- paste0("binning", binwidth)
+  if(matchpop==TRUE) name <- paste0("binning1", binwidth)
+  writeLines(write, con=paste0(case_folder, "/", name, "-", species, ".txt"))
+
+}
 
 ## External binning cases. For this the change_data function shouldn't be
 ## called at all, and instead the generated data should be in 1cm bins
