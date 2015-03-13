@@ -21,7 +21,7 @@ source("startup.R")
 ## Create case files dynamically for reproducibility
 ## file.copy(from=paste0("../ss3models/cases/", c("F0-yel", "F1-yel", "F2-yel"), ".txt"),
 ##           to=paste0("cases", c("F0-yel", "F1-yel", "F2-yel"), ".txt"))
-species <- c('cod')
+species <- c('cod','flatfish','yellow')
 source("write_casefiles.R")
 ### ------------------------------------------------------------
 
@@ -43,8 +43,9 @@ source("write_casefiles.R")
 						to=c("results/results.ts.csv", "results/results.sc.csv"))
 	file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
+	
 ## To test the tail compression 
-	scenarios <- expand_scenarios(cases=list(D=5, F=1, I=11:16, B=c(0,2,3), E=991), species=species)
+	scenarios <- expand_scenarios(cases=list(D=5, F=1, I=11:15, B=c(1,2,3), E=991), species=species)
 	case_files <- list(F="F", B="em_binning", I="data",
 										 D=c("index","lcomp","agecomp","calcomp"), E="E")
 	## unlink(scenarios, TRUE)
@@ -60,7 +61,7 @@ source("write_casefiles.R")
 	file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
 ## To test the robustification constant
-	scenarios <- expand_scenarios(cases=list(D=5, F=1, I=21:25, B=c(0,2,3), E=991), species=species)
+	scenarios <- expand_scenarios(cases=list(D=5, F=1, I=21:25, B=c(1,2,3), E=991), species=species)
 	case_files <- list(F="F", B="em_binning", I="data",
 										 D=c("index","lcomp","agecomp","calcomp"), E="E")
 	## unlink(scenarios, TRUE)

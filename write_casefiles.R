@@ -12,12 +12,13 @@ for(spp in species)
               to=case_folder)
     ## write the data cases
     source("cases/write_cases_data.R")
+		## write the binning case files
+		source("cases/write_cases_binning.R")
+
 }
 
 ## Others are different by species so these are hard coded and write all
 ## species at the same time.
-source("cases/write_cases_binning.R")
-#source("cases/write_cases_data.R")
 
 ### ------------------------------------------------------------
 ## ## Old case files
