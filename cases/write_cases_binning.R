@@ -81,10 +81,44 @@ write_bincase(species="cod", binwidth=13, lbmin=20, lbmax=160,
                 matchpop=FALSE, pmin=8, pmax=202)
 write_bincase(species="cod", binwidth=13, lbmin=20, lbmax=160,
                 matchpop=TRUE, pmin=8, pmax=202)
-write_bincase(species="cod", binwidth=24, lbmin=20, lbmax=160,
+write_bincase(species="cod", binwidth=25, lbmin=20, lbmax=160,
                 matchpop=FALSE, pmin=8, pmax=202)
-write_bincase(species="cod", binwidth=24, lbmin=20, lbmax=160,
+write_bincase(species="cod", binwidth=25, lbmin=20, lbmax=160,
                 matchpop=TRUE, pmin=8, pmax=202)
+
+write_bincase(species="fla", binwidth=1, lbmin=12, lbmax=58,
+                matchpop=FALSE, pmin=2, pmax=86)
+write_bincase(species="fla", binwidth=1, lbmin=12, lbmax=58,
+                matchpop=TRUE, pmin=2, pmax=86)
+write_bincase(species="fla", binwidth=2, lbmin=12, lbmax=58,
+                matchpop=FALSE, pmin=2, pmax=86)
+write_bincase(species="fla", binwidth=2, lbmin=12, lbmax=58,
+                matchpop=TRUE, pmin=2, pmax=86)
+write_bincase(species="fla", binwidth=5, lbmin=12, lbmax=58,
+                matchpop=FALSE, pmin=2, pmax=86)
+write_bincase(species="fla", binwidth=5, lbmin=12, lbmax=58,
+                matchpop=TRUE, pmin=2, pmax=86)
+write_bincase(species="fla", binwidth=9, lbmin=12, lbmax=58,
+                matchpop=FALSE, pmin=2, pmax=86)
+write_bincase(species="fla", binwidth=9, lbmin=12, lbmax=58,
+                matchpop=TRUE, pmin=2, pmax=86)
+
+write_bincase(species="yel", binwidth=1, lbmin=18, lbmax=75,
+                matchpop=FALSE, pmin=10, pmax=90)
+write_bincase(species="yel", binwidth=1, lbmin=18, lbmax=75,
+                matchpop=TRUE, pmin=10, pmax=90)
+write_bincase(species="yel", binwidth=2, lbmin=18, lbmax=75,
+                matchpop=FALSE, pmin=10, pmax=90)
+write_bincase(species="yel", binwidth=2, lbmin=18, lbmax=75,
+                matchpop=TRUE, pmin=10, pmax=90)
+write_bincase(species="yel", binwidth=6, lbmin=18, lbmax=75,
+                matchpop=FALSE, pmin=10, pmax=90)
+write_bincase(species="yel", binwidth=6, lbmin=18, lbmax=75,
+                matchpop=TRUE, pmin=10, pmax=90)
+write_bincase(species="yel", binwidth=12, lbmin=18, lbmax=75,
+                matchpop=FALSE, pmin=10, pmax=90)
+write_bincase(species="yel", binwidth=12, lbmin=18, lbmax=75,
+                matchpop=TRUE, pmin=10, pmax=90)
 
 
 ## External binning cases. For this the change_data function shouldn't be
