@@ -25,7 +25,7 @@ case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
 Nsim <- 1
 for(spp in species){
-    scenarios <- expand_scenarios(cases=list(D=1, F=1, I=0, B=c(0:3, 11:13), E=991), species=spp)
+    scenarios <- expand_scenarios(cases=list(D=1:6, F=1, I=0, B=c(0:3, 11:13), E=991), species=spp)
     run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
                parallel=F, parallel_iterations=FALSE,
                case_folder=case_folder, om_dir=ss3model(spp, "om"),
