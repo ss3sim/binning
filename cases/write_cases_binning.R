@@ -78,17 +78,17 @@ write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE, pmin,
 write_bincase(species="cod", binwidth=2, lbmin=20, lbmax=160,
               matchpop=FALSE, pmin=8, pmax=202, ID=0)
 write_bincase(species="cod", binwidth=4, lbmin=20, lbmax=160,
-              matchpop=FALSE, pmin=8, pmax=202, ID=1)
+              matchpop=FALSE, pmin=8, pmax=200, ID=1)
 write_bincase(species="cod", binwidth=4, lbmin=20, lbmax=160,
               matchpop=TRUE, pmin=8, pmax=202, ID=1)
 write_bincase(species="cod", binwidth=13, lbmin=20, lbmax=160,
-              matchpop=FALSE, pmin=8, pmax=202, ID=2)
+              matchpop=FALSE, pmin=8, pmax=203, ID=2)
 write_bincase(species="cod", binwidth=13, lbmin=20, lbmax=160,
-              matchpop=TRUE, pmin=8, pmax=202, ID=2)
+              matchpop=TRUE, pmin=8, pmax=203, ID=2)
 write_bincase(species="cod", binwidth=25, lbmin=20, lbmax=160,
-              matchpop=FALSE, pmin=8, pmax=202, ID=3)
+              matchpop=FALSE, pmin=8, pmax=208, ID=3)
 write_bincase(species="cod", binwidth=25, lbmin=20, lbmax=160,
-              matchpop=TRUE, pmin=8, pmax=202, ID=3)
+              matchpop=TRUE, pmin=8, pmax=208, ID=3)
 
 write_bincase(species="flatfish", binwidth=1, lbmin=12, lbmax=58,
               matchpop=FALSE, pmin=2, pmax=86, ID=0)
@@ -97,28 +97,28 @@ write_bincase(species="flatfish", binwidth=2, lbmin=12, lbmax=58,
 write_bincase(species="flatfish", binwidth=2, lbmin=12, lbmax=58,
               matchpop=TRUE, pmin=2, pmax=86, ID=1)
 write_bincase(species="flatfish", binwidth=5, lbmin=12, lbmax=58,
-              matchpop=FALSE, pmin=2, pmax=86, ID=2)
+              matchpop=FALSE, pmin=2, pmax=87, ID=2)
 write_bincase(species="flatfish", binwidth=5, lbmin=12, lbmax=58,
-              matchpop=TRUE, pmin=2, pmax=86, ID=2)
+              matchpop=TRUE, pmin=2, pmax=87, ID=2)
 write_bincase(species="flatfish", binwidth=9, lbmin=12, lbmax=58,
-              matchpop=FALSE, pmin=2, pmax=86, ID=3)
+              matchpop=FALSE, pmin=2, pmax=92, ID=3)
 write_bincase(species="flatfish", binwidth=9, lbmin=12, lbmax=58,
-              matchpop=TRUE, pmin=2, pmax=86, ID=3)
+              matchpop=TRUE, pmin=2, pmax=92, ID=3)
 
 write_bincase(species="yellow", binwidth=1, lbmin=18, lbmax=75,
-              matchpop=FALSE, pmin=10, pmax=90, ID=0)
+              matchpop=FALSE, pmin=10, pmax=94, ID=0)
 write_bincase(species="yellow", binwidth=2, lbmin=18, lbmax=75,
-              matchpop=FALSE, pmin=10, pmax=90, ID=1)
+              matchpop=FALSE, pmin=10, pmax=94, ID=1)
 write_bincase(species="yellow", binwidth=2, lbmin=18, lbmax=75,
-              matchpop=TRUE, pmin=10, pmax=90, ID=1)
+              matchpop=TRUE, pmin=10, pmax=94, ID=1)
 write_bincase(species="yellow", binwidth=6, lbmin=18, lbmax=75,
-              matchpop=FALSE, pmin=10, pmax=90, ID=2)
+              matchpop=FALSE, pmin=10, pmax=94, ID=2)
 write_bincase(species="yellow", binwidth=6, lbmin=18, lbmax=75,
-              matchpop=TRUE, pmin=10, pmax=90, ID=2)
+              matchpop=TRUE, pmin=10, pmax=94, ID=2)
 write_bincase(species="yellow", binwidth=12, lbmin=18, lbmax=75,
-              matchpop=FALSE, pmin=10, pmax=90, ID=3)
+              matchpop=FALSE, pmin=10, pmax=94, ID=3)
 write_bincase(species="yellow", binwidth=12, lbmin=18, lbmax=75,
-              matchpop=TRUE, pmin=10, pmax=90, ID=3)
+              matchpop=TRUE, pmin=10, pmax=94, ID=3)
 
 
 ## OLD case files
