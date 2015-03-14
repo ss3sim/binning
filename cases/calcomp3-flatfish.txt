@@ -1,0 +1,3 @@
+fleets;c(1,2)
+years;list(c(seq(26,46,by=10),seq(51,66,by=5),71:100), seq(76,100, by=2))
+Nsamp;list(500/4, 500)

@@ -6,19 +6,15 @@
 for(spp in species)
 {
     ## Get the F cases from the package since based on Fmsy
-    file.copy(from=paste0(system.file("cases", package="ss3models"),"/F1-", spp,'.txt'),
-              to=case_folder)
-    file.copy(from=paste0(system.file("cases", package="ss3models"),"/E991-", spp,'.txt'),
-              to=case_folder)
+    file.copy(from=paste0(system.file("cases", package="ss3models"),"/F1-", spp,'.txt'), to=case_folder)
+    ## Get the E case which gets final year catch
+    file.copy(from=paste0(system.file("cases", package="ss3models"),"/E991-", spp,'.txt'), to=case_folder)
     ## write the data cases
     source("cases/write_cases_data.R")
-		## write the binning case files
-		source("cases/write_cases_binning.R")
+    ## write the binning case files
+    source("cases/write_cases_binning.R")
 
 }
-
-## Others are different by species so these are hard coded and write all
-## species at the same time.
 
 ### ------------------------------------------------------------
 ## ## Old case files
