@@ -1,5 +1,5 @@
 lbin_method;2
-pop_binwidth;12
+pop_binwidth;4
 pop_minimum_size;8
-pop_maximum_size;204
-bin_vector;seq(20,164,by=12)
+pmax;200
+bin_vector;seq(20,164,by=4)
