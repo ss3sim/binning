@@ -5,9 +5,9 @@
 ## really only for plotting and needs to be specific for each species
 bin.cases.df <-
     data.frame(species=c('cod'),
-               dat.bin=paste0("dat.bin=",c(1,2,4,13,2,4,13)),
-               pop.bin=paste0("pop.bin=", c(1,1,1,1,2,4,13)),
-               B=paste0("B",c(0:3, 11:13)))
+               dat.bin=paste0("dat.bin=",c(1,2,4,12, 24, 2,4,1 12,24)),
+               pop.bin=paste0("pop.bin=", c(1,1,1,1,1, 2, 4,12,24)),
+               B=paste0("B",B))
 
 tcomp.cases.df <-
     data.frame(species=c('cod'),

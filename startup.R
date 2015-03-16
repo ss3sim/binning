@@ -18,7 +18,7 @@ library(ggplot2)
 library(devtools)
 library(plyr)
 library(doParallel)
-registerDoParallel(cores = 4)
+registerDoParallel(cores = cores)
 library("foreach")
 message(paste(getDoParWorkers(), "/n/ncores have been registered for",
     "parallel processing."))
