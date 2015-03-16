@@ -11,11 +11,12 @@
 ## pmin: pop minimum size
 ## pmax: pop maximum size
 ## Binning case ID number so that we can 0 is the 1cm binning, 1 is the small bin case, etc... See case list
-write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE, pmin, pmax, ID){
+write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE,
+                          pmin, pmax, ID){
     pbins <- ifelse(matchpop, binwidth, 1)
     pseq <- seq(pmin, pmax, by=pbins)
     write <- c('lbin_method;2', paste0('pop_binwidth;', pbins),
-               paste0('pop_minimum_size;', pmin), paste0('pmax;', pmax),
+               paste0('pop_minimum_size;', pmin), paste0('pop_maximum_size;', pmax),
                paste0('bin_vector;seq(', lbmin, ",", lbmax, ",by=", binwidth, ")"))
     if(nchar(binwidth)==1 & matchpop==TRUE) binwidth <- paste0("0", binwidth)
     if(matchpop==FALSE) name <- paste0("em_binning", ID)
