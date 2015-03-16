@@ -1,6 +1,6 @@
 ## Source this file to run the entire set of binning scenarios
-Nsim <- 4
-D <- 1:2
+Nsim <- 1
+D <- c(2,3,4,5)
 B <- c(0:4, 11:14)
 case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
@@ -14,10 +14,10 @@ for(spp in species){
                call_change_data=TRUE)
 }
 ## Read in results
-scen.all <- expand_scenarios(cases=list(D=1:6, F=1, I=0, B=c(0:4, 11:14), E=991), species=species)
+scen.all <- expand_scenarios(cases=list(D=D, F=1, I=0, B=B, E=991), species=species)
 get_results_all(user=scen.all, parallel=F, over=TRUE)
 file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
-          to=c("results/results.ts.csv", "results/results.sc.csv"))
+          to=c("results/results_binning.ts.csv", "results/results_binning.sc.csv"))
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 ## unlink(scen.all, TRUE)
 
