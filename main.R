@@ -18,7 +18,7 @@ source("run_popbin_scenarios")
 
 ### ------------------------------------------------------------
 ## Step 2: Run the EM binning scenarios
-D.binning <- c(2,3,4,5)
+D.binning <- c(2,3,5,6)
 B.binning <- c(0:4, 11:14)
 source("run_binning_scenarios.R")
 
