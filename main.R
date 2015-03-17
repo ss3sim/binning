@@ -9,12 +9,14 @@ cores <- 4   # parallel cores
 source("startup.R")
 ## Create case files dynamically for reproducibility
 species <- c('cod','flatfish','yellow')
+unlink('cases', TRUE)
+dir.create('cases')
 source("write_casefiles.R")
 ### ------------------------------------------------------------
 
 ### ------------------------------------------------------------
 ## Step 1: Run the OM tests for pop bins
-source("run_popbin_scenarios")
+## source("run_popbin_scenarios")
 
 ### ------------------------------------------------------------
 ## Step 2: Run the EM binning scenarios

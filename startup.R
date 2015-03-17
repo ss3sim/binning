@@ -20,6 +20,6 @@ library(plyr)
 library(doParallel)
 registerDoParallel(cores = cores)
 library("foreach")
-message(paste(getDoParWorkers(), "/n/ncores have been registered for",
+message(paste(getDoParWorkers(), "cores have been registered for",
     "parallel processing."))
 ### ------------------------------------------------------------
