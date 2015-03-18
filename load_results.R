@@ -10,16 +10,16 @@ bin.cases.df <-
                B=paste0("B",B))
 
 tcomp.cases.df <-
-    data.frame(species=c('cod'),
-               dat.bin=paste0("dat.bin=",c(1,4,13,1,4,13,1,4,13,1,4,13,1,4,13,1,4,13)),
-               tcomp=paste0("tail.comp=", rep(c(0.01,seq(0.05,0.25,0.05)), each=3)),
-               B=paste0("B",rep(c(0,2,3), 6)))
+    data.frame(species=rep(c('cod','flatfish','yellow'),15),
+               dat.bin=paste0("dat.bin=",rep(c(2,4,13),each=15)),
+               tcomp=paste0("tail.comp=", rep(rep(c(-1, 0.01, 0.1, 0.25, 0.5), each=3),3)),
+               B=paste0("B",rep(c(1,2,3), each=15)))
 
 robust.cases.df <-
-    data.frame(species=c('cod'),
-               dat.bin=paste0("dat.bin=",c(1,4,13,1,4,13,1,4,13,1,4,13,1,4,13)),
-               robust=paste0("robust=", rep(c(1e-5,1e-4,1e-3,1e-2,1e-1), each=3)),
-               B=paste0("B",rep(c(0,2,3), 5)))
+    data.frame(species=rep(c('cod','flatfish','yellow'),15),
+               dat.bin=paste0("dat.bin=",rep(c(2,4,13),each=15)),
+               robust=paste0("robust=", rep(rep(c(1e-10,1e-5,1e-3,0.1,0.5), each=3),3)),
+               B=paste0("B",rep(c(1,2,3),each=15)))
 
 
 ### ------------------------------------------------------------
