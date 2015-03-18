@@ -39,57 +39,58 @@ for(spp in species){
 
 ##### For tail compression
 g <- plot_scalar_boxplot(tcomp.long.growth, x="variable", y='value',
-                         vert2='species', vert="dbin", rel=TRUE,
-                         horiz="tcomp", print=FALSE) +
+                         vert2='species', vert="B", rel=TRUE,
+                         horiz="tvalue", print=FALSE) +
                              theme(axis.text.x=element_text(angle=90))
 ggsave("plots/tcomp_growth_errors.png",g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(tcomp.long.selex, x="variable", y='value', vert2='species', vert="dbin", rel=TRUE, horiz="tcomp", print=FALSE)+
+g <- plot_scalar_boxplot(tcomp.long.selex, x="variable", y='value', vert2='species', vert="B", rel=TRUE, horiz="tvalue", print=FALSE)+
     theme(axis.text.x=element_text(angle=90))
 ggsave("plots/tcomp_selex_errors.png", g, width=ggwidth, height=ggheight)
 g <- plot_scalar_boxplot(tcomp.long.management, x="variable",
-                         y='value', vert2='species', vert="dbin", rel=TRUE,
-                         horiz="tcomp", print=FALSE)+
+                         y='value', vert2='species', vert="B", rel=TRUE,
+                         horiz="tvalue", print=FALSE)+
                              theme(axis.text.x=element_text(angle=90))
 ggsave("plots/tcomp_management_errors.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(tcomp, aes(x=dbin, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
+g <- ggplot(tcomp.unfiltered, aes(x=B, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
     geom_jitter()+
-        facet_grid(species~dbin+tcomp)+
+        facet_grid(species~tvalue)+
             geom_hline(yintercept=log(.01), col='red')
 ggsave("plots/tcomp_convergence.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(tcomp, aes(x=dbin, y=runtime, size=params_on_bound_em, color=converged))+
-    geom_jitter()+ ylab("Runtime (minutes)")+
-        facet_grid(species~dbin+tcomp)
+g <- ggplot(tcomp.unfiltered, aes(x=B, y=runtime, size=params_on_bound_em, color=converged))+
+    geom_jitter(alpha=.5)+ ylab("Runtime (minutes)")+
+        facet_grid(species~tvalue)
 ggsave("plots/tcomp_runtime.png",g, width=ggwidth, height=ggheight)
+ggplot(tcomp.counts, aes(tvalue, pct.converged))+geom_point()+facet_grid(species~B)
 ## table of convergence
-plyr::ddply(tcomp.long, .(species, dbin, B), summarize,
-            median.logmaxgrad=round(median(log_max_grad),2),
-            max.stuck.on.bounds=max(params_on_bound_em))
+## plyr::ddply(tcomp.long, .(species, tvalue, B), summarize,
+##             median.logmaxgrad=round(median(log_max_grad),2),
+##             max.stuck.on.bounds=max(params_on_bound_em))
 
 ##### For robustification constant
 g <- plot_scalar_boxplot(robust.long.growth, x="variable", y='value',
-                         vert2='species', vert="dbin", rel=TRUE,
-                         horiz="robust", print=FALSE) +
+                         vert2='species', vert="B", rel=TRUE,
+                         horiz="rvalue", print=FALSE) +
                              theme(axis.text.x=element_text(angle=90))
 ggsave("plots/robust_growth_errors.png",g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(robust.long.selex, x="variable", y='value', vert2='species', vert="dbin", rel=TRUE, horiz="robust", print=FALSE)+
+g <- plot_scalar_boxplot(robust.long.selex, x="variable", y='value', vert2='species', vert="B", rel=TRUE, horiz="rvalue", print=FALSE)+
     theme(axis.text.x=element_text(angle=90))
 ggsave("plots/robust_selex_errors.png", g, width=ggwidth, height=ggheight)
 g <- plot_scalar_boxplot(robust.long.management, x="variable",
-                         y='value', vert2='species', vert="dbin", rel=TRUE,
-                         horiz="robust", print=FALSE)+
+                         y='value', vert2='species', vert="B", rel=TRUE,
+                         horiz="rvalue", print=FALSE)+
                              theme(axis.text.x=element_text(angle=90))
 ggsave("plots/robust_management_errors.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(robust, aes(x=dbin, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
+g <- ggplot(robust, aes(x=B, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
     geom_jitter()+
-        facet_grid(species~dbin+robust)+
+        facet_grid(species~B+rvalue)+
             geom_hline(yintercept=log(.01), col='red')
 ggsave("plots/robust_convergence.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(robust, aes(x=dbin, y=runtime, size=params_on_bound_em, color=converged))+
+g <- ggplot(robust, aes(x=B, y=runtime, size=params_on_bound_em, color=converged))+
     geom_jitter()+ ylab("Runtime (minutes)")+
-        facet_grid(species~dbin+robust)
+        facet_grid(species~B+rvalue)
 ggsave("plots/robust_runtime.png",g, width=ggwidth, height=ggheight)
 ## table of convergence
-plyr::ddply(robust.long, .(species, dbin, B), summarize,
+plyr::ddply(robust.long, .(species, B, B), summarize,
             median.logmaxgrad=round(median(log_max_grad),2),
             max.stuck.on.bounds=max(params_on_bound_em))
 

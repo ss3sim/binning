@@ -3,8 +3,7 @@
 
 ## make a table with better names for merging into the main results; used
 ## really only for plotting and needs to be specific for each species
-bin.cases.df <-
-    rbind(
+bin.cases.df <- rbind(
         data.frame(species=c('cod'),
                    dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
                    pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
@@ -17,39 +16,52 @@ bin.cases.df <-
                    dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
                    pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
                    B=paste0("B",B.binning)))
-data.cases.df <- data.frame(D=paste0("D",D.binning), data=c("Rich; A+L", "Rich; C+L",
-                                         "Poor; A+L", "Poor; C+L"))
+data.cases.df <-
+    data.frame(D=paste0("D",D.binning), data=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
+
+## tcomp.cases.df <-
+##     data.frame(species=rep(c('cod','flatfish','yellow'),15),
+##                dbin=paste0("dbin=",rep(c(2,4,13),each=15)),
+##                tcomp=paste0("tail.comp=", rep(rep(c(-1, 0.01, 0.1, 0.25, 0.5), each=3),3)),
+##                B=paste0("B",rep(c(1,2,3), each=15)))
 
 tcomp.cases.df <-
-    data.frame(species=rep(c('cod','flatfish','yellow'),15),
-               dbin=paste0("dbin=",rep(c(2,4,13),each=15)),
-               tcomp=paste0("tail.comp=", rep(rep(c(-1, 0.01, 0.1, 0.25, 0.5), each=3),3)),
-               B=paste0("B",rep(c(1,2,3), each=15)))
-
+    data.frame(species=rep(c('cod','flatfish','yellow'),each=5),
+               tvalue=paste0("tail.comp=", c(-1, 0.01, 0.1, 0.25, 0.5)),
+               I=paste0("I",11:15))
 robust.cases.df <-
-    data.frame(species=rep(c('cod','flatfish','yellow'),15),
-               dbin=paste0("dbin=",rep(c(2,4,13),each=15)),
-               robust=paste0("robust=", rep(rep(c(1e-10,1e-5,1e-3,0.1,0.5), each=3),3)),
-               B=paste0("B",rep(c(1,2,3),each=15)))
+    data.frame(species=rep(c('cod','flatfish','yellow'),each=5),
+               rvalue=paste0("robust=", c(1e-10,1e-5,1e-3,0.1,0.5)),
+               I=paste0("I", 21:25))
+## robust.cases.df <-
+##     data.frame(species=rep(c('cod','flatfish','yellow'),15),
+##                dbin=paste0("dbin=",rep(c(2,4,13),each=15)),
+##                robust=paste0("robust=", rep(rep(c(1e-10,1e-5,1e-3,0.1,0.5), each=3),3)),
+##                B=paste0("B",rep(c(1,2,3),each=15)))
+## reorder for plotting
+bin.cases.df$pbin <- factor(bin.cases.df$pbin, levels= c("pbin=1",  "pbin=2", "pbin=4" , "pbin=5",
+                             "pbin=10",  "pbin=12", "pbin=20", "pbin=24"))
+bin.cases.df$dbin <- factor(bin.cases.df$dbin, levels=c("dbin=1",  "dbin=2", "dbin=4" , "dbin=5",
+                             "dbin=10",  "dbin=12", "dbin=20", "dbin=24"))
+data.cases.df$data <- factor(data.cases.df$data, levels=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
+# tcomp.cases.df$dbin <- factor(tcomp.cases.df$dbin, levels=c("dbin=2", "dbin=4", "dbin=13"))
+robust.cases.df$rvalue <- factor(robust.cases.df$rvalue,
+          levels=c("robust=1e-10", "robust=1e-05", "robust=0.001",
+          "robust=0.1", "robust=0.5"))
+
 
 ### ------------------------------------------------------------
 ## binning section
 binning <- read.csv("results/results_binning.sc.csv")
 binning$log_max_grad <- log(binning$max_grad)
 binning$converged <- ifelse(binning$max_grad<.1, "yes", "no")
-(scenario.counts <- ddply(binning, .(scenario), summarize,
+binning.counts <- ddply(binning, .(D,B, species), summarize,
                           replicates=length(scenario),
-                          pct.converged=100*mean(converged=="yes")))
+                          pct.converged=100*mean(converged=="yes"))
 binning <- calculate_re(binning, add=TRUE)
 binning$runtime <- binning$RunTime
 binning <- merge(binning, bin.cases.df, by=c("species", "B"))
 binning <- merge(binning, data.cases.df, by=c("D"))
-## reorder for plotting
-binning$pbin <- factor(binning$pbin, levels= c("pbin=1",  "pbin=2", "pbin=4" , "pbin=5",
-                             "pbin=10",  "pbin=12", "pbin=20", "pbin=24"))
-binning$dbin <- factor(binning$dbin, levels=c("dbin=1",  "dbin=2", "dbin=4" , "dbin=5",
-                             "dbin=10",  "dbin=12", "dbin=20", "dbin=24"))
-binning$data <- factor(binning$data, levels=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
 ## Drop fixed params (columns of zeroes)
 binning$RecrDist_GP_1_re <- NULL
 binning <- binning[,-which(apply(binning, 2, function(x) all(x==0)))]
@@ -78,20 +90,24 @@ binning.long.management$variable <- gsub("_re", "", binning.long.management$vari
 
 ## tail compression
 tcomp <- read.csv("results/results_tcomp.sc.csv")
-(scenario.counts <- ddply(tcomp, .(scenario), summarize, replicates=length(scenario)))
 tcomp$log_max_grad <- log(tcomp$max_grad)
 tcomp$converged <- ifelse(tcomp$max_grad<.1, "yes", "no")
 tcomp <- calculate_re(tcomp, add=TRUE)
 tcomp$runtime <- tcomp$RunTime
-tcomp <- merge(tcomp, tcomp.cases.df, by=c("species", "B"))
+tcomp <- merge(tcomp, tcomp.cases.df, by=c("species", "I"))
+tcomp.counts <- ddply(tcomp, .(tvalue,B, species), summarize,
+                          replicates=length(scenario),
+                          pct.converged=100*mean(converged=="yes"))
 ## Drop fixed params (columns of zeroes)
 tcomp$RecrDist_GP_1_re <- NULL
 tcomp <- tcomp[,-which(apply(tcomp, 2, function(x) all(x==0)))]
 re.names <- names(tcomp)[grep("_re", names(tcomp))]
+tcomp.unfiltered <- tcomp
+tcomp <- subset(tcomp, converged=="yes")
 tcomp.long <-
     melt(tcomp, measure.vars=re.names, id.vars=
-             c("species","replicate", "D", "B", "dbin",
-               "tcomp", "log_max_grad", "params_on_bound_em",
+             c("species","replicate", "D", "B", "tvalue",
+               "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
 tcomp.long.growth <- droplevels(subset(tcomp.long, variable %in% growth.names))
@@ -106,20 +122,22 @@ tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable
 
 ## robustification
 robust <- read.csv("results/results_robust.sc.csv")
-(scenario.counts <- ddply(robust, .(scenario), summarize, replicates=length(scenario)))
 robust$log_max_grad <- log(robust$max_grad)
 robust$converged <- ifelse(robust$max_grad<.1, "yes", "no")
 robust <- calculate_re(robust, add=TRUE)
 robust$runtime <- robust$RunTime
-robust <- merge(robust, robust.cases.df, by=c("species", "B"))
+robust <- merge(robust, robust.cases.df, by=c("species", "I"))
+robust.counts <- ddply(robust, .(rvalue, B, species), summarize,
+                          replicates=length(scenario),
+                          pct.converged=100*mean(converged=="yes"))
 ## Drop fixed params (columns of zeroes)
 robust$RecrDist_GP_1_re <- NULL
 robust <- robust[,-which(apply(robust, 2, function(x) all(x==0)))]
 re.names <- names(robust)[grep("_re", names(robust))]
 robust.long <-
     melt(robust, measure.vars=re.names, id.vars=
-             c("species","replicate", "D", "B", "dbin",
-               "robust", "log_max_grad", "params_on_bound_em",
+             c("species","replicate", "D", "B",
+               "rvalue", "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
 robust.long.growth <- droplevels(subset(robust.long, variable %in% growth.names))
