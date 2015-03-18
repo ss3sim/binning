@@ -22,13 +22,13 @@ data.cases.df <- data.frame(D=paste0("D",D.binning), data=c("Rich; A+L", "Rich; 
 
 tcomp.cases.df <-
     data.frame(species=rep(c('cod','flatfish','yellow'),15),
-               dat.bin=paste0("dat.bin=",rep(c(2,4,13),each=15)),
+               dbin=paste0("dbin=",rep(c(2,4,13),each=15)),
                tcomp=paste0("tail.comp=", rep(rep(c(-1, 0.01, 0.1, 0.25, 0.5), each=3),3)),
                B=paste0("B",rep(c(1,2,3), each=15)))
 
 robust.cases.df <-
     data.frame(species=rep(c('cod','flatfish','yellow'),15),
-               dat.bin=paste0("dat.bin=",rep(c(2,4,13),each=15)),
+               dbin=paste0("dbin=",rep(c(2,4,13),each=15)),
                robust=paste0("robust=", rep(rep(c(1e-10,1e-5,1e-3,0.1,0.5), each=3),3)),
                B=paste0("B",rep(c(1,2,3),each=15)))
 
