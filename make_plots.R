@@ -7,87 +7,89 @@ library(ggplot2)
 library(plyr)
 
 ### For effect binning
-g <- plot_scalar_boxplot(results.sc.long.growth, x="variable", y='value',
-                         vert2='species', vert="D", rel=TRUE,
-                         horiz2="dat.bin", horiz="pop.bin", print=FALSE) +
-                             theme(axis.text.x=element_text(angle=90))
-ggsave("plots/growth_errors.png",g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(results.sc.long.selex, x="variable", y='value', vert2='species', vert="D", rel=TRUE, horiz2="dat.bin", horiz="pop.bin", print=FALSE)+
-    theme(axis.text.x=element_text(angle=90))
-ggsave("plots/selex_errors.png", g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(results.sc.long.management, x="variable",
-                         y='value', vert2='species', vert="D", rel=TRUE, horiz2="dat.bin",
-                         horiz="pop.bin", print=FALSE)+
-                             theme(axis.text.x=element_text(angle=90))
-ggsave("plots/management_errors.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(results.sc, aes(x=D, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
-    geom_jitter()+
-        facet_grid(species~dat.bin+pop.bin)+
-            geom_hline(yintercept=log(.01), col='red')
-ggsave("plots/convergence.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(results.sc, aes(x=D, y=runtime, size=params_on_bound_em, color=converged))+
-    geom_jitter()+ ylab("Runtime (minutes)")+
-        facet_grid(species~dat.bin+pop.bin)
-ggsave("plots/runtime.png",g, width=ggwidth, height=ggheight)
-## table of convergence
-plyr::ddply(results.sc.long, .(species, D, B), summarize,
-            median.logmaxgrad=round(median(log_max_grad),2),
-            max.stuck.on.bounds=max(params_on_bound_em))
+for(spp in species){
+    g <- plot_scalar_boxplot(subset(binning.long.growth, species==spp), x="variable", y='value',
+                             vert='species', vert2="data", rel=TRUE,
+                             horiz2="dbin", horiz="pbin", print=FALSE) +
+                                 theme(axis.text.x=element_text(angle=90))
+    ggsave(paste0("plots/binning_growth_errors_",spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- plot_scalar_boxplot(subset(binning.long.selex, species==spp), x="variable", y='value', vert2='species', vert="data", rel=TRUE, horiz2="dbin", horiz="pbin", print=FALSE)+
+        theme(axis.text.x=element_text(angle=90))
+    ggsave(paste0("plots/binning_selex_errors_", spp, ".png"), g, width=ggwidth, height=ggheight)
+    g <- plot_scalar_boxplot(subset(binning.long.management, species==spp), x="variable",
+                             y='value', vert2='species', vert="data", rel=TRUE, horiz2="dbin",
+                             horiz="pbin", print=FALSE)+
+                                 theme(axis.text.x=element_text(angle=90))
+    ggsave(paste0("plots/binning_management_errors_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- ggplot(subset(binning.unfiltered, species==spp), aes(x=data, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
+        geom_jitter()+
+            facet_grid(species~dbin+pbin)+
+                geom_hline(yintercept=log(.01), col='red')
+    ggsave(paste0("plots/binning_convergence_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- ggplot(subset(binning.unfiltered, species==spp), aes(x=data, y=runtime, size=params_on_bound_em, color=converged))+
+        geom_jitter(alpha=.5)+ ylab("Runtime (minutes)")+
+            facet_grid(.~pbin+dbin) +  theme(axis.text.x=element_text(angle=90))
+    ggsave(paste0("plots/binning_runtime_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    ## ## table of convergence
+    ## plyr::ddply(binning.long, .(species, data, B), summarize,
+    ##             median.logmaxgrad=round(median(log_max_grad),2),
+    ##             max.stuck.on.bounds=max(params_on_bound_em))
+}
 
 
 ##### For tail compression
-g <- plot_scalar_boxplot(results.sc.tcomp.long.growth, x="variable", y='value',
-                         vert2='species', vert="dat.bin", rel=TRUE,
+g <- plot_scalar_boxplot(tcomp.long.growth, x="variable", y='value',
+                         vert2='species', vert="dbin", rel=TRUE,
                          horiz="tcomp", print=FALSE) +
                              theme(axis.text.x=element_text(angle=90))
-ggsave("plots/growth_errors_tcomp.png",g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(results.sc.tcomp.long.selex, x="variable", y='value', vert2='species', vert="dat.bin", rel=TRUE, horiz="tcomp", print=FALSE)+
+ggsave("plots/tcomp_growth_errors_tcomp.png",g, width=ggwidth, height=ggheight)
+g <- plot_scalar_boxplot(tcomp.long.selex, x="variable", y='value', vert2='species', vert="dbin", rel=TRUE, horiz="tcomp", print=FALSE)+
     theme(axis.text.x=element_text(angle=90))
-ggsave("plots/selex_errors_tcomp.png", g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(results.sc.tcomp.long.management, x="variable",
-                         y='value', vert2='species', vert="dat.bin", rel=TRUE,
+ggsave("plots/tcomp_selex_errors_tcomp.png", g, width=ggwidth, height=ggheight)
+g <- plot_scalar_boxplot(tcomp.long.management, x="variable",
+                         y='value', vert2='species', vert="dbin", rel=TRUE,
                          horiz="tcomp", print=FALSE)+
                              theme(axis.text.x=element_text(angle=90))
-ggsave("plots/management_errors_tcomp.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(results.sc.tcomp, aes(x=dat.bin, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
+ggsave("plots/tcomp_management_errors_tcomp.png",g, width=ggwidth, height=ggheight)
+g <- ggplot(tcomp, aes(x=dbin, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
     geom_jitter()+
-        facet_grid(species~dat.bin+tcomp)+
+        facet_grid(species~dbin+tcomp)+
             geom_hline(yintercept=log(.01), col='red')
-ggsave("plots/convergence_tcomp.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(results.sc.tcomp, aes(x=dat.bin, y=runtime, size=params_on_bound_em, color=converged))+
+ggsave("plots/tcomp_convergence_tcomp.png",g, width=ggwidth, height=ggheight)
+g <- ggplot(tcomp, aes(x=dbin, y=runtime, size=params_on_bound_em, color=converged))+
     geom_jitter()+ ylab("Runtime (minutes)")+
-        facet_grid(species~dat.bin+tcomp)
-ggsave("plots/runtime_tcomp.png",g, width=ggwidth, height=ggheight)
+        facet_grid(species~dbin+tcomp)
+ggsave("plots/tcomp_runtime_tcomp.png",g, width=ggwidth, height=ggheight)
 ## table of convergence
-plyr::ddply(results.sc.tcomp.long, .(species, dat.bin, B), summarize,
+plyr::ddply(tcomp.long, .(species, dbin, B), summarize,
             median.logmaxgrad=round(median(log_max_grad),2),
             max.stuck.on.bounds=max(params_on_bound_em))
 
 ##### For robustification constant
-g <- plot_scalar_boxplot(results.sc.robust.long.growth, x="variable", y='value',
-                         vert2='species', vert="dat.bin", rel=TRUE,
+g <- plot_scalar_boxplot(robust.long.growth, x="variable", y='value',
+                         vert2='species', vert="dbin", rel=TRUE,
                          horiz="robust", print=FALSE) +
                              theme(axis.text.x=element_text(angle=90))
-ggsave("plots/growth_errors_robust.png",g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(results.sc.robust.long.selex, x="variable", y='value', vert2='species', vert="dat.bin", rel=TRUE, horiz="robust", print=FALSE)+
+ggsave("plots/robust_growth_errors_robust.png",g, width=ggwidth, height=ggheight)
+g <- plot_scalar_boxplot(robust.long.selex, x="variable", y='value', vert2='species', vert="dbin", rel=TRUE, horiz="robust", print=FALSE)+
     theme(axis.text.x=element_text(angle=90))
-ggsave("plots/selex_errors_robust.png", g, width=ggwidth, height=ggheight)
-g <- plot_scalar_boxplot(results.sc.robust.long.management, x="variable",
-                         y='value', vert2='species', vert="dat.bin", rel=TRUE,
+ggsave("plots/robust_selex_errors_robust.png", g, width=ggwidth, height=ggheight)
+g <- plot_scalar_boxplot(robust.long.management, x="variable",
+                         y='value', vert2='species', vert="dbin", rel=TRUE,
                          horiz="robust", print=FALSE)+
                              theme(axis.text.x=element_text(angle=90))
-ggsave("plots/management_errors_robust.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(results.sc.robust, aes(x=dat.bin, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
+ggsave("plots/robust_management_errors_robust.png",g, width=ggwidth, height=ggheight)
+g <- ggplot(robust, aes(x=dbin, y=log_max_grad, color=runtime, size=params_on_bound_em,))+
     geom_jitter()+
-        facet_grid(species~dat.bin+robust)+
+        facet_grid(species~dbin+robust)+
             geom_hline(yintercept=log(.01), col='red')
-ggsave("plots/convergence_robust.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(results.sc.robust, aes(x=dat.bin, y=runtime, size=params_on_bound_em, color=converged))+
+ggsave("plots/robust_convergence_robust.png",g, width=ggwidth, height=ggheight)
+g <- ggplot(robust, aes(x=dbin, y=runtime, size=params_on_bound_em, color=converged))+
     geom_jitter()+ ylab("Runtime (minutes)")+
-        facet_grid(species~dat.bin+robust)
-ggsave("plots/runtime_robust.png",g, width=ggwidth, height=ggheight)
+        facet_grid(species~dbin+robust)
+ggsave("plots/robust_runtime_robust.png",g, width=ggwidth, height=ggheight)
 ## table of convergence
-plyr::ddply(results.sc.robust.long, .(species, dat.bin, B), summarize,
+plyr::ddply(robust.long, .(species, dbin, B), summarize,
             median.logmaxgrad=round(median(log_max_grad),2),
             max.stuck.on.bounds=max(params_on_bound_em))
 
@@ -100,7 +102,7 @@ plyr::ddply(results.sc.robust.long, .(species, dat.bin, B), summarize,
 ## results.ts <- rbind(sto.ts, det.ts)
 ## results.ts <- calculate_re(results.ts, add=TRUE)
 ## results.ts <-
-##     merge(x=results.ts, y= subset(results.sc,
+##     merge(x=results.ts, y= subset(binning,
 ##      select=c("ID", "params_on_bound_em", "log_max_grad")), by="ID")
 ## re.names <- names(results.ts)[grep("_re", names(results.ts))]
 ## results.ts.long <-
@@ -117,10 +119,10 @@ plyr::ddply(results.sc.robust.long, .(species, dat.bin, B), summarize,
 ## ggsave("plots/results.SSB.png", width=ggwidth, height=ggheight)
 ## plot_ts_boxplot(results.ts, y="Recruit_0_re", vert="D", rel=TRUE)
 ## ggsave("plots/results.recdevs.png", width=ggwidth, height=ggheight)
-## plot_scalar_boxplot(results.sc, x="D", y="depletion_re", rel=TRUE)
+## plot_scalar_boxplot(binning, x="D", y="depletion_re", rel=TRUE)
 ## ggsave("plots/results.depletion.png", width=ggwidth, height=ggheight)
 ## growth.names <- paste0(c('L_at_Amin', 'L_at_Amax', 'VonBert_K', 'CV_young', 'CV_old'), '_Fem_GP_1_re')
-## results.growth <- subset(results.sc, select=c('D', 'species', growth.names))
+## results.growth <- subset(binning, select=c('D', 'species', growth.names))
 ## results.growth.long <- reshape2::melt(results.growth, measure.vars=growth.names)
 ## levels(results.growth.long$variable) <- gsub('_Fem_GP_1', '', x=levels(results.growth.long$variable))
 ## plot_scalar_boxplot(results.growth.long, vert='variable', y='value', x='D', rel=TRUE)

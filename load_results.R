@@ -4,115 +4,131 @@
 ## make a table with better names for merging into the main results; used
 ## really only for plotting and needs to be specific for each species
 bin.cases.df <-
-    data.frame(species=c('cod'),
-               dat.bin=paste0("dat.bin=",c(1,2,4,12, 24, 2,4,1 12,24)),
-               pop.bin=paste0("pop.bin=", c(1,1,1,1,1, 2, 4,12,24)),
-               B=paste0("B",B))
+    rbind(
+        data.frame(species=c('cod'),
+                   dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
+                   pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
+                   B=paste0("B",B.binning)),
+        data.frame(species=c('flatfish'),
+                   dbin=paste0("dbin=",c(1,2,5,10,20, 2,5,10,20)),
+                   pbin=paste0("pbin=", c(1,1,1,1,1, 2,5,10,20)),
+                   B=paste0("B",B.binning)),
+        data.frame(species=c('yellow'),
+                   dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
+                   pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
+                   B=paste0("B",B.binning)))
+data.cases.df <- data.frame(D=paste0("D",D.binning), data=c("Rich; A+L", "Rich; C+L",
+                                         "Poor; A+L", "Poor; C+L"))
 
 tcomp.cases.df <-
     data.frame(species=c('cod'),
-               dat.bin=paste0("dat.bin=",c(1,4,13,1,4,13,1,4,13,1,4,13,1,4,13,1,4,13)),
+               dbin=paste0("dbin=",c(1,4,13,1,4,13,1,4,13,1,4,13,1,4,13,1,4,13)),
                tcomp=paste0("tail.comp=", rep(c(0.01,seq(0.05,0.25,0.05)), each=3)),
                B=paste0("B",rep(c(0,2,3), 6)))
-
 robust.cases.df <-
     data.frame(species=c('cod'),
-               dat.bin=paste0("dat.bin=",c(1,4,13,1,4,13,1,4,13,1,4,13,1,4,13)),
+               dbin=paste0("dbin=",c(1,4,13,1,4,13,1,4,13,1,4,13,1,4,13)),
                robust=paste0("robust=", rep(c(1e-5,1e-4,1e-3,1e-2,1e-1), each=3)),
                B=paste0("B",rep(c(0,2,3), 5)))
 
 
 ### ------------------------------------------------------------
 ## binning section
-results.sc <- read.csv("results/results.sc.csv")
-(scenario.counts <- ddply(results.sc, .(scenario), summarize, replicates=length(scenario)))
-results.sc$log_max_grad <- log(results.sc$max_grad)
-results.sc$converged <- ifelse(results.sc$max_grad<.1, "yes", "no")
-results.sc <- calculate_re(results.sc, add=TRUE)
-results.sc$runtime <- results.sc$RunTime
-results.sc <- merge(results.sc, bin.cases.df, by=c("species", "B"))
+binning <- read.csv("results/results_binning.sc.csv")
+binning$log_max_grad <- log(binning$max_grad)
+binning$converged <- ifelse(binning$max_grad<.1, "yes", "no")
+(scenario.counts <- ddply(binning, .(scenario), summarize,
+                          replicates=length(scenario),
+                          pct.converged=100*mean(converged=="yes")))
+binning <- calculate_re(binning, add=TRUE)
+binning$runtime <- binning$RunTime
+binning <- merge(binning, bin.cases.df, by=c("species", "B"))
+binning <- merge(binning, data.cases.df, by=c("D"))
+## reorder for plotting
+binning$pbin <- factor(binning$pbin, levels= c("pbin=1",  "pbin=2", "pbin=4" , "pbin=5",
+                             "pbin=10",  "pbin=12", "pbin=20", "pbin=24"))
+binning$dbin <- factor(binning$dbin, levels=c("dbin=1",  "dbin=2", "dbin=4" , "dbin=5",
+                             "dbin=10",  "dbin=12", "dbin=20", "dbin=24"))
+binning$data <- factor(binning$data, levels=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
 ## Drop fixed params (columns of zeroes)
-results.sc$RecrDist_GP_1_re <- NULL
-results.sc <- results.sc[,-which(apply(results.sc, 2, function(x) all(x==0)))]
-re.names <- names(results.sc)[grep("_re", names(results.sc))]
-results.sc.long <-
-    melt(results.sc, measure.vars=re.names, id.vars=
-             c("species","replicate", "D", "B", "dat.bin",
-               "pop.bin", "log_max_grad", "params_on_bound_em",
+binning$RecrDist_GP_1_re <- NULL
+binning <- binning[,-which(apply(binning, 2, function(x) all(x==0)))]
+binning.unfiltered <- binning           # before subetting by convergence
+binning <- droplevels(subset(binning, converged=="yes"))
+re.names <- names(binning)[grep("_re", names(binning))]
+binning.long <-
+    melt(binning, measure.vars=re.names, id.vars=
+             c("species","replicate", "data", "B", "dbin",
+               "pbin", "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
-results.sc.long.growth <- droplevels(subset(results.sc.long, variable %in% growth.names))
-results.sc.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", results.sc.long.growth$variable)
+binning.long.growth <- droplevels(subset(binning.long, variable %in% growth.names))
+binning.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", binning.long.growth$variable)
 selex.names <- re.names[grep("Sel_", re.names)]
-results.sc.long.selex <- droplevels(subset(results.sc.long, variable %in% selex.names))
-results.sc.long.selex$variable <- gsub("ery|ey|Size|_re", "", results.sc.long.selex$variable)
-results.sc.long.selex$variable <- gsub("_", ".", results.sc.long.selex$variable)
+binning.long.selex <- droplevels(subset(binning.long, variable %in% selex.names))
+binning.long.selex$variable <- gsub("ery|ey|Size|_re", "", binning.long.selex$variable)
+binning.long.selex$variable <- gsub("_", ".", binning.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
-results.sc.long.management <- droplevels(subset(results.sc.long, variable %in% management.names))
-results.sc.long.management$variable <- gsub("_re", "", results.sc.long.management$variable)
+binning.long.management <- droplevels(subset(binning.long, variable %in% management.names))
+binning.long.management$variable <- gsub("_re", "", binning.long.management$variable)
+## End of binning results
+### ------------------------------------------------------------
+
+
 
 ## tail compression
-results.sc.tcomp <- read.csv("results/results_tcomp.sc.csv")
-(scenario.counts <- ddply(results.sc.tcomp, .(scenario), summarize, replicates=length(scenario)))
-results.sc.tcomp$log_max_grad <- log(results.sc.tcomp$max_grad)
-results.sc.tcomp$converged <- ifelse(results.sc.tcomp$max_grad<.1, "yes", "no")
-results.sc.tcomp <- calculate_re(results.sc.tcomp, add=TRUE)
-results.sc.tcomp$runtime <- results.sc.tcomp$RunTime
-results.sc.tcomp <- merge(results.sc.tcomp, tcomp.cases.df, by=c("species", "B"))
+tcomp <- read.csv("results/results_tcomp.sc.csv")
+(scenario.counts <- ddply(tcomp, .(scenario), summarize, replicates=length(scenario)))
+tcomp$log_max_grad <- log(tcomp$max_grad)
+tcomp$converged <- ifelse(tcomp$max_grad<.1, "yes", "no")
+tcomp <- calculate_re(tcomp, add=TRUE)
+tcomp$runtime <- tcomp$RunTime
+tcomp <- merge(tcomp, tcomp.cases.df, by=c("species", "B"))
 ## Drop fixed params (columns of zeroes)
-results.sc.tcomp$RecrDist_GP_1_re <- NULL
-results.sc.tcomp <- results.sc.tcomp[,-which(apply(results.sc.tcomp, 2, function(x) all(x==0)))]
-re.names <- names(results.sc.tcomp)[grep("_re", names(results.sc.tcomp))]
-results.sc.tcomp.long <-
-    melt(results.sc.tcomp, measure.vars=re.names, id.vars=
-             c("species","replicate", "D", "B", "dat.bin",
+tcomp$RecrDist_GP_1_re <- NULL
+tcomp <- tcomp[,-which(apply(tcomp, 2, function(x) all(x==0)))]
+re.names <- names(tcomp)[grep("_re", names(tcomp))]
+tcomp.long <-
+    melt(tcomp, measure.vars=re.names, id.vars=
+             c("species","replicate", "D", "B", "dbin",
                "tcomp", "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
-results.sc.tcomp.long.growth <- droplevels(subset(results.sc.tcomp.long, variable %in% growth.names))
-results.sc.tcomp.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", results.sc.tcomp.long.growth$variable)
+tcomp.long.growth <- droplevels(subset(tcomp.long, variable %in% growth.names))
+tcomp.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", tcomp.long.growth$variable)
 selex.names <- re.names[grep("Sel_", re.names)]
-results.sc.tcomp.long.selex <- droplevels(subset(results.sc.tcomp.long, variable %in% selex.names))
-results.sc.tcomp.long.selex$variable <- gsub("ery|ey|Size|_re", "", results.sc.tcomp.long.selex$variable)
-results.sc.tcomp.long.selex$variable <- gsub("_", ".", results.sc.tcomp.long.selex$variable)
+tcomp.long.selex <- droplevels(subset(tcomp.long, variable %in% selex.names))
+tcomp.long.selex$variable <- gsub("ery|ey|Size|_re", "", tcomp.long.selex$variable)
+tcomp.long.selex$variable <- gsub("_", ".", tcomp.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
-results.sc.tcomp.long.management <- droplevels(subset(results.sc.tcomp.long, variable %in% management.names))
-results.sc.tcomp.long.management$variable <- gsub("_re", "", results.sc.tcomp.long.management$variable)
+tcomp.long.management <- droplevels(subset(tcomp.long, variable %in% management.names))
+tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable)
 
 ## robustification
-results.sc.robust <- read.csv("results/results_robust.sc.csv")
-(scenario.counts <- ddply(results.sc.robust, .(scenario), summarize, replicates=length(scenario)))
-results.sc.robust$log_max_grad <- log(results.sc.robust$max_grad)
-results.sc.robust$converged <- ifelse(results.sc.robust$max_grad<.1, "yes", "no")
-results.sc.robust <- calculate_re(results.sc.robust, add=TRUE)
-results.sc.robust$runtime <- results.sc.robust$RunTime
-results.sc.robust <- merge(results.sc.robust, robust.cases.df, by=c("species", "B"))
+robust <- read.csv("results/results_robust.sc.csv")
+(scenario.counts <- ddply(robust, .(scenario), summarize, replicates=length(scenario)))
+robust$log_max_grad <- log(robust$max_grad)
+robust$converged <- ifelse(robust$max_grad<.1, "yes", "no")
+robust <- calculate_re(robust, add=TRUE)
+robust$runtime <- robust$RunTime
+robust <- merge(robust, robust.cases.df, by=c("species", "B"))
 ## Drop fixed params (columns of zeroes)
-results.sc.robust$RecrDist_GP_1_re <- NULL
-results.sc.robust <- results.sc.robust[,-which(apply(results.sc.robust, 2, function(x) all(x==0)))]
-re.names <- names(results.sc.robust)[grep("_re", names(results.sc.robust))]
-results.sc.robust.long <-
-    melt(results.sc.robust, measure.vars=re.names, id.vars=
-             c("species","replicate", "D", "B", "dat.bin",
+robust$RecrDist_GP_1_re <- NULL
+robust <- robust[,-which(apply(robust, 2, function(x) all(x==0)))]
+re.names <- names(robust)[grep("_re", names(robust))]
+robust.long <-
+    melt(robust, measure.vars=re.names, id.vars=
+             c("species","replicate", "D", "B", "dbin",
                "robust", "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
-results.sc.robust.long.growth <- droplevels(subset(results.sc.robust.long, variable %in% growth.names))
-results.sc.robust.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", results.sc.robust.long.growth$variable)
+robust.long.growth <- droplevels(subset(robust.long, variable %in% growth.names))
+robust.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", robust.long.growth$variable)
 selex.names <- re.names[grep("Sel_", re.names)]
-results.sc.robust.long.selex <- droplevels(subset(results.sc.robust.long, variable %in% selex.names))
-results.sc.robust.long.selex$variable <- gsub("ery|ey|Size|_re", "", results.sc.robust.long.selex$variable)
-results.sc.robust.long.selex$variable <- gsub("_", ".", results.sc.robust.long.selex$variable)
+robust.long.selex <- droplevels(subset(robust.long, variable %in% selex.names))
+robust.long.selex$variable <- gsub("ery|ey|Size|_re", "", robust.long.selex$variable)
+robust.long.selex$variable <- gsub("_", ".", robust.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
-results.sc.robust.long.management <- droplevels(subset(results.sc.robust.long, variable %in% management.names))
-results.sc.robust.long.management$variable <- gsub("_re", "", results.sc.robust.long.management$variable)
-
-## results.ts <- read.csv("results/results.ts.csv")
-## results.ts.long <- melt(results.ts, id.vars=c("ID","species", "D", 'I', "B", "replicate", "year"))
-## results.ts.long <- merge(x=results.ts.long, y= subset(results.sc.long,
-##                          select=c("ID", "params_on_bound_em", "max_grad")),
-##                          by="ID")
-## levels(results.ts.long$variable) <- gsub("_re", "", levels(results.ts.long$variable))
-## results.ts$bin_method <- ifelse(results.ts$B=="B0", "Internal", "External")
-## results.ts$bin_width <- ifelse(results.ts$I=="I1" | results.ts$B=="B1", "2cm", "20cm")
-## ## ------------------------------------------------------------
+robust.long.management <- droplevels(subset(robust.long, variable %in% management.names))
+robust.long.management$variable <- gsub("_re", "", robust.long.management$variable)
+### ------------------------------------------------------------
