@@ -26,8 +26,8 @@ write_bincase <- function(species, binwidth, lbmin, lbmax, matchpop=FALSE,
 
 if (spp == 'cod') {
     pmin <- 8; pmax <- 200
-    dmin <- 20; dmax <- 164
-    len_bins = "seq(20, 164, by=1)"
+    dmin <- pmin; dmax <- pmax
+    len_bins = "seq(8, 200, by=1)"
     write_bincase(species=spp, binwidth=1, lbmin=dmin, lbmax=dmax, matchpop=FALSE, pmin=pmin, pmax=pmax, ID=0)
     write_bincase(species=spp, binwidth=2, lbmin=dmin, lbmax=dmax, matchpop=FALSE, pmin=pmin, pmax=pmax, ID=1)
     write_bincase(species=spp, binwidth=2, lbmin=dmin, lbmax=dmax, matchpop=TRUE, pmin=pmin, pmax=pmax, ID=1)
@@ -39,8 +39,8 @@ if (spp == 'cod') {
     write_bincase(species=spp, binwidth=24, lbmin=dmin, lbmax=dmax, matchpop=TRUE, pmin=pmin, pmax=pmax, ID=4)
 } else if (spp == 'flatfish') {
     pmin <- 2; pmax <- 102
-    dmin <- 10; dmax <- 70
-    len_bins = "seq(10, 70, by=1)"
+    dmin <- pmin; dmax <- pmax
+    len_bins = "seq(2, 102, by=1)"
     write_bincase(species=spp, binwidth=1, lbmin=dmin, lbmax=dmax, matchpop=FALSE, pmin=pmin, pmax=pmax, ID=0)
     write_bincase(species=spp, binwidth=2, lbmin=dmin, lbmax=dmax, matchpop=FALSE, pmin=pmin, pmax=pmax, ID=1)
     write_bincase(species=spp, binwidth=2, lbmin=dmin, lbmax=dmax, matchpop=TRUE, pmin=pmin, pmax=pmax, ID=1)
@@ -52,8 +52,8 @@ if (spp == 'cod') {
     write_bincase(species=spp, binwidth=20, lbmin=dmin, lbmax=dmax, matchpop=TRUE, pmin=pmin, pmax=pmax, ID=4)
 } else if (spp == 'yellow') {
     pmin <- 10; pmax <- 106
-    dmin <- 18; dmax <- 90
-    len_bins = "seq(18, 90, by=1)"
+    dmin <- pmin; dmax <- pmax
+    len_bins = "seq(10, 106, by=1)"
     write_bincase(species=spp, binwidth=1, lbmin=dmin, lbmax=dmax, matchpop=FALSE, pmin=pmin, pmax=pmax, ID=0)
     write_bincase(species=spp, binwidth=2, lbmin=dmin, lbmax=dmax, matchpop=FALSE, pmin=pmin, pmax=pmax, ID=1)
     write_bincase(species=spp, binwidth=2, lbmin=dmin, lbmax=dmax, matchpop=TRUE, pmin=pmin, pmax=pmax, ID=1)
