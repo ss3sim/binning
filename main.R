@@ -8,8 +8,9 @@
 cores <- 4   # parallel cores
 devtools::install_github("ss3sim/ss3sim")
 devtools::install_github('ss3sim/ss3models')
+D.binning <- c(2,3,5,6)
+B.binning <- c(0:4, 11:14)
 source("startup.R")
-
 ## Create case files dynamically for reproducibility
 species <- c('cod','flatfish','yellow')
 unlink('cases', TRUE)
@@ -23,8 +24,6 @@ source("write_casefiles.R")
 
 ### ------------------------------------------------------------
 ## Step 2: Run the EM binning scenarios
-D.binning <- c(2,3,5,6)
-B.binning <- c(0:4, 11:14)
 source("run_binning_scenarios.R"n)
 
 ### ------------------------------------------------------------

@@ -34,7 +34,56 @@ for(spp in species){
     ## plyr::ddply(binning.long, .(species, data, B), summarize,
     ##             median.logmaxgrad=round(median(log_max_grad),2),
     ##             max.stuck.on.bounds=max(params_on_bound_em))
+    myylim <- ylim(-3,3)
+    g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="SpawnBio_re", horiz="data",
+                         vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
+    ggsave(paste0("plots/binning_ts_SBB_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="Recruit_0_re", horiz="data",
+                         vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
+    ggsave(paste0("plots/binning_ts_recruits_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="F_re", horiz="data",
+                         vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
+    ggsave(paste0("plots/binning_ts_F_", spp, ".png"),g, width=ggwidth, height=ggheight)
 }
+
+## ## Temp code to explore correlations, needs to be fixed
+## temp <- subset(binning, species=='cod')
+## ggplot(temp, aes(L_at_Amin_Fem_GP_1_re, CV_young_Fem_GP_1_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(VonBert_K_Fem_GP_1_re, CV_young_Fem_GP_1_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(L_at_Amin_Fem_GP_1_re, VonBert_K_Fem_GP_1_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(CV_young_Fem_GP_1_re, SSB_MSY_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(LnQ_base_2_Survey_re, SSB_MSY_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(CV_young_Fem_GP_1_re, SSB_MSY_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(VonBert_K_Fem_GP_1_re, SSB_MSY_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(L_at_Amax_Fem_GP_1_re, SSB_MSY_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(SizeSel_2P_3_Survey_re, SSB_MSY_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(SizeSel_2P_1_Survey_re, SSB_MSY_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+
+## ggplot(temp, aes(CV_young_Fem_GP_1_re, SSB_Unfished_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(LnQ_base_2_Survey_re, SSB_Unfished_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(CV_young_Fem_GP_1_re, SSB_Unfished_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(VonBert_K_Fem_GP_1_re, SSB_Unfished_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(L_at_Amax_Fem_GP_1_re, SSB_Unfished_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(SizeSel_2P_3_Survey_re, SSB_Unfished_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+## ggplot(temp, aes(SizeSel_2P_1_Survey_re, SSB_Unfished_re))+
+##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
+
 
 
 ##### For tail compression

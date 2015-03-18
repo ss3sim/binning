@@ -83,6 +83,13 @@ binning.long.selex$variable <- gsub("_", ".", binning.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
 binning.long.management <- droplevels(subset(binning.long, variable %in% management.names))
 binning.long.management$variable <- gsub("_re", "", binning.long.management$variable)
+
+binning.ts <- read.csv("results/results_binning.ts.csv")
+binning.ts <- merge(binning.ts, subset(binning.unfiltered, select=c("ID",'converged')), by="ID")
+binning.ts <- merge(binning.ts, bin.cases.df, by=c("species", "B"))
+binning.ts <- merge(binning.ts, data.cases.df, by=c("D"))
+binning.ts <- subset(binning.ts, converged=="yes")
+binning.ts <- calculate_re(binning.ts, add=TRUE)
 ## End of binning results
 ### ------------------------------------------------------------
 
