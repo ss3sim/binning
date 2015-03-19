@@ -1,5 +1,5 @@
 ## Source this file to run the entire set of binning scenarios
-Nsim <- 25
+Nsim <- 50
 case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
 for(spp in species){

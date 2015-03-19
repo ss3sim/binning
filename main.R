@@ -24,7 +24,7 @@ source("write_casefiles.R")
 
 ### ------------------------------------------------------------
 ## Step 2: Run the EM binning scenarios
-source("run_binning_scenarios.R"n)
+source("run_binning_scenarios.R")
 
 ### ------------------------------------------------------------
 ## Step 3: Run the robustification and tail compression scenarios
