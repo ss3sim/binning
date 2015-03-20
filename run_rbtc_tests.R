@@ -11,9 +11,9 @@ run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
 ## Read in results
 get_results_all(user=scenarios, parallel=TRUE, over=TRUE)
 xx <- read.csv("ss3sim_scalar.csv")
-save(xx, file="results/results_tcomp.sc.RData")
+saveRDS(xx, file="results/results_tcomp.sc.RData")
 xx <- read.csv("ss3sim_ts.csv")
-save(xx, file="results/results_tcomp.ts.RData")
+saveRDS(xx, file="results/results_tcomp.ts.RData")
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
 ## To test the robustification constant
@@ -29,8 +29,8 @@ run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
 ## Read in results
 get_results_all(user=scenarios, parallel=TRUE, over=TRUE)
 xx <- read.csv("ss3sim_scalar.csv")
-save(xx, file="results/results_robust.sc.RData")
+saveRDS(xx, file="results/results_robust.sc.RData")
 xx <- read.csv("ss3sim_ts.csv")
-save(xx, file="results/results_robust.ts.RData")
+saveRDS(xx, file="results/results_robust.ts.RData")
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
