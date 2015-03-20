@@ -1,8 +1,9 @@
 ## To test the tail compression
-scenarios <- expand_scenarios(cases=list(D=5, F=1, I=11:15, B=c(1,2,3), E=991), species=species)
+scenarios <- expand_scenarios(cases=list(D=c(2,3,5,6), F=1, I=11:14, B=c(1,2,3), E=991), species=species)
 case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
 ## unlink(scenarios, TRUE)
+# scenarios <- scenarios[! scenarios %in% list.dirs(getwd(),recursive=F, full.names =F)]
 Nsim <- 25
 run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
            parallel=TRUE, parallel_iterations=FALSE,
@@ -17,10 +18,11 @@ saveRDS(xx, file="results/results_tcomp.ts.RData")
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
 ## To test the robustification constant
-scenarios <- expand_scenarios(cases=list(D=5, F=1, I=21:25, B=c(1,2,3), E=991), species=species)
+scenarios <- expand_scenarios(cases=list(D=c(2,3,5,6), F=1, I=21:24, B=c(1,2,3), E=991), species=species)
 case_files <- list(F="F", B="em_binning", I="data",
                    D=c("index","lcomp","agecomp","calcomp"), E="E")
 ## unlink(scenarios, TRUE)
+# scenarios <- scenarios[! scenarios %in% list.dirs(getwd(),recursive=F, full.names =F)]
 Nsim <- 25
 run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
            parallel=TRUE, parallel_iterations=FALSE,
