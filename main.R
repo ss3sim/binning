@@ -3,6 +3,10 @@
 
 ### In progress!
 
+### TO DO before rerunning the simulation
+## 1.) Drop E991 and instead use biomass at end of year
+## 1.) Revisit data sets and sample sizes
+
 ### ------------------------------------------------------------
 ## Step 0: Prepare the R workspace and generate case files
 cores <- 4   # parallel cores

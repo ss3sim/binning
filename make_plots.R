@@ -26,14 +26,20 @@ for(spp in species){
             facet_grid(species~dbin+pbin)+
                 geom_hline(yintercept=log(.01), col='red')
     ggsave(paste0("plots/binning_convergence_", spp, ".png"),g, width=ggwidth, height=ggheight)
-    g <- ggplot(subset(binning.unfiltered, species==spp), aes(x=data, y=runtime, size=params_on_bound_em, color=converged))+
+
+    g <- ggplot(subset(binning.unfiltered, species==spp & binmatch=="no match"), aes(x=dbin, y=runtime, size=params_on_bound_em, color=converged))+
         geom_jitter(alpha=.5)+ ylab("Runtime (minutes)")+
-            facet_grid(.~pbin+dbin) +  theme(axis.text.x=element_text(angle=90))
+            facet_grid(data~pbin) +
+                theme(axis.text.x=element_text(angle=90))#+ylim(0, 3)
     ggsave(paste0("plots/binning_runtime_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- ggplot(subset(binning.unfiltered, species==spp & binmatch=="match"), aes(x=pbin, y=runtime, size=params_on_bound_em, color=converged))+
+        geom_jitter(alpha=.5)+ ylab("Runtime (minutes)")+
+            facet_grid(data~.) +  theme(axis.text.x=element_text(angle=90))#+ylim(0, 3)
+    ggsave(paste0("plots/binning_runtime_", spp, "2.png"),g, width=ggwidth, height=ggheight)
     ## ## table of convergence
-    ## plyr::ddply(binning.long, .(species, data, B), summarize,
-    ##             median.logmaxgrad=round(median(log_max_grad),2),
-    ##             max.stuck.on.bounds=max(params_on_bound_em))
+    plyr::ddply(binning.long, .(species, data, B), summarize,
+                median.logmaxgrad=round(median(log_max_grad),2),
+                max.stuck.on.bounds=max(params_on_bound_em))
     myylim <- ylim(-3,3)
     g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="SpawnBio_re", horiz="data",
                          vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
