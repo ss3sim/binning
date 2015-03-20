@@ -1,30 +1,23 @@
 ## Source this data to load in the results and do any processing before
 ## making figures and tables.
 
-## make a table with better names for merging into the main results; used
-## really only for plotting and needs to be specific for each species
-bin.cases.df <- rbind(
-        data.frame(species=c('cod'),
-                   dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
-                   pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
-                   B=paste0("B",B.binning)),
-        data.frame(species=c('flatfish'),
-                   dbin=paste0("dbin=",c(1,2,5,10,20, 2,5,10,20)),
-                   pbin=paste0("pbin=", c(1,1,1,1,1, 2,5,10,20)),
-                   B=paste0("B",B.binning)),
-        data.frame(species=c('yellow'),
-                   dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
-                   pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
-                   B=paste0("B",B.binning)))
+###  ------------------------------------------------------------
+### Step 1: Make some quick data.frames to rename ggplot factors
+bin.cases.df <-
+    rbind(data.frame(species=c('cod'),
+                     dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
+                     pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
+                     B=paste0("B",B.binning)),
+          data.frame(species=c('flatfish'),
+                     dbin=paste0("dbin=",c(1,2,5,10,20, 2,5,10,20)),
+                     pbin=paste0("pbin=", c(1,1,1,1,1, 2,5,10,20)),
+                     B=paste0("B",B.binning)),
+          data.frame(species=c('yellow'),
+                     dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
+                     pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
+                     B=paste0("B",B.binning)))
 data.cases.df <-
     data.frame(D=paste0("D",D.binning), data=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
-
-## tcomp.cases.df <-
-##     data.frame(species=rep(c('cod','flatfish','yellow'),15),
-##                dbin=paste0("dbin=",rep(c(2,4,13),each=15)),
-##                tcomp=paste0("tail.comp=", rep(rep(c(-1, 0.01, 0.1, 0.25, 0.5), each=3),3)),
-##                B=paste0("B",rep(c(1,2,3), each=15)))
-
 tcomp.cases.df <-
     data.frame(species=rep(c('cod','flatfish','yellow'),each=5),
                tvalue=paste0("tail.comp=", c(-1, 0.01, 0.1, 0.25, 0.5)),
@@ -33,35 +26,32 @@ robust.cases.df <-
     data.frame(species=rep(c('cod','flatfish','yellow'),each=5),
                rvalue=paste0("robust=", c(1e-10,1e-5,1e-3,0.1,0.5)),
                I=paste0("I", 21:25))
-## robust.cases.df <-
-##     data.frame(species=rep(c('cod','flatfish','yellow'),15),
-##                dbin=paste0("dbin=",rep(c(2,4,13),each=15)),
-##                robust=paste0("robust=", rep(rep(c(1e-10,1e-5,1e-3,0.1,0.5), each=3),3)),
-##                B=paste0("B",rep(c(1,2,3),each=15)))
 ## reorder for plotting
 bin.cases.df$pbin <- factor(bin.cases.df$pbin, levels= c("pbin=1",  "pbin=2", "pbin=4" , "pbin=5",
                              "pbin=10",  "pbin=12", "pbin=20", "pbin=24"))
 bin.cases.df$dbin <- factor(bin.cases.df$dbin, levels=c("dbin=1",  "dbin=2", "dbin=4" , "dbin=5",
                              "dbin=10",  "dbin=12", "dbin=20", "dbin=24"))
 data.cases.df$data <- factor(data.cases.df$data, levels=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
-# tcomp.cases.df$dbin <- factor(tcomp.cases.df$dbin, levels=c("dbin=2", "dbin=4", "dbin=13"))
 robust.cases.df$rvalue <- factor(robust.cases.df$rvalue,
           levels=c("robust=1e-10", "robust=1e-05", "robust=0.001",
           "robust=0.1", "robust=0.5"))
-
+### End renaming data.frames
+### ------------------------------------------------------------
 
 ### ------------------------------------------------------------
+### Step 2: Load and prep the binning results
 ## binning section
-binning <- read.csv("results/results_binning.sc.csv")
+binning <- readRDS("results/results_binning.sc.RData")
 binning$log_max_grad <- log(binning$max_grad)
-binning$converged <- ifelse(binning$max_grad<.1, "yes", "no")
+binning$converged <- ifelse(binning$max_grad<.1 & binning$params_on_bound_em==0, "yes", "no")
 binning.counts <- ddply(binning, .(D,B, species), summarize,
                           replicates=length(scenario),
                           pct.converged=100*mean(converged=="yes"))
 binning <- calculate_re(binning, add=TRUE)
-binning$runtime <- binning$RunTime
+binning$runtime <- (binning$RunTime)
 binning <- merge(binning, bin.cases.df, by=c("species", "B"))
 binning <- merge(binning, data.cases.df, by=c("D"))
+binning$binmatch <- with(binning, ifelse(pbin=="pbin=1" & dbin!="dbin=1", "no match", "match"))
 ## Drop fixed params (columns of zeroes)
 binning$RecrDist_GP_1_re <- NULL
 binning <- binning[,-which(apply(binning, 2, function(x) all(x==0)))]
@@ -84,7 +74,7 @@ management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_en
 binning.long.management <- droplevels(subset(binning.long, variable %in% management.names))
 binning.long.management$variable <- gsub("_re", "", binning.long.management$variable)
 
-binning.ts <- read.csv("results/results_binning.ts.csv")
+binning.ts <- readRDS("results/results_binning.ts.RData")
 binning.ts <- merge(binning.ts, subset(binning.unfiltered, select=c("ID",'converged')), by="ID")
 binning.ts <- merge(binning.ts, bin.cases.df, by=c("species", "B"))
 binning.ts <- merge(binning.ts, data.cases.df, by=c("D"))
@@ -94,9 +84,10 @@ binning.ts <- calculate_re(binning.ts, add=TRUE)
 ### ------------------------------------------------------------
 
 
-
+### ------------------------------------------------------------
+### Step 2: Load and prep the tail compression and robustification data
 ## tail compression
-tcomp <- read.csv("results/results_tcomp.sc.csv")
+tcomp <- readRDS("results/results_tcomp.sc.RData")
 tcomp$log_max_grad <- log(tcomp$max_grad)
 tcomp$converged <- ifelse(tcomp$max_grad<.1, "yes", "no")
 tcomp <- calculate_re(tcomp, add=TRUE)
@@ -126,9 +117,8 @@ tcomp.long.selex$variable <- gsub("_", ".", tcomp.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
 tcomp.long.management <- droplevels(subset(tcomp.long, variable %in% management.names))
 tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable)
-
 ## robustification
-robust <- read.csv("results/results_robust.sc.csv")
+robust <- readRDS("results/results_robust.sc.RData")
 robust$log_max_grad <- log(robust$max_grad)
 robust$converged <- ifelse(robust$max_grad<.1, "yes", "no")
 robust <- calculate_re(robust, add=TRUE)
@@ -156,4 +146,5 @@ robust.long.selex$variable <- gsub("_", ".", robust.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
 robust.long.management <- droplevels(subset(robust.long, variable %in% management.names))
 robust.long.management$variable <- gsub("_re", "", robust.long.management$variable)
+## End tcomp and robust
 ### ------------------------------------------------------------
