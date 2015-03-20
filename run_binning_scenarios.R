@@ -17,8 +17,11 @@ for(spp in species){
 scen.all <- expand_scenarios(cases=list(D=D.binning, F=1, I=0, B=B.binning,
                              E=991), species=species)
 get_results_all(user=scen.all, parallel=TRUE, over=TRUE)
-file.copy(c("ss3sim_ts.csv", "ss3sim_scalar.csv"), over=TRUE,
-          to=c("results/results_binning.ts.csv", "results/results_binning.sc.csv"))
+get_results_all(user=scenarios, parallel=TRUE, over=TRUE)
+xx <- read.csv("ss3sim_scalar.csv")
+save(xx, file="results/results_binning.sc.RData")
+xx <- read.csv("ss3sim_ts.csv")
+save(xx, file="results/results_binning.ts.RData")
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 ## unlink(scen.all, TRUE)
 rm(scenarios, scen.all, Nsim, case_files)
