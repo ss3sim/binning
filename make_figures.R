@@ -56,7 +56,7 @@ make_selex_plot <- function(B){
 
 for(bb in 0:4){
 png(paste0('plots/selex_B', bb, '.png'), width=9, height=5, units='in', res=300)
-make_selex_plot(0)
+make_selex_plot(bb)
 dev.off()
 }
 
