@@ -34,3 +34,5 @@ xx <- read.csv("ss3sim_ts.csv")
 saveRDS(xx, file="results/results_robust.ts.RData")
 file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 
+## clean up work space
+rm(xx, scenarios, Nsim, case_files)
