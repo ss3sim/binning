@@ -77,7 +77,7 @@ data0 <- c('age_bins; NULL', paste0('len_bins; ', len_bins),
 writeLines(data0, con=paste0(case_folder,"/", "data0-", spp, ".txt"))
 
 ## For cases with tail compression
-tc.seq <- c(-1, 0.01, 0.1, 0.25, 0.5)
+tc.seq <- c(-1, 1e-3, 0.01, 0.1)
 tc.n <- length(tc.seq)
 for(i in 1:tc.n){
     tc <- tc.seq[i]
@@ -88,7 +88,7 @@ for(i in 1:tc.n){
     writeLines(x, con=paste0(case_folder, "/data1",i, "-", spp, ".txt"))
 }
 ## For cases with robustification constant
-rb.seq <- c(1e-10,1e-5,1e-3,0.1,0.5)
+rb.seq <- c(1e-10,1e-5,1e-3,0.01)
 rb.n <-length(rb.seq)
 for(i in 1:rb.n){
     rb <- rb.seq[i]
