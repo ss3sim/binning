@@ -12,6 +12,7 @@ for(spp in species){
 						 em_dir=ss3model(spp, "em"), case_files=case_files, call_change_data=TRUE)
 }
 ## Read in results
+scenarios <- expand_scenarios(cases=list(D=c(2,3,5,6), F=1, I=11:14, B=c(1,2,3), E=991), species=species)
 get_results_all(user=scenarios, parallel=TRUE, over=TRUE)
 xx <- read.csv("ss3sim_scalar.csv")
 saveRDS(xx, file="results/results_tcomp.sc.RData")
@@ -33,6 +34,7 @@ for(spp in species){
 						 em_dir=ss3model(spp, "em"), case_files=case_files, call_change_data=TRUE)
 }
 ## Read in results
+scenarios <- expand_scenarios(cases=list(D=c(2,3,5,6), F=1, I=21:24, B=c(1,2,3), E=991), species=species)
 get_results_all(user=scenarios, parallel=TRUE, over=TRUE)
 xx <- read.csv("ss3sim_scalar.csv")
 saveRDS(xx, file="results/results_robust.sc.RData")

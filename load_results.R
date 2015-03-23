@@ -19,13 +19,13 @@ bin.cases.df <-
 data.cases.df <-
     data.frame(D=paste0("D",D.binning), data=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
 tcomp.cases.df <-
-    data.frame(species=rep(c('cod','flatfish','yellow'),each=5),
-               tvalue=paste0("tail.comp=", c(-1, 0.01, 0.1, 0.25, 0.5)),
-               I=paste0("I",11:15))
+    data.frame(species=rep(c('cod','flatfish','yellow'),each=4),
+               tvalue=paste0("tail.comp=", c(-1, 1e-3, 0.01, 0.1)),
+               I=paste0("I",11:14))
 robust.cases.df <-
-    data.frame(species=rep(c('cod','flatfish','yellow'),each=5),
-               rvalue=paste0("robust=", c(1e-10,1e-5,1e-3,0.1,0.5)),
-               I=paste0("I", 21:25))
+    data.frame(species=rep(c('cod','flatfish','yellow'),each=4),
+               rvalue=paste0("robust=", c(1e-10,1e-5,1e-3,0.01)),
+               I=paste0("I", 21:24))
 ## reorder for plotting
 bin.cases.df$pbin <- factor(bin.cases.df$pbin, levels= c("pbin=1",  "pbin=2", "pbin=4" , "pbin=5",
                              "pbin=10",  "pbin=12", "pbin=20", "pbin=24"))
@@ -34,7 +34,7 @@ bin.cases.df$dbin <- factor(bin.cases.df$dbin, levels=c("dbin=1",  "dbin=2", "db
 data.cases.df$data <- factor(data.cases.df$data, levels=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
 robust.cases.df$rvalue <- factor(robust.cases.df$rvalue,
           levels=c("robust=1e-10", "robust=1e-05", "robust=0.001",
-          "robust=0.1", "robust=0.5"))
+          "robust=0.01"))
 ### End renaming data.frames
 ### ------------------------------------------------------------
 
