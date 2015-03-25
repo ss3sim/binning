@@ -51,6 +51,10 @@ for(spp in species){
                          vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
     ggsave(paste0("plots/binning_ts_F_", spp, ".png"),g, width=ggwidth, height=ggheight)
 }
+g <- ggplot(binning.counts, aes(x=data, y=pct.converged))+facet_grid(B~species)+
+   geom_bar(stat='identity', aes(fill=pct.converged)) +  theme(axis.text.x=element_text(angle=90))
+ggsave("plots/binning_convergence_counts.png", g, width=ggwidth, height=ggheight)
+
 
 ## ## Temp code to explore correlations, needs to be fixed
 ## temp <- subset(binning, species=='cod')
@@ -74,7 +78,6 @@ for(spp in species){
 ##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
 ## ggplot(temp, aes(SizeSel_2P_1_Survey_re, SSB_MSY_re))+
 ##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
-
 ## ggplot(temp, aes(CV_young_Fem_GP_1_re, SSB_Unfished_re))+
 ##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
 ## ggplot(temp, aes(LnQ_base_2_Survey_re, SSB_Unfished_re))+

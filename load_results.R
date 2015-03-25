@@ -44,14 +44,14 @@ robust.cases.df$rvalue <- factor(robust.cases.df$rvalue,
 binning <- readRDS("results/results_binning.sc.RData")
 binning$log_max_grad <- log(binning$max_grad)
 binning$converged <- ifelse(binning$max_grad<.1 & binning$params_on_bound_em==0, "yes", "no")
-binning.counts <- ddply(binning, .(D,B, species), summarize,
-                          replicates=length(scenario),
-                          pct.converged=100*mean(converged=="yes"))
 binning <- calculate_re(binning, add=TRUE)
 binning$runtime <- (binning$RunTime)
 binning <- merge(binning, bin.cases.df, by=c("species", "B"))
 binning <- merge(binning, data.cases.df, by=c("D"))
 binning$binmatch <- with(binning, ifelse(pbin=="pbin=1" & dbin!="dbin=1", "no match", "match"))
+binning.counts <- ddply(binning, .(data,B, species), summarize,
+                          replicates=length(scenario),
+                          pct.converged=100*mean(converged=="yes"))
 ## Drop fixed params (columns of zeroes)
 binning$RecrDist_GP_1_re <- NULL
 binning <- binning[,-which(apply(binning, 2, function(x) all(x==0)))]
@@ -85,11 +85,11 @@ binning.ts <- calculate_re(binning.ts, add=TRUE)
 
 
 ### ------------------------------------------------------------
-### Step 2: Load and prep the tail compression and robustification data
+### Step 3: Load and prep the tail compression and robustification data
 ## tail compression
 tcomp <- readRDS("results/results_tcomp.sc.RData")
 tcomp$log_max_grad <- log(tcomp$max_grad)
-tcomp$converged <- ifelse(tcomp$max_grad<.1, "yes", "no")
+tcomp$converged <- ifelse(tcomp$max_grad<.1 & tcomp$params_on_bound_em==0, "yes", "no")
 tcomp <- calculate_re(tcomp, add=TRUE)
 tcomp$runtime <- tcomp$RunTime
 tcomp <- merge(tcomp, tcomp.cases.df, by=c("species", "I"))
@@ -120,7 +120,7 @@ tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable
 ## robustification
 robust <- readRDS("results/results_robust.sc.RData")
 robust$log_max_grad <- log(robust$max_grad)
-robust$converged <- ifelse(robust$max_grad<.1, "yes", "no")
+robust$converged <- ifelse(robust$max_grad<.1 & robust$params_on_bound_em==0, "yes", "no")
 robust <- calculate_re(robust, add=TRUE)
 robust$runtime <- robust$RunTime
 robust <- merge(robust, robust.cases.df, by=c("species", "I"))
