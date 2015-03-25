@@ -1,48 +1,62 @@
 ## This file runs scenarios for what happens to model as pop bins increase
 
-spp <- "flatfish"
-max_bin <- 20
-increment <- 2
-F_case <- "F1"
+## species <- "flatfish"
+## max_bin <- 20
+## binwidth <- 2
+## F_case <- "F1"
+## sigmaR <- .4
+## pop_bins <- seq(1, max_bin, binwidth)
 
-pop_bins <- seq(1, max_bin, increment)
+Nreps <- 2
+minsize <- c(1, 15)
+temp <- do.call(rbind,
+                lapply(1:Nreps, function(i)
+                    do.call(rbind,  lapply(minsize, function(i.minsize)
+                        cbind("iteration"=i, "minsize"=i.minsize,
+                              data.frame(
+left off here  get_om_values(species=spp, max_bin=200,
+                binwidth=1, sigmaR=1.1,
+                iteration=i,
+                pop_minimum_size=i.minsize,
+                pop_maximum_size=300)
+
+                              ))))))
+
+ggplot(temp, aes(iteration, SSB_MSY, group=minsize, color=minsize))+ geom_line()
+facet_grid(minsize~.)
 
 ## out <- plyr::ldply(pop_bins, function(x) {
-get_om_values <- function(
-  unlink(spp, recursive = TRUE, force = TRUE)
-  file.copy(ss3models::ss3model(spp, "om"), to = ".", recursive = TRUE)
-  file.rename("om", spp)
-  datfile <- r4ss::SS_readdat(file.path(spp, "ss3.dat"), verbose = FALSE)
-  ss3sim::change_data(
-    datfile          = datfile,
-    outfile          = file.path(spp, "ss3.dat"),
-    fleets           = 1:2,
-    years            = 26:100,
-    types            = c("len", "age"),
-    age_bins         = 1:15,
-    len_bins         = seq(10, 50, x),
-    pop_binwidth     = x,
-    pop_minimum_size = NULL,
-    pop_maximum_size = NULL)
+## This function returns the management values for a given set of
+## parameters. It is designed to be looped over.
+get_om_values <- function(species, max_bin, binwidth, F_case="F1",
+                          sigmaR, iteration, pop_minimum_size=NULL,
+                          pop_maximum_size=NULL){
+    unlink(species, recursive = TRUE, force = TRUE)
+    file.copy(ss3models::ss3model(species, "om"), to = '.', recursive = TRUE)
+    file.rename("om", species)
+    setwd(species)
+    datfile <- r4ss::SS_readdat("ss3.dat", verbose = FALSE)
+    recdevs <- get_recdevs(iteration = iteration, n = 100, seed=iteration)
+    recdevs <- sigmaR * recdevs - sigmaR^2/2 # from the package data
+    change_rec_devs(recdevs_new=recdevs, file_in="ss3.par", file_out="ss3.par")
+    change_data(datfile = datfile, outfile =  "ss3.dat",
+                fleets = 1:2, years = 25:26, types = c("age"), age_bins = 1:15,
+                len_bins = c(50,51), pop_binwidth = binwidth,
+                pop_minimum_size = pop_minimize_size, pop_maximum_size = pop_maximum_size)
+    args <- ss3sim:::get_args(system.file("cases", paste0(F_case, "-", species, ".txt"),
+                                          package = "ss3models"))
+    ss3sim::change_f(years = args$years, years_alter = args$years_alter,
+                     fvals = args$fvals, file_in =  "ss3.par", file_out = "ss3.par")
+    system("ss3_24o_opt -nohess", ignore.stdout=TRUE)
+    o <- r4ss::SS_output(species, covar = FALSE, verbose = FALSE, compfile = "none",
+                         forecast = TRUE, warn = TRUE, readwt = FALSE, printstats = FALSE,
+                         NoCompOK = TRUE, ncols = 300)
+    setwd("..")
+    unlink(species, recursive = TRUE, force = TRUE)
+    Sys.sleep(0.05) # give ample time for deletion of folder
+    ss3sim::get_results_scalar(o)
+}
 
-  args <- ss3sim:::get_args(system.file("cases", paste0(F_case, "-", spp, ".txt"),
-    package = "ss3models"))
-
-  ss3sim::change_f(years = args$years,
-    years_alter = args$years_alter,
-    fvals = args$fvals,
-    file_in = file.path(spp, "ss3.par"),
-    file_out = file.path(spp, "ss3.par"))
-  setwd(spp)
-  system("ss3_24o_opt -nohess", ignore.stdout=TRUE)
-  setwd("..")
-  o <- r4ss::SS_output(spp, covar = FALSE, verbose = FALSE, compfile = "none",
-    forecast = TRUE, warn = TRUE, readwt = FALSE, printstats = FALSE,
-    NoCompOK = TRUE, ncols = 300)
-  unlink(spp, recursive = TRUE, force = TRUE)
-  Sys.sleep(0.25) # give ample time for deletion of folder
-  ss3sim::get_results_scalar(o)
-})
 
 out2 <- out[,-grep("NLL", names(out))]
 
