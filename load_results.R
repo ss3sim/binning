@@ -65,6 +65,13 @@ binning$RecrDist_GP_1_re <- NULL
 binning <- binning[,-which(apply(binning, 2, function(x) all(x==0)))]
 binning.unfiltered <- binning           # before subetting by convergence
 binning <- droplevels(subset(binning, converged=="yes"))
+binning.runtime <- ddply(binning, .(data,B, species), summarize,
+                         binmatch=binmatch[1],
+                         dbin=dbin[1], pbin=pbin[1],
+                          replicates=length(scenario),
+                          mean.runtime=round(mean(runtime),2),
+                         median.runtime=round(median(runtime),2),
+                         sd.runtime=round(sd(runtime),2))
 re.names <- names(binning)[grep("_re", names(binning))]
 binning.long <-
     melt(binning, measure.vars=re.names, id.vars=
