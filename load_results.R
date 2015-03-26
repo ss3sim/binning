@@ -71,7 +71,9 @@ binning.runtime <- ddply(binning, .(data,B, species), summarize,
                           replicates=length(scenario),
                           mean.runtime=round(mean(runtime),2),
                          median.runtime=round(median(runtime),2),
-                         sd.runtime=round(sd(runtime),2))
+                         sd.runtime=round(sd(runtime),2),
+                         lower.runtime=quantile(runtime, probs=.25),
+                         upper.runtime=quantile(runtime, probs=.75))
 re.names <- names(binning)[grep("_re", names(binning))]
 binning.long <-
     melt(binning, measure.vars=re.names, id.vars=

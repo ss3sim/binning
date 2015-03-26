@@ -74,9 +74,15 @@ for(spp in species){
 g <- ggplot(binning.counts, aes(x=data, y=pct.converged))+facet_grid(B~species)+
    geom_bar(stat='identity', aes(fill=pct.converged)) +  theme(axis.text.x=element_text(angle=90))
 ggsave("plots/binning_convergence_counts.png", g, width=ggwidth, height=ggheight)
+
 g <- ggplot(binning.runtime, aes(x=dbin, y=median.runtime, color=binmatch, group=binmatch))+
-    geom_line()+ facet_grid(species~data, scales='free') +  theme(axis.text.x=element_text(angle=90))
+    geom_line()+ facet_grid(species~data, scales='free') +
+    theme(axis.text.x=element_text(angle=90))+
+    geom_point(aes(size=(replicates)))+
+    geom_linerange(aes(ymin=lower.runtime, ymax=upper.runtime))
 ggsave("plots/binning_median_runtime.png", g, width=ggwidth, height=ggheight)
+
+x
 ## ## Temp code to explore correlations, needs to be fixed
 ## temp <- subset(binning, species=='cod')
 ## ggplot(temp, aes(L_at_Amin_Fem_GP_1_re, CV_young_Fem_GP_1_re))+
