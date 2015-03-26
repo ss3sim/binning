@@ -24,7 +24,7 @@ source("write_casefiles.R")
 
 ### ------------------------------------------------------------
 ## Step 1: Run the OM tests for pop bins
-## source("run_popbin_scenarios")
+source("run_popbin_scenarios")
 
 ### ------------------------------------------------------------
 ## Step 2: Run the EM binning scenarios

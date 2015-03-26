@@ -6,6 +6,31 @@ ggheight <- 7
 library(ggplot2)
 library(plyr)
 
+### ------------------------------------------------------------
+## First section is popbin effect
+p <- popbins.binwidth[,c("species", "binwidth", 'F', paste0(scalars, "_RE"))] %>%
+        melt(id.vars=c('species','F', "binwidth")) %>%
+  ggplot(aes(x=binwidth, y=value, colour=variable)) + geom_line() +
+      facet_grid(species~F)+ xlab("Population bin width (cm)") +
+    ylab("Relative change from base case")
+ggsave(paste0("plots/popbins_binwidth.png"),p, width=ggwidth, height=ggheight)
+p <- popbins.minsize[,c("species", "minsize", 'F', paste0(scalars, "_RE"))] %>%
+        melt(id.vars=c('species','F', "minsize")) %>%
+  ggplot(aes(x=minsize, y=value, colour=variable)) + geom_line() +
+      facet_grid(species~F)+ xlab("Population min bin (cm)") +
+    ylab("Relative change from base case")
+ggsave(paste0("plots/popbins_minsize.png"),p, width=ggwidth, height=ggheight)
+p <- popbins.maxsize[,c("species", "max.Linf.ratio", 'F', paste0(scalars, "_RE"))] %>%
+        melt(id.vars=c('species','F', "max.Linf.ratio")) %>%
+  ggplot(aes(x=max.Linf.ratio, y=value, colour=variable)) + geom_line() +
+      facet_grid(species~F, scales='free_x')+
+          xlab("Population max bin:Linf ratio") +
+    ylab("Relative change from base case")
+ggsave(paste0("plots/popbins_maxsize.png"),p, width=ggwidth, height=ggheight)
+
+### ------------------------------------------------------------
+
+
 ### For effect binning
 for(spp in species){
     g <- plot_scalar_boxplot(subset(binning.long.growth, species==spp), x="variable", y='value',

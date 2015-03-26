@@ -1,6 +1,14 @@
 ## Source this data to load in the results and do any processing before
 ## making figures and tables.
 
+## Load the results from section 1
+Linf.df <- data.frame(species=factor(c('cod', 'flatfish', 'yellow')), Linf=c(132,47,62))
+popbins.binwidth <- readRDS(file='results/popbins.binwidth.RData')
+popbins.minsize <- readRDS(file='results/popbins.minsize.RData')
+popbins.maxsize <- readRDS(file='results/popbins.maxsize.RData')
+popbins.maxsize <- merge(Linf.df, popbins.maxsize, by='species')
+popbins.maxsize$max.Linf.ratio <- with(popbins.maxsize, maxsize/Linf)
+
 ###  ------------------------------------------------------------
 ### Step 1: Make some quick data.frames to rename ggplot factors
 bin.cases.df <-

@@ -1,11 +1,13 @@
 ## This file runs scenarios for what happens to model as pop bins increase
 
+## Some values vary across species so need to make lists for this
+sigmar.list <- list('cod'=.4, 'flatfish'=.7, 'yellow'=.5)
 scalars <- c("SSB_MSY", "TotYield_MSY", "SSB_Unfished", "depletion")
-scalar_re <- function(x) {
-  (x - x[1]) / x[1]
-}
+F.cases <- "F1"
+scalar_re <- function(x) {(x - x[1]) / x[1]}
 ## This function returns the management values for a given set of
-## parameters. It is designed to be looped over.
+## parameters. It is designed to be looped over. Be careful of wd if an
+## error occurs.
 get_om_values <- function(species, binwidth, F_case="F1",
                           sigmaR, iteration, pop_minimum_size=NULL,
                           pop_maximum_size=NULL){
@@ -37,17 +39,18 @@ get_om_values <- function(species, binwidth, F_case="F1",
     ss3sim::get_results_scalar(o)
 }
 
+
 ## Run the OM across bin widths for species. F and recdevs don't make a
 ## difference for the equilbirium values
-binwidth <- 1:15
+binwidth <- 1:20
 popbins.binwidth <-
-    ldply(paste0("F", 1), function(Fcase)
+    ldply(F.cases, function(Fcase)
     ldply(species, function(spp)
     ldply(binwidth, function(binwidth)
         data.frame("binwidth"=binwidth, "species"=spp, "F"=Fcase,
-                   get_om_values(species=spp, max_bin=200,
-                                 binwidth=binwidth, sigmaR=1.1,
-                                 iteration=i, F_case=Fcase,
+                   get_om_values(species=spp,
+                                 binwidth=binwidth, sigmaR=sigmar.list[[spp]],
+                                 iteration=1, F_case=Fcase,
                                  pop_minimum_size=1,
                                  pop_maximum_size=200)))))
 popbins.binwidth <- popbins.binwidth[,c('species', 'binwidth','F', scalars)]
@@ -56,24 +59,19 @@ popbins.binwidth <- ddply(popbins.binwidth, .(species,F),
     TotYield_MSY_RE=scalar_re(TotYield_MSY),
     SSB_Unfished_RE=scalar_re(SSB_Unfished),
     depletion_RE=scalar_re(depletion))
-p <- popbins.binwidth[,c("species", "binwidth", 'F', paste0(scalars, "_RE"))] %>%
-        melt(id.vars=c('species','F', "binwidth")) %>%
-  ggplot(aes(x=binwidth, y=value, colour=variable)) + geom_line() +
-      facet_grid(F~species)+ xlab("Population bin size") +
-    ylab("Relative error")
-ggsave(paste0("plots/popbins_binwidth.png"),p, width=7, height=6)
+saveRDS(popbins.binwidth, file='results/popbins.binwidth.RData')
 
 ## Run the OM across minimum bin sizes for species. F and recdevs don't
 ## make a difference for the equilbirium values
 minsize <- 1:15
 popbins.minsize <-
-    ldply(paste0("F", 1), function(Fcase)
+    ldply(F.cases, function(Fcase)
     ldply(species, function(spp)
     ldply(minsize, function(minsize)
         data.frame("minsize"=minsize, "species"=spp, "F"=Fcase,
-                   get_om_values(species=spp, max_bin=200,
-                                 binwidth=1, sigmaR=1.1,
-                                 iteration=i, F_case=Fcase,
+                   get_om_values(species=spp,
+                                 binwidth=1, sigmaR=sigmar.list[[spp]],
+                                 iteration=1, F_case=Fcase,
                                  pop_minimum_size=minsize,
                                  pop_maximum_size=200)))))
 popbins.minsize <- popbins.minsize[,c('species', 'minsize','F', scalars)]
@@ -82,13 +80,7 @@ popbins.minsize <- ddply(popbins.minsize, .(species,F),
     TotYield_MSY_RE=scalar_re(TotYield_MSY),
     SSB_Unfished_RE=scalar_re(SSB_Unfished),
     depletion_RE=scalar_re(depletion))
-p <- popbins.minsize[,c("species", "minsize", 'F', paste0(scalars, "_RE"))] %>%
-        melt(id.vars=c('species','F', "minsize")) %>%
-  ggplot(aes(x=minsize, y=value, colour=variable)) + geom_line() +
-      facet_grid(F~species)+ xlab("Population bin size") +
-    ylab("Relative error")
-ggsave(paste0("plots/popbins_minsize.png"),p, width=7, height=6)
-
+saveRDS(popbins.minsize, file='results/popbins.minsize.RData')
 
 ## Run the OM across maximum bin sizes for species. F and recdevs don't
 ## make a difference for the equilbirium values
@@ -96,13 +88,13 @@ maxsize.list <- list('cod'=rev(seq(132, 200, by=2)),
                      'flatfish'=rev(seq(47, 103, by=2)),
                      'yellow'=rev(seq(62, 106, by=2)))
 popbins.maxsize <-
-    ldply(paste0("F", 1), function(Fcase)
+    ldply(F.cases, function(Fcase)
     ldply(species, function(spp)
     ldply(maxsize.list[[spp]], function(maxsize)
         data.frame("maxsize"=maxsize, "species"=spp, "F"=Fcase,
                    get_om_values(species=spp,
-                                 binwidth=1, sigmaR=1.1,
-                                 iteration=i, F_case=Fcase,
+                                 binwidth=1, sigmaR=sigmar.list[[spp]],
+                                 iteration=1, F_case=Fcase,
                                  pop_minimum_size=1,
                                  pop_maximum_size=maxsize)))))
 popbins.maxsize <- popbins.maxsize[,c('species', 'maxsize','F', scalars)]
@@ -111,11 +103,5 @@ popbins.maxsize <- ddply(popbins.maxsize, .(species,F),
     TotYield_MSY_RE=scalar_re(TotYield_MSY),
     SSB_Unfished_RE=scalar_re(SSB_Unfished),
     depletion_RE=scalar_re(depletion))
-p <- popbins.maxsize[,c("species", "maxsize", 'F', paste0(scalars, "_RE"))] %>%
-        melt(id.vars=c('species','F', "maxsize")) %>%
-  ggplot(aes(x=maxsize, y=value, colour=variable)) + geom_line() +
-      facet_grid(F~species, scales='free_x')+ xlab("Population bin size") +
-    ylab("Relative error")
-ggsave(paste0("plots/popbins_maxsize.png"),p, width=7, height=6)
-
+saveRDS(popbins.maxsize, file='results/popbins.maxsize.RData')
 
