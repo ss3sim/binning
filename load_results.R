@@ -20,7 +20,7 @@ data.cases.df <-
     data.frame(D=paste0("D",D.binning), data=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
 tcomp.cases.df <-
     data.frame(species=rep(c('cod','flatfish','yellow'),each=4),
-               tvalue=paste0("tail.comp=", c(-1, 1e-3, 0.01, 0.1)),
+               tvalue=paste0("tcomp=", c(-1, 1e-3, 0.01, 0.1)),
                I=paste0("I",11:14))
 robust.cases.df <-
     data.frame(species=rep(c('cod','flatfish','yellow'),each=4),
@@ -73,7 +73,6 @@ binning.long.selex$variable <- gsub("_", ".", binning.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
 binning.long.management <- droplevels(subset(binning.long, variable %in% management.names))
 binning.long.management$variable <- gsub("_re", "", binning.long.management$variable)
-
 binning.ts <- readRDS("results/results_binning.ts.RData")
 binning.ts <- merge(binning.ts, subset(binning.unfiltered, select=c("ID",'converged')), by="ID")
 binning.ts <- merge(binning.ts, bin.cases.df, by=c("species", "B"))
@@ -93,7 +92,8 @@ tcomp$converged <- ifelse(tcomp$max_grad<.1 & tcomp$params_on_bound_em==0, "yes"
 tcomp <- calculate_re(tcomp, add=TRUE)
 tcomp$runtime <- tcomp$RunTime
 tcomp <- merge(tcomp, tcomp.cases.df, by=c("species", "I"))
-tcomp.counts <- ddply(tcomp, .(tvalue,B, species), summarize,
+tcomp <- merge(tcomp, data.cases.df, by=c("D"))
+tcomp.counts <- ddply(tcomp, .(tvalue,B,data, species), summarize,
                           replicates=length(scenario),
                           pct.converged=100*mean(converged=="yes"))
 ## Drop fixed params (columns of zeroes)
@@ -104,7 +104,7 @@ tcomp.unfiltered <- tcomp
 tcomp <- subset(tcomp, converged=="yes")
 tcomp.long <-
     melt(tcomp, measure.vars=re.names, id.vars=
-             c("species","replicate", "D", "B", "tvalue",
+             c("species","replicate", "data", "B", "tvalue",
                "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
@@ -114,7 +114,7 @@ selex.names <- re.names[grep("Sel_", re.names)]
 tcomp.long.selex <- droplevels(subset(tcomp.long, variable %in% selex.names))
 tcomp.long.selex$variable <- gsub("ery|ey|Size|_re", "", tcomp.long.selex$variable)
 tcomp.long.selex$variable <- gsub("_", ".", tcomp.long.selex$variable)
-management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
+management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
 tcomp.long.management <- droplevels(subset(tcomp.long, variable %in% management.names))
 tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable)
 ## robustification
@@ -124,7 +124,10 @@ robust$converged <- ifelse(robust$max_grad<.1 & robust$params_on_bound_em==0, "y
 robust <- calculate_re(robust, add=TRUE)
 robust$runtime <- robust$RunTime
 robust <- merge(robust, robust.cases.df, by=c("species", "I"))
-robust.counts <- ddply(robust, .(rvalue, B, species), summarize,
+robust <- merge(robust, data.cases.df, by=c("D"))
+robust.unfiltered <- robust
+robust <- subset(robust, converged=="yes")
+robust.counts <- ddply(robust.unfiltered, .(rvalue, B, species, data), summarize,
                           replicates=length(scenario),
                           pct.converged=100*mean(converged=="yes"))
 ## Drop fixed params (columns of zeroes)
@@ -133,7 +136,7 @@ robust <- robust[,-which(apply(robust, 2, function(x) all(x==0)))]
 re.names <- names(robust)[grep("_re", names(robust))]
 robust.long <-
     melt(robust, measure.vars=re.names, id.vars=
-             c("species","replicate", "D", "B",
+             c("species","replicate", "data", "B",
                "rvalue", "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
@@ -143,7 +146,7 @@ selex.names <- re.names[grep("Sel_", re.names)]
 robust.long.selex <- droplevels(subset(robust.long, variable %in% selex.names))
 robust.long.selex$variable <- gsub("ery|ey|Size|_re", "", robust.long.selex$variable)
 robust.long.selex$variable <- gsub("_", ".", robust.long.selex$variable)
-management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
+management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
 robust.long.management <- droplevels(subset(robust.long, variable %in% management.names))
 robust.long.management$variable <- gsub("_re", "", robust.long.management$variable)
 ## End tcomp and robust
