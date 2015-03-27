@@ -159,7 +159,6 @@ ggsave("plots/tcomp_convergence_counts.png", g, width=1.25*ggwidth, height=gghei
 ### ------------------------------------------------------------
 
 ##### For robustification
-B.temp <- "B1" # only showing this in the plots
 for(spp in species){
     g <- plot_scalar_boxplot(subset(robust.long.growth, species==spp & B==B.temp),
                x="rvalue", y='value', vert='data', vert2="B",

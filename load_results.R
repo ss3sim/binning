@@ -102,27 +102,30 @@ binning.ts <- calculate_re(binning.ts, add=TRUE)
 
 ### ------------------------------------------------------------
 ### Step 3: Load and prep the tail compression and robustification data
+B.temp <- "B1" # only showing this in the plots and tables for now
 ## tail compression
 tcomp <- readRDS("results/results_tcomp.sc.RData")
+tcomp <- subset(tcomp, B==B.temp)
+tcomp$params_on_bound_om <- NULL
 tcomp$log_max_grad <- log(tcomp$max_grad)
 tcomp$converged <- ifelse(tcomp$max_grad<.1 & tcomp$params_on_bound_em==0, "yes", "no")
 tcomp <- calculate_re(tcomp, add=TRUE)
 tcomp$runtime <- tcomp$RunTime
 tcomp <- merge(tcomp, tcomp.cases.df, by=c("species", "I"))
 tcomp <- merge(tcomp, data.cases.df, by=c("D"))
-tcomp.counts <- ddply(tcomp, .(tvalue,B,data, species), summarize,
-                          replicates=length(scenario),
-                          pct.converged=100*mean(converged=="yes"))
 ## Drop fixed params (columns of zeroes)
 tcomp$RecrDist_GP_1_re <- NULL
 tcomp <- tcomp[,-which(apply(tcomp, 2, function(x) all(x==0)))]
-re.names <- names(tcomp)[grep("_re", names(tcomp))]
 tcomp.unfiltered <- tcomp
-tcomp <- subset(tcomp, converged=="yes")
+tcomp <- droplevels(subset(tcomp, converged=="yes"))
+tcomp.counts <- ddply(tcomp.unfiltered, .(tvalue, B, species, data), summarize,
+                          replicates=length(scenario),
+                          pct.converged=100*mean(converged=="yes"))
+re.names <- names(tcomp)[grep("_re", names(tcomp))]
 tcomp.long <-
     melt(tcomp, measure.vars=re.names, id.vars=
-             c("species","replicate", "data", "B", "tvalue",
-               "log_max_grad", "params_on_bound_em",
+             c("species","replicate", "data", "B",
+               "tvalue", "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
 tcomp.long.growth <- droplevels(subset(tcomp.long, variable %in% growth.names))
@@ -136,20 +139,22 @@ tcomp.long.management <- droplevels(subset(tcomp.long, variable %in% management.
 tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable)
 ## robustification
 robust <- readRDS("results/results_robust.sc.RData")
+robust <- subset(robust, B==B.temp)
+robust$params_on_bound_om <- NULL
 robust$log_max_grad <- log(robust$max_grad)
 robust$converged <- ifelse(robust$max_grad<.1 & robust$params_on_bound_em==0, "yes", "no")
 robust <- calculate_re(robust, add=TRUE)
 robust$runtime <- robust$RunTime
 robust <- merge(robust, robust.cases.df, by=c("species", "I"))
 robust <- merge(robust, data.cases.df, by=c("D"))
-robust.unfiltered <- robust
-robust <- subset(robust, converged=="yes")
-robust.counts <- ddply(robust.unfiltered, .(rvalue, B, species, data), summarize,
-                          replicates=length(scenario),
-                          pct.converged=100*mean(converged=="yes"))
 ## Drop fixed params (columns of zeroes)
 robust$RecrDist_GP_1_re <- NULL
 robust <- robust[,-which(apply(robust, 2, function(x) all(x==0)))]
+robust.unfiltered <- robust
+robust <- droplevels(subset(robust, converged=="yes"))
+robust.counts <- ddply(robust.unfiltered, .(rvalue, B, species, data), summarize,
+                          replicates=length(scenario),
+                          pct.converged=100*mean(converged=="yes"))
 re.names <- names(robust)[grep("_re", names(robust))]
 robust.long <-
     melt(robust, measure.vars=re.names, id.vars=
