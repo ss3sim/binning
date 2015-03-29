@@ -70,11 +70,21 @@ for(spp in species){
     g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="F_re", horiz="data",
                          vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
     ggsave(paste0("plots/binning_ts_F_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- ggplot(subset(binning.long.growth2, species==spp & B %in% c("B1","B2", "B3", "B4")), aes(x=B0, y=value, color=B)) + geom_point(alpha=.5)+
+        facet_wrap('variable', scales='fixed')+xlim(-1,1)+ylim(-1,1) +           ggtitle("Pairwise RE with base case for unmatching bins")+
+            geom_hline(yintercept=0, col=gray(.5))+geom_vline(xintercept=0, col=gray(.5))
+    ggsave(paste0("plots/binning_scatter_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- ggplot(subset(binning.long.growth2, species==spp & !B %in% c("B1","B2", "B3", "B4")), aes(x=B0, y=value, color=B)) + geom_point(alpha=.5)+
+        facet_wrap('variable', scales='fixed')+xlim(-1,1)+ylim(-1,1) +
+            ggtitle("Pairwise RE with base case for matching bins")+
+                geom_hline(yintercept=0, col=gray(.5))+geom_vline(xintercept=0, col=gray(.5))
+    ggsave(paste0("plots/binning_scatter2_", spp, ".png"),g, width=ggwidth, height=ggheight)
 }
-g <- ggplot(binning.counts, aes(x=data, y=pct.converged))+facet_grid(B~species)+
-   geom_bar(stat='identity', aes(fill=pct.converged)) +  theme(axis.text.x=element_text(angle=90))
-ggsave("plots/binning_convergence_counts.png", g, width=ggwidth, height=ggheight)
 
+g <- ggplot(binning.counts, aes(x=data.binwidth, y=pct.converged, color=binmatch, group=binmatch))+
+    geom_line()+ facet_grid(species~data, scales='free') +
+        theme(axis.text.x=element_text(angle=90))
+ggsave("plots/binning_convergence_counts.png", g, width=ggwidth, height=ggheight)
 g <- ggplot(binning.runtime, aes(x=dbin, y=median.runtime, color=binmatch, group=binmatch))+
     geom_line()+ facet_grid(species~data, scales='free') +
     theme(axis.text.x=element_text(angle=90))+

@@ -56,10 +56,15 @@ binning <- calculate_re(binning, add=TRUE)
 binning$runtime <- (binning$RunTime)
 binning <- merge(binning, bin.cases.df, by=c("species", "B"))
 binning <- merge(binning, data.cases.df, by=c("D"))
+binning$data.binwidth <- with(binning, as.numeric(gsub("dbin=", "", x=dbin)))
 binning$binmatch <- with(binning, ifelse(pbin=="pbin=1" & dbin!="dbin=1", "no match", "match"))
-binning.counts <- ddply(binning, .(data,B, species), summarize,
+binning.counts <- ddply(binning, .(data,data.binwidth, binmatch,species), summarize,
                           replicates=length(scenario),
                           pct.converged=100*mean(converged=="yes"))
+## ## Get counts of which params were stuck
+## z <- unique(do.call(c, strsplit(binning$params_stuck_low_em, split=';')))
+## sapply(binning$params_stuck_low_em, function(i)
+##     sum(grep(i, x=strsplit(zz, split=';')), na.rm=TRUE))
 ## Drop fixed params (columns of zeroes)
 binning$RecrDist_GP_1_re <- NULL
 binning <- binning[,-which(apply(binning, 2, function(x) all(x==0)))]
@@ -77,7 +82,8 @@ binning.runtime <- ddply(binning, .(data,B, species), summarize,
 re.names <- names(binning)[grep("_re", names(binning))]
 binning.long <-
     melt(binning, measure.vars=re.names, id.vars=
-             c("species","replicate", "data", "B", "dbin",
+             c("species","replicate", "data", "B", "dbin", "binmatch",
+               "data.binwidth",
                "pbin", "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
@@ -90,6 +96,15 @@ binning.long.selex$variable <- gsub("_", ".", binning.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
 binning.long.management <- droplevels(subset(binning.long, variable %in% management.names))
 binning.long.management$variable <- gsub("_re", "", binning.long.management$variable)
+## This is my crazy way to get B0 on the x axis
+temp <- dcast(binning.long.growth, value.var='value',
+                             formula=species+data+variable+replicate~B)
+binning.long.growth2 <-
+    melt(temp, measure.vars=levels(bin.cases.df$B)[-1],
+         variable.name="B" )
+rm(temp)
+
+## read in the time series data
 binning.ts <- readRDS("results/results_binning.ts.RData")
 binning.ts <- merge(binning.ts, subset(binning.unfiltered, select=c("ID",'converged')), by="ID")
 binning.ts <- merge(binning.ts, bin.cases.df, by=c("species", "B"))
