@@ -3,12 +3,22 @@
 
 ### In progress!
 
+### TO DO before rerunning the simulation
+## 1.) Drop E991 and instead use biomass at end of year
+## 1.) Revisit data sets and sample sizes
+
 ### ------------------------------------------------------------
 ## Step 0: Prepare the R workspace and generate case files
 cores <- 4   # parallel cores
+devtools::install_github("ss3sim/ss3sim")
+devtools::install_github('ss3sim/ss3models')
+D.binning <- c(2,3,5,6)
+B.binning <- c(0:4, 11:14)
 source("startup.R")
 ## Create case files dynamically for reproducibility
 species <- c('cod','flatfish','yellow')
+unlink('cases', TRUE)
+dir.create('cases')
 source("write_casefiles.R")
 ### ------------------------------------------------------------
 
@@ -18,8 +28,6 @@ source("run_popbin_scenarios")
 
 ### ------------------------------------------------------------
 ## Step 2: Run the EM binning scenarios
-D.binning <- c(2,3,5,6)
-B.binning <- c(0:4, 11:14)
 source("run_binning_scenarios.R")
 
 ### ------------------------------------------------------------
@@ -37,3 +45,22 @@ source("make_tables.R")
 source("make_figures.R")
 
 
+
+## get_results_bias <- function(scenarios, directory=getwd()){
+##     temp <- list()
+##     for(sc in scenarios){
+##         bias.temp <- read.table(paste0(sc,"/bias/AdjustBias.DAT"), header=FALSE, sep=" ")
+##         names(bias.temp) <- c("iteration", paste0("bias", 1:5))
+##         bias.temp$scenario <- sc
+##         temp[[sc]] <- bias.temp
+##     }
+##     bias.all <- do.call(rbind, temp)
+##     bias.all$converged <- apply(bias.all, 1, anyNA)
+##     row.names(bias.all) <- NULL
+##     bias.all.long <- melt(bias.all, id.vars=c("iteration", "scenario", "converged"))
+##     return(bias.all.long)
+## }
+## ggplot(bias.all.long, aes(x=scenario, y=value))+geom_point() +
+##     facet_wrap("variable", scales="free_y")
+## scenarios.converged <- ddply(bias.all.long, .(scenario), summarize, mean(converged))
+## plot(scenarios.converged)

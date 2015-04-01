@@ -4,5 +4,8 @@
 *-flatfish
 .Rproj.user
 binning.Rproj
-
+example_models
 *.history
+plots/Thumbs.db
+ss3sim_ts.csv
+ss3sim_scalar.csv

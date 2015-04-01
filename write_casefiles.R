@@ -10,9 +10,9 @@ for(spp in species)
     ## Get the E case which gets final year catch
     file.copy(from=paste0(system.file("cases", package="ss3models"),"/E991-", spp,'.txt'), to=case_folder)
     ## write the data cases
-    source("cases/write_cases_data.R")
+    source("write_cases_data.R")
     ## write the binning case files
-    source("cases/write_cases_binning.R")
+    source("write_cases_binning.R")
 
 }
 

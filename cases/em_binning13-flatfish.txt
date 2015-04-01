@@ -2,4 +2,4 @@ lbin_method;2
 pop_binwidth;10
 pop_minimum_size;2
 pop_maximum_size;102
-bin_vector;seq(10,70,by=10)
+bin_vector;seq(2,102,by=10)
