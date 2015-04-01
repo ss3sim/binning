@@ -112,9 +112,9 @@ saveRDS(popbins.maxsize, file='results/popbins.maxsize.RData')
 # Example code to make the time series plot:
 # # `out` is output from the `get_om_values()` function:
 # # I've explicitely called the dplyr:: namespace to avoid conflicts
-# # with plyr, but you'll still need to load maggritr for pipes if you aren't
+# # with plyr, but you'll still need to load magrittr for pipes if you aren't
 # # going to load dplyr:
-# library("maggritr")
+# library("magrittr")
 # # (or strip out the pipes and dplyr if you'd rather)
 # max_bin <- 20
 # increment <- 2
