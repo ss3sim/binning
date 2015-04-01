@@ -31,6 +31,7 @@ ggsave(paste0("plots/popbins_maxsize.png"),p, width=ggwidth, height=ggheight)
 ### ------------------------------------------------------------
 
 
+
 ### For effect binning
 for(spp in species){
     g <- plot_scalar_boxplot(subset(binning.long.growth, species==spp), x="variable", y='value',
@@ -60,6 +61,20 @@ for(spp in species){
         geom_jitter(alpha=.5)+ ylab("Runtime (minutes)")+
             facet_grid(data~.) +  theme(axis.text.x=element_text(angle=90))#+ylim(0, 3)
     ggsave(paste0("plots/binning_runtime_", spp, "2.png"),g, width=ggwidth, height=ggheight)
+    ## Plot MAREs vs iteration to address stability
+    g <- ggplot(data=subset(binning.long.growth.mares, species==spp), aes(x=replicate2, y=cMARE, group=variable, color=variable))+
+        ylab("Centered MARE") +xlab("Replicate")
+    g <- g+geom_line(lwd=.5, alpha=1)+facet_grid(B~data)+ ylim(-.25, .25)
+    ggsave(paste0("plots/binning_growth_MAREs_",spp, ".png"), width=ggwidth, height=ggheight, units="in")
+    g <- ggplot(data=subset(binning.long.management.mares, species==spp), aes(x=replicate2, y=cMARE, group=variable, color=variable))+
+        ylab("Centered MARE") +xlab("Replicate")
+    g <- g+geom_line(lwd=.5, alpha=1)+facet_grid(B~data)+ ylim(-.25, .25)
+    ggsave(paste0("plots/binning_management_MAREs_",spp, ".png"), width=ggwidth, height=ggheight, units="in")
+    g <- ggplot(data=subset(binning.long.selex.mares, species==spp), aes(x=replicate2, y=cMARE, group=variable, color=variable))+
+        ylab("Centered MARE") +xlab("Replicate")
+    g <- g+geom_line(lwd=.5, alpha=1)+facet_grid(B~data)+ ylim(-.25, .25)
+    ggsave(paste0("plots/binning_selex_MAREs_",spp, ".png"), width=ggwidth, height=ggheight, units="in")
+    ## time series plots
     myylim <- ylim(-3,3)
     g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="SpawnBio_re", horiz="data",
                          vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim

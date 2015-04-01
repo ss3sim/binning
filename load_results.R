@@ -103,6 +103,20 @@ binning.long.growth2 <-
     melt(temp, measure.vars=levels(bin.cases.df$B)[-1],
          variable.name="B" )
 rm(temp)
+## Now make running MARE calculations. Takes a while to run these calcs!!!
+my.median <- function(x) {sapply(1:length(x), function(i) {median(x[1:i])})}
+binning.long.growth.mares <- ddply(binning.long.growth, .(species, data, B, variable), .fun=mutate,
+                       replicate2=1:length(replicate),
+                       cMARE=my.median(abs(value))-median(abs(value)),
+                       MARE=my.median(abs(value)))
+binning.long.management.mares <- ddply(binning.long.management, .(species, data, B, variable), .fun=mutate,
+                       replicate2=1:length(replicate),
+                       cMARE=my.median(abs(value))-median(abs(value)),
+                       MARE=my.median(abs(value)))
+binning.long.selex.mares <- ddply(binning.long.selex, .(species, data, B, variable), .fun=mutate,
+                       replicate2=1:length(replicate),
+                       cMARE=my.median(abs(value))-median(abs(value)),
+                       MARE=my.median(abs(value)))
 
 ## read in the time series data
 binning.ts <- readRDS("results/results_binning.ts.RData")
