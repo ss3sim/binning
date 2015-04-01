@@ -10,7 +10,8 @@ scalar_re <- function(x) {(x - x[1]) / x[1]}
 ## error occurs.
 get_om_values <- function(species, binwidth, F_case="F1",
                           sigmaR, iteration, pop_minimum_size=NULL,
-                          pop_maximum_size=NULL){
+                          pop_maximum_size=NULL, type = c("scalar", "timeseries")){
+    type <- type[1]
     unlink(species, recursive = TRUE, force = TRUE)
     file.copy(ss3models::ss3model(species, "om"), to = '.', recursive = TRUE)
     file.rename("om", species)
@@ -36,7 +37,10 @@ get_om_values <- function(species, binwidth, F_case="F1",
     setwd('..')
     unlink(species, recursive=TRUE, force=TRUE)
     Sys.sleep(0.05) # give ample time for deletion of folder
-    ss3sim::get_results_scalar(o)
+    if (type == "scalar")
+      ss3sim::get_results_scalar(o)
+    if (type == "timeseries")
+      ss3sim::get_results_timeseries(o)
 }
 
 
@@ -105,3 +109,28 @@ popbins.maxsize <- ddply(popbins.maxsize, .(species,F),
     depletion_RE=scalar_re(depletion))
 saveRDS(popbins.maxsize, file='results/popbins.maxsize.RData')
 
+# Example code to make the time series plot:
+# # `out` is output from the `get_om_values()` function:
+# # I've explicitely called the dplyr:: namespace to avoid conflicts
+# # with plyr, but you'll still need to load magrittr for pipes if you aren't
+# # going to load dplyr:
+# library("magrittr")
+# # (or strip out the pipes and dplyr if you'd rather)
+# max_bin <- 20
+# increment <- 2
+# pop_bins <- seq(1, max_bin, increment)
+# out$bin <- rep(pop_bins, each = 100)
+# out_RE <- out %>%
+#   dplyr::filter(bin == 1) %>%
+#   dplyr::rename(SpawnBio_bin1 = SpawnBio, Recruit_0_bin1 = Recruit_0) %>%
+#   dplyr::select(-F, -bin) %>%
+#   dplyr::inner_join(out, by = "Yr") %>%
+#   dplyr::mutate(
+#     SpawnBio_RE = (SpawnBio - SpawnBio_bin1) / SpawnBio_bin1,
+#     Recruit_0_RE = (Recruit_0 - Recruit_0_bin1) / Recruit_0_bin1)
+#
+# p1 <- ggplot(out_RE, aes(Yr, Recruit_0_RE, colour = bin, group = bin)) + geom_line()
+# p2 <- ggplot(out_RE, aes(bin, SpawnBio_RE, colour = yr, group = bin)) + geom_line()
+# pdf(paste0("plots/om_popbins_ts_", stock, ".pdf"), width = 5, height = 7)
+# gridExtra::grid.arrange(p2, p1)
+# dev.off()
