@@ -9,11 +9,11 @@ for(spp in species){
     scenarios <- expand_scenarios(cases=list(D=c(2,3), F=1, I=0,
                                   B=B.binning), species=spp)
     run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
-               parallel=F, parallel_iterations=FALSE,
+               parallel=TRUE, parallel_iterations=FALSE,
                case_folder=case_folder, om_dir=ss3model(spp, "om"),
                em_dir=ss3model(spp, "em"), case_files=case_files,
                bias_adjust=FALSE, bias_nsim=10,
-               admb_options= " -maxfn 1 -phase 50",
+               ## admb_options= " -maxfn 1 -phase 50",
                call_change_data=TRUE)
 }
 for(spp in species){
@@ -29,13 +29,14 @@ for(spp in species){
                call_change_data=TRUE)
 }
 ## Read in results
-scenarios.binning.all <- expand_scenarios(cases=list(D=D.binning, F=1, I=0, B=B.binning,
-                             E=991), species=species)
-get_results_all(user=scen.all, parallel=TRUE, over=TRUE)
+scenarios.binning.all <-
+    expand_scenarios(cases=list(D=D.binning, F=1, I=0, B=B.binning),
+                     species=species)
+get_results_all(user=scenarios.binning.all, parallel=TRUE, over=TRUE)
 xx <- read.csv("ss3sim_scalar.csv")
 saveRDS(xx, file="results/results_binning.sc.RData")
 xx <- read.csv("ss3sim_ts.csv")
 saveRDS(xx, file="results/results_binning.ts.RData")
 ## file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 ## unlink(scen.all, TRUE)
-rm(xx, scenarios, scen.all, Nsim, case_files)
+rm(xx, scenarios, Nsim, case_files)
