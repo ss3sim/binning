@@ -21,7 +21,7 @@ D.binning <- c(2,3,5,6)
 B.binning <- c(0:4, 11:14)
 ## major cases for robust/tcomp section
 D.rbtc <- D.binning
-B.rbtc <- B0
+B.rbtc <- 0
 source("startup.R")
 ## Create case files dynamically for reproducibility
 species <- c('cod','flatfish','yellow')
@@ -34,7 +34,6 @@ for(spp in species) {
     write_cases_data(spp=spp)
     write_cases_binning(spp=spp)
 }
-## source("write_casefiles.R")
 ### ------------------------------------------------------------
 
 ### ------------------------------------------------------------
