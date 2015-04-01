@@ -117,6 +117,27 @@ binning.long.selex.mares <- ddply(binning.long.selex, .(species, data, B, variab
                        replicate2=1:length(replicate),
                        cMARE=my.median(abs(value))-median(abs(value)),
                        MARE=my.median(abs(value)))
+## ## Read in the bias adjustment parameters by iteration
+## get_results_bias <- function(scenarios, directory=getwd()){
+##     temp <- list()
+##     for(sc in scenarios){
+##         bias.temp <- read.table(paste0(sc,"/bias/AdjustBias.DAT"), header=FALSE, sep=" ")
+##         names(bias.temp) <- c("iteration", paste0("bias", 1:5))
+##         bias.temp$scenario <- sc
+##         temp[[sc]] <- bias.temp
+##     }
+##     bias.all <- do.call(rbind, temp)
+##     row.names(bias.all) <- NULL
+##     bias.all$converged <- !is.na(bias.all$bias1)
+##     bias.all.long <- melt(bias.all, id.vars=c("iteration", "scenario", "converged"))
+##     return(bias.all.long)
+## }
+## bias.all.long <- get_results_bias(scen.all)
+## bias.all.long$data <- do.call(rbind, strsplit(bias.all.long$scenario, split='-'))[,2]
+## bias.all.long$B <- do.call(rbind, strsplit(bias.all.long$scenario, split='-'))[,1]
+## bias.all.long$species <- do.call(rbind, strsplit(bias.all.long$scenario, split='-'))[,6]
+## scenarios.converged <- ddply(bias.all.long, .(species, data, B), summarize,
+##                              pct.converged=mean(converged))
 
 ## read in the time series data
 binning.ts <- readRDS("results/results_binning.ts.RData")

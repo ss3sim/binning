@@ -95,7 +95,6 @@ for(spp in species){
                 geom_hline(yintercept=0, col=gray(.5))+geom_vline(xintercept=0, col=gray(.5))
     ggsave(paste0("plots/binning_scatter2_", spp, ".png"),g, width=ggwidth, height=ggheight)
 }
-
 g <- ggplot(binning.counts, aes(x=data.binwidth, y=pct.converged, color=binmatch, group=binmatch))+
     geom_line()+ facet_grid(species~data, scales='free') +
         theme(axis.text.x=element_text(angle=90))
@@ -106,6 +105,10 @@ g <- ggplot(binning.runtime, aes(x=dbin, y=median.runtime, color=binmatch, group
     geom_point(aes(size=(replicates)))+
     geom_linerange(aes(ymin=lower.runtime, ymax=upper.runtime))
 ggsave("plots/binning_median_runtime.png", g, width=ggwidth, height=ggheight)
+## ## quick plots of bias adjustment
+## ggplot(subset(bias.all.long, species=='flatfish'), aes(x=data, y=value))+geom_point() +
+##     facet_grid(variable~species+B, scales="free_y")
+## ggplot(scenarios.converged, aes(B, pct.converged))+geom_point()+facet_grid(species~data)
 
 x
 ## ## Temp code to explore correlations, needs to be fixed

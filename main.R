@@ -43,24 +43,3 @@ source("load_results.R")
 source("make_plots.R")
 source("make_tables.R")
 source("make_figures.R")
-
-
-
-## get_results_bias <- function(scenarios, directory=getwd()){
-##     temp <- list()
-##     for(sc in scenarios){
-##         bias.temp <- read.table(paste0(sc,"/bias/AdjustBias.DAT"), header=FALSE, sep=" ")
-##         names(bias.temp) <- c("iteration", paste0("bias", 1:5))
-##         bias.temp$scenario <- sc
-##         temp[[sc]] <- bias.temp
-##     }
-##     bias.all <- do.call(rbind, temp)
-##     bias.all$converged <- apply(bias.all, 1, anyNA)
-##     row.names(bias.all) <- NULL
-##     bias.all.long <- melt(bias.all, id.vars=c("iteration", "scenario", "converged"))
-##     return(bias.all.long)
-## }
-## ggplot(bias.all.long, aes(x=scenario, y=value))+geom_point() +
-##     facet_wrap("variable", scales="free_y")
-## scenarios.converged <- ddply(bias.all.long, .(scenario), summarize, mean(converged))
-## plot(scenarios.converged)
