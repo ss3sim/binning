@@ -11,15 +11,30 @@
 ## Step 0: Prepare the R workspace and generate case files
 cores <- 4   # parallel cores
 devtools::install_github("ss3sim/ss3sim")
-devtools::install_github('ss3sim/ss3models')
+devtools::install_github('ss3sim/ss3models', ref='increased_maxage')
+## sample sizes
+Nsim.datapoor <- 200
+Nsim.datarich <- 100
+Nsim.biasruns <- 10 # only run for binning section due to poor convergence
+## major cases for binning section
 D.binning <- c(2,3,5,6)
 B.binning <- c(0:4, 11:14)
+## major cases for robust/tcomp section
+D.rbtc <- D.binning
+B.rbtc <- B0
 source("startup.R")
 ## Create case files dynamically for reproducibility
 species <- c('cod','flatfish','yellow')
 unlink('cases', TRUE)
 dir.create('cases')
-source("write_casefiles.R")
+for(spp in species) {
+    ## Get the F cases from the package since based on Fmsy
+    file.copy(from=paste0(system.file("cases", package="ss3models"),"/F1-", spp,'.txt'), to=case_folder)
+    ## write the data and binning cases
+    write_cases_data(spp=spp)
+    write_cases_binning(spp=spp)
+}
+## source("write_casefiles.R")
 ### ------------------------------------------------------------
 
 ### ------------------------------------------------------------
