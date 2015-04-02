@@ -181,7 +181,7 @@ write_cases_binning <- function(spp){
                'tail_compression; -1')
     writeLines(data0, con=paste0(case_folder,"/", "data0-", spp, ".txt"))
     ## For cases with tail compression
-    tc.seq <- c(-1, 1e-3, 0.01, 0.1)
+    tc.seq <- c(-1, 1e-3, 0.01, 0.05)
     tc.n <- length(tc.seq)
     for(i in 1:tc.n){
         tc <- tc.seq[i]
