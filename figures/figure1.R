@@ -1,7 +1,7 @@
 
 ### ------------------------------------------------------------
 ## Make the literature review figure(s)
-lit <- read.csv("lit-review.csv", stringsAsFactors = FALSE, strip.white = TRUE)
+lit <- read.csv("results/lit-review.csv", stringsAsFactors = FALSE, strip.white = TRUE)
 names(lit) <- tolower(names(lit))
 names(lit) <- gsub("\\.", "_", names(lit))
 names(lit) <- gsub("__", "_", names(lit))
@@ -54,7 +54,9 @@ fable <- function(x, y, z, xlab = "", ylab = "",
   if(!is.null(y))
     mtext(ylab, side = 2, line = 2.00, cex = 0.8)
 }
-pdf("figures/fig1_lit_review.pdf", width = width, height = height)
+
+make.file(file.type, "figures/figure1_lit_review", width = width, height =
+          height, res=500)
 par(mar = c(1, 8, 3, 1), oma = c(1, 1, 1, 1), cex = 0.75)
 m <- c(rep(1, 3), rep(2, 5))
 layout(m)
