@@ -41,6 +41,19 @@ source("figures/figure1.R")
 source("figures/figure2.R")
 
 
+str(binning.long)
+## get MARE for each growth parameter
+df <- ddply(binning.long.growth, .(species, data, dbin, binmatch,variable), summarize,
+            MARE=median(abs(value)),
+            median.runtime=median(runtime))
+## get some measure of total MARE by plying over variable
+df2 <- ddply(df, .(species, data, dbin, binmatch), summarize,
+             MARE.median=median(MARE),
+             MARE.sum=sum(MARE),
+             median.runtime=median.runtime[1])
+df2$binwidth <- with(df2, as.numeric(gsub("dbin=","", x=dbin)))
+g <- ggplot(df2, aes(log(median.runtime), log(MARE.median), size=binwidth, color=binmatch))+geom_point()+facet_grid(data~species)
+ggsave('plots/binning_performance_tradeoffs.png', g,  width=7, height=5)
 
 
 
