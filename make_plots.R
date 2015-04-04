@@ -39,6 +39,11 @@ for(spp in species){
                              horiz2="dbin", horiz="pbin", print=FALSE) +
                                  theme(axis.text.x=element_text(angle=90))
     ggsave(paste0("plots/binning_growth_errors_",spp, ".png"),g, width=ggwidth, height=ggheight)
+    g <- plot_scalar_boxplot(subset(binning.long.figure, species==spp), x="dbin", y='value',
+                             vert='species', horiz="data", rel=TRUE,
+                             vert2="variable", horiz2="binmatch", print=FALSE) +
+                                 theme(axis.text.x=element_text(angle=90))
+    ggsave(paste0("plots/binning_figure_errors_",spp, ".png"),g, width=ggwidth, height=ggheight)
     g <- plot_scalar_boxplot(subset(binning.long.selex, species==spp), x="variable", y='value', vert2='species', vert="data", rel=TRUE, horiz2="dbin", horiz="pbin", print=FALSE)+
         theme(axis.text.x=element_text(angle=90))
     ggsave(paste0("plots/binning_selex_errors_", spp, ".png"), g, width=ggwidth, height=ggheight)

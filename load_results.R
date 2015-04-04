@@ -97,6 +97,9 @@ binning.long.selex$variable <- gsub("_", ".", binning.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
 binning.long.management <- droplevels(subset(binning.long, variable %in% management.names))
 binning.long.management$variable <- gsub("_re", "", binning.long.management$variable)
+figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
+binning.long.figure <- droplevels(subset(binning.long, variable %in% figure.names))
+binning.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", binning.long.figure$variable)
 ## This is my crazy way to get B0 on the x axis
 temp <- dcast(binning.long.growth, value.var='value',
                              formula=species+data+variable+replicate~B)
