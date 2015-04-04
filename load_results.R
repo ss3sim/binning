@@ -3,7 +3,7 @@
 
 ## Load the results from section 1
 Linf.df <- data.frame(species=factor(c('cod', 'flatfish', 'yellow')), Linf=c(132,47,62))
-popbins.binwidth.sc <- readRDS(file='results/popbins.binwidth.scalars.RData')
+popbins.binwidth.scalars <- readRDS(file='results/popbins.binwidth.scalars.RData')
 popbins.binwidth.ts <- readRDS(file='results/popbins.binwidth.ts.RData')
 popbins.minsize <- readRDS(file='results/popbins.minsize.RData')
 popbins.maxsize <- readRDS(file='results/popbins.maxsize.RData')
