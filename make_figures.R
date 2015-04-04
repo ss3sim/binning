@@ -39,7 +39,7 @@ make.file <- function(type=c("png","pdf", "none"), filename,
 file.type <- 'png'
 source("figures/figure1.R")
 source("figures/figure2.R")
-
+source("figures/figure3.R")
 
 str(binning.long)
 ## get MARE for each growth parameter
@@ -54,6 +54,9 @@ df2 <- ddply(df, .(species, data, dbin, binmatch), summarize,
 df2$binwidth <- with(df2, as.numeric(gsub("dbin=","", x=dbin)))
 g <- ggplot(df2, aes(log(median.runtime), log(MARE.median), size=binwidth, color=binmatch))+geom_point()+facet_grid(data~species)
 ggsave('plots/binning_performance_tradeoffs.png', g,  width=7, height=5)
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 ## This file runs scenarios for what happens to model as pop bins increase
-
+library(plyr)
+library(dplyr)
 ## Some values vary across species so need to make lists for this
 sigmar.list <- list('cod'=.4, 'flatfish'=.7, 'yellow'=.5)
 scalars <- c("SSB_MSY", "TotYield_MSY", "SSB_Unfished", "depletion")
@@ -38,99 +39,100 @@ get_om_values <- function(species, binwidth, F_case="F1",
     unlink(species, recursive=TRUE, force=TRUE)
     Sys.sleep(0.05) # give ample time for deletion of folder
     if (type == "scalar")
-      ss3sim::get_results_scalar(o)
+      result <- ss3sim::get_results_scalar(o)
     if (type == "timeseries")
-      ss3sim::get_results_timeseries(o)
+      result <- ss3sim::get_results_timeseries(o)
+    return(result)
 }
 
 
-## Run the OM across bin widths for species. F and recdevs don't make a
-## difference for the equilbirium values
-binwidth <- 1:20
-popbins.binwidth <-
+## Run the OM across bin widths for species. First do the scalar quantities
+## which are in equilibrium so process error and F don't matter.
+binwidth <- 1:24
+popbins.binwidth.scalars <-
     ldply(F.cases, function(Fcase)
     ldply(species, function(spp)
-    ldply(binwidth, function(binwidth)
-        data.frame("binwidth"=binwidth, "species"=spp, "F"=Fcase,
+    ldply(binwidth, function(bw)
+        data.frame("binwidth"=bw, "species"=spp, "F"=Fcase,
                    get_om_values(species=spp,
-                                 binwidth=binwidth, sigmaR=sigmar.list[[spp]],
+                                 binwidth=bw, sigmaR=sigmar.list[[spp]],
                                  iteration=1, F_case=Fcase,
                                  pop_minimum_size=1,
                                  pop_maximum_size=200)))))
-popbins.binwidth <- popbins.binwidth[,c('species', 'binwidth','F', scalars)]
-popbins.binwidth <- ddply(popbins.binwidth, .(species,F),
+popbins.binwidth.scalars <- popbins.binwidth.scalars[,c('species', 'binwidth','F', scalars)]
+popbins.binwidth.scalars <- ddply(popbins.binwidth.scalars, .(species,F),
     mutate, SSB_MSY_RE=scalar_re(SSB_MSY),
     TotYield_MSY_RE=scalar_re(TotYield_MSY),
     SSB_Unfished_RE=scalar_re(SSB_Unfished),
     depletion_RE=scalar_re(depletion))
-saveRDS(popbins.binwidth, file='results/popbins.binwidth.RData')
+saveRDS(popbins.binwidth.scalars, file='results/popbins.binwidth.scalars.RData')
 
-## Run the OM across minimum bin sizes for species. F and recdevs don't
-## make a difference for the equilbirium values
-minsize <- 1:15
-popbins.minsize <-
+## Run the OM across bin widths for species. Now do the time series which
+## do depend on F and recdevs
+binwidth <- 1:24
+temp <-
     ldply(F.cases, function(Fcase)
     ldply(species, function(spp)
-    ldply(minsize, function(minsize)
-        data.frame("minsize"=minsize, "species"=spp, "F"=Fcase,
+    ldply(binwidth, function(bw)
+        data.frame("binwidth"=bw, "species"=spp,
                    get_om_values(species=spp,
-                                 binwidth=1, sigmaR=sigmar.list[[spp]],
+                                 binwidth=bw, sigmaR=sigmar.list[[spp]],
                                  iteration=1, F_case=Fcase,
-                                 pop_minimum_size=minsize,
+                                 pop_minimum_size=1, type='timeseries',
                                  pop_maximum_size=200)))))
-popbins.minsize <- popbins.minsize[,c('species', 'minsize','F', scalars)]
-popbins.minsize <- ddply(popbins.minsize, .(species,F),
-    mutate, SSB_MSY_RE=scalar_re(SSB_MSY),
-    TotYield_MSY_RE=scalar_re(TotYield_MSY),
-    SSB_Unfished_RE=scalar_re(SSB_Unfished),
-    depletion_RE=scalar_re(depletion))
-saveRDS(popbins.minsize, file='results/popbins.minsize.RData')
+## calculate relative error using sean's code, uses binwidth=1 as base
+popbins.binwidth.ts <- temp %>%
+  dplyr::filter(binwidth == 1) %>%
+  dplyr::rename(SpawnBio_bin1 = SpawnBio, Recruit_0_bin1 = Recruit_0) %>%
+  dplyr::select(-F, binwidth) %>%
+  dplyr::inner_join(temp, by = c("species","Yr")) %>%
+  dplyr::mutate(
+    SpawnBio_RE = (SpawnBio - SpawnBio_bin1) / SpawnBio_bin1,
+    Recruit_0_RE = (Recruit_0 - Recruit_0_bin1) / Recruit_0_bin1)
+saveRDS(popbins.binwidth.ts, file='results/popbins.binwidth.ts.RData')
 
-## Run the OM across maximum bin sizes for species. F and recdevs don't
-## make a difference for the equilbirium values
-maxsize.list <- list('cod'=rev(seq(132, 200, by=2)),
-                     'flatfish'=rev(seq(47, 103, by=2)),
-                     'yellow'=rev(seq(62, 106, by=2)))
-popbins.maxsize <-
-    ldply(F.cases, function(Fcase)
-    ldply(species, function(spp)
-    ldply(maxsize.list[[spp]], function(maxsize)
-        data.frame("maxsize"=maxsize, "species"=spp, "F"=Fcase,
-                   get_om_values(species=spp,
-                                 binwidth=1, sigmaR=sigmar.list[[spp]],
-                                 iteration=1, F_case=Fcase,
-                                 pop_minimum_size=1,
-                                 pop_maximum_size=maxsize)))))
-popbins.maxsize <- popbins.maxsize[,c('species', 'maxsize','F', scalars)]
-popbins.maxsize <- ddply(popbins.maxsize, .(species,F),
-    mutate, SSB_MSY_RE=scalar_re(SSB_MSY),
-    TotYield_MSY_RE=scalar_re(TotYield_MSY),
-    SSB_Unfished_RE=scalar_re(SSB_Unfished),
-    depletion_RE=scalar_re(depletion))
-saveRDS(popbins.maxsize, file='results/popbins.maxsize.RData')
 
-# Example code to make the time series plot:
-# # `out` is output from the `get_om_values()` function:
-# # I've explicitely called the dplyr:: namespace to avoid conflicts
-# # with plyr, but you'll still need to load magrittr for pipes if you aren't
-# # going to load dplyr:
-# library("magrittr")
-# # (or strip out the pipes and dplyr if you'd rather)
-# max_bin <- 20
-# increment <- 2
-# pop_bins <- seq(1, max_bin, increment)
-# out$bin <- rep(pop_bins, each = 100)
-# out_RE <- out %>%
-#   dplyr::filter(bin == 1) %>%
-#   dplyr::rename(SpawnBio_bin1 = SpawnBio, Recruit_0_bin1 = Recruit_0) %>%
-#   dplyr::select(-F, -bin) %>%
-#   dplyr::inner_join(out, by = "Yr") %>%
-#   dplyr::mutate(
-#     SpawnBio_RE = (SpawnBio - SpawnBio_bin1) / SpawnBio_bin1,
-#     Recruit_0_RE = (Recruit_0 - Recruit_0_bin1) / Recruit_0_bin1)
-#
-# p1 <- ggplot(out_RE, aes(Yr, Recruit_0_RE, colour = bin, group = bin)) + geom_line()
-# p2 <- ggplot(out_RE, aes(bin, SpawnBio_RE, colour = yr, group = bin)) + geom_line()
-# pdf(paste0("plots/om_popbins_ts_", stock, ".pdf"), width = 5, height = 7)
-# gridExtra::grid.arrange(p2, p1)
-# dev.off()
+## ## ## These weren't that interestign so turning off for now
+## ## Run the OM across minimum bin sizes for species. F and recdevs don't
+## ## make a difference for the equilbirium values
+## minsize <- 1:15
+## popbins.minsize <-
+##     ldply(F.cases, function(Fcase)
+##     ldply(species, function(spp)
+##     ldply(minsize, function(minsize)
+##         data.frame("minsize"=minsize, "species"=spp, "F"=Fcase,
+##                    get_om_values(species=spp,
+##                                  binwidth=1, sigmaR=sigmar.list[[spp]],
+##                                  iteration=1, F_case=Fcase,
+##                                  pop_minimum_size=minsize,
+##                                  pop_maximum_size=200)))))
+## popbins.minsize <- popbins.minsize[,c('species', 'minsize','F', scalars)]
+## popbins.minsize <- ddply(popbins.minsize, .(species,F),
+##     mutate, SSB_MSY_RE=scalar_re(SSB_MSY),
+##     TotYield_MSY_RE=scalar_re(TotYield_MSY),
+##     SSB_Unfished_RE=scalar_re(SSB_Unfished),
+##     depletion_RE=scalar_re(depletion))
+## saveRDS(popbins.minsize, file='results/popbins.minsize.RData')
+## ## Run the OM across maximum bin sizes for species. F and recdevs don't
+## ## make a difference for the equilbirium values
+## maxsize.list <- list('cod'=rev(seq(132, 200, by=2)),
+##                      'flatfish'=rev(seq(47, 103, by=2)),
+##                      'yellow'=rev(seq(62, 106, by=2)))
+## popbins.maxsize <-
+##     ldply(F.cases, function(Fcase)
+##     ldply(species, function(spp)
+##     ldply(maxsize.list[[spp]], function(maxsize)
+##         data.frame("maxsize"=maxsize, "species"=spp, "F"=Fcase,
+##                    get_om_values(species=spp,
+##                                  binwidth=1, sigmaR=sigmar.list[[spp]],
+##                                  iteration=1, F_case=Fcase,
+##                                  pop_minimum_size=1,
+##                                  pop_maximum_size=maxsize)))))
+## popbins.maxsize <- popbins.maxsize[,c('species', 'maxsize','F', scalars)]
+## popbins.maxsize <- ddply(popbins.maxsize, .(species,F),
+##     mutate, SSB_MSY_RE=scalar_re(SSB_MSY),
+##     TotYield_MSY_RE=scalar_re(TotYield_MSY),
+##     SSB_Unfished_RE=scalar_re(SSB_Unfished),
+##     depletion_RE=scalar_re(depletion))
+## saveRDS(popbins.maxsize, file='results/popbins.maxsize.RData')
+
