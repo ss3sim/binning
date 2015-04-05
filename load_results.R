@@ -156,10 +156,8 @@ binning.ts <- calculate_re(binning.ts, add=TRUE)
 
 ### ------------------------------------------------------------
 ### Step 3: Load and prep the tail compression and robustification data
-B.temp <- "B1" # only showing this in the plots and tables for now
 ## tail compression
 tcomp <- readRDS("results/results_tcomp.sc.RData")
-tcomp <- subset(tcomp, B==B.temp)
 tcomp$params_on_bound_om <- NULL
 tcomp$log_max_grad <- log(tcomp$max_grad)
 tcomp$converged <- ifelse(tcomp$max_grad<.1 & tcomp$params_on_bound_em==0, "yes", "no")
@@ -193,7 +191,6 @@ tcomp.long.management <- droplevels(subset(tcomp.long, variable %in% management.
 tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable)
 ## robustification
 robust <- readRDS("results/results_robust.sc.RData")
-robust <- subset(robust, B==B.temp)
 robust$params_on_bound_om <- NULL
 robust$log_max_grad <- log(robust$max_grad)
 robust$converged <- ifelse(robust$max_grad<.1 & robust$params_on_bound_em==0, "yes", "no")

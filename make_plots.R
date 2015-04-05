@@ -154,25 +154,24 @@ x
 ##     geom_point()+facet_grid(D~B)+xlim(-1,1)+ylim(-1,1)
 
 ##### For tail compression
-B.temp <- "B1" # only showing this in the plots
 for(spp in species){
-    g <- plot_scalar_boxplot(subset(tcomp.long.growth, species==spp & B==B.temp),
+    g <- plot_scalar_boxplot(subset(tcomp.long.growth, species==spp ),
                x="tvalue", y='value', vert='data', vert2="B",
                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
                    theme(axis.text.x=element_text(angle=90))
     ggsave(paste0("plots/tcomp_growth_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_scalar_boxplot(subset(tcomp.long.selex, species==spp & B==B.temp),
+    g <- plot_scalar_boxplot(subset(tcomp.long.selex, species==spp ),
                x="tvalue", y='value', vert='data', vert2="B",
                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
                    theme(axis.text.x=element_text(angle=90))
     ggsave(paste0("plots/tcomp_selex_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_scalar_boxplot(subset(tcomp.long.management, species==spp & B==B.temp),
+    g <- plot_scalar_boxplot(subset(tcomp.long.management, species==spp ),
                x="tvalue", y='value', vert='data', vert2="B",
                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
                    theme(axis.text.x=element_text(angle=90))
     ggsave(paste0("plots/tcomp_management_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
 }
-g <- ggplot(subset(tcomp.unfiltered, B==B.temp),
+g <- ggplot(tcomp.unfiltered,
       aes(x=tvalue, y=log_max_grad, color=runtime,
           size=params_on_bound_em,))+
               geom_jitter()+ facet_grid(species~data)+
@@ -193,23 +192,23 @@ ggsave("plots/tcomp_convergence_counts.png", g, width=1.25*ggwidth, height=gghei
 
 ##### For robustification
 for(spp in species){
-    g <- plot_scalar_boxplot(subset(robust.long.growth, species==spp & B==B.temp),
+    g <- plot_scalar_boxplot(subset(robust.long.growth, species==spp ),
                x="rvalue", y='value', vert='data', vert2="B",
                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
                    theme(axis.text.x=element_text(angle=90))
     ggsave(paste0("plots/robust_growth_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_scalar_boxplot(subset(robust.long.selex, species==spp & B==B.temp),
+    g <- plot_scalar_boxplot(subset(robust.long.selex, species==spp ),
                x="rvalue", y='value', vert='data', vert2="B",
                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
                    theme(axis.text.x=element_text(angle=90))
     ggsave(paste0("plots/robust_selex_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_scalar_boxplot(subset(robust.long.management, species==spp & B==B.temp),
+    g <- plot_scalar_boxplot(subset(robust.long.management, species==spp ),
                x="rvalue", y='value', vert='data', vert2="B",
                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
                    theme(axis.text.x=element_text(angle=90))
     ggsave(paste0("plots/robust_management_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
 }
-g <- ggplot(subset(robust.unfiltered, B==B.temp),
+g <- ggplot(robust.unfiltered,
       aes(x=rvalue, y=log_max_grad, color=runtime,
           size=params_on_bound_em,))+
               geom_jitter()+ facet_grid(species~data)+
