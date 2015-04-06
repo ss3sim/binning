@@ -1,3 +1,0 @@
-fleets;c(1,2)
-years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))
-Nsamp;list(10, 10)
