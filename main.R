@@ -10,8 +10,8 @@
 ### ------------------------------------------------------------
 ## Step 0: Prepare the R workspace and generate case files
 cores <- 4   # parallel cores
-devtools::install_github("ss3sim/ss3sim", ref='delete_compreport_files')
-devtools::install_github('ss3sim/ss3models', ref='increased_maxage')
+devtools::install_github("ss3sim/ss3sim")
+devtools::install_github('ss3sim/ss3models', ref='turn_on_cumreport_files')
 ## sample sizes
 Nsim.datapoor <- 200
 Nsim.datarich <- 100

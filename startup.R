@@ -23,20 +23,20 @@ registerDoParallel(cores = cores)
 library("foreach")
 message(paste(getDoParWorkers(), "cores have been registered for",
     "parallel processing."))
-
+message("Loading functions to write case files...")
 
 ### ------------------------------------------------------------
 write_cases_data <- function(spp, dir=case_folder){
     ## Data cases
-    ## Scenario 1:
-    index1 <- c('fleets;c(2)', 'years;list(seq(76,100, by=2))', 'sds_obs;list(.2)')
-    lcomp1 <- c('fleets;c(1,2)', 'years;list(c(36,46,seq(51,66,by=5),71:100), seq(76,100, by=2))', 'Nsamp;list(500/4, 500)', 'cpar;c(NA,NA)')
-    agecomp1 <- "fleets;NULL"
-    calcomp1 <- "fleets;NULL"
-    writeLines(index1, con=paste0(dir,"/", "index1-", spp, ".txt"))
-    writeLines(lcomp1, con=paste0(dir,"/", "lcomp1-", spp, ".txt"))
-    writeLines(agecomp1, con=paste0(dir,"/", "agecomp1-", spp, ".txt"))
-    writeLines(calcomp1, con=paste0(dir,"/", "calcomp1-", spp, ".txt"))
+    ## ## Scenario 1:
+    ## index1 <- c('fleets;c(2)', 'years;list(seq(76,100, by=2))', 'sds_obs;list(.2)')
+    ## lcomp1 <- c('fleets;c(1,2)', 'years;list(c(36,46,seq(51,66,by=5),71:100), seq(76,100, by=2))', 'Nsamp;list(500/4, 500)', 'cpar;c(NA,NA)')
+    ## agecomp1 <- "fleets;NULL"
+    ## calcomp1 <- "fleets;NULL"
+    ## writeLines(index1, con=paste0(dir,"/", "index1-", spp, ".txt"))
+    ## writeLines(lcomp1, con=paste0(dir,"/", "lcomp1-", spp, ".txt"))
+    ## writeLines(agecomp1, con=paste0(dir,"/", "agecomp1-", spp, ".txt"))
+    ## writeLines(calcomp1, con=paste0(dir,"/", "calcomp1-", spp, ".txt"))
     ## Scenario 2:
     index2 <- c('fleets;c(2)', 'years;list(seq(76,100, by=2))', 'sds_obs;list(.2)')
     lcomp2 <- c('fleets;c(1,2)', 'years;list(c(36,46,seq(51,66,by=5),71:100), seq(76,100, by=2))', 'Nsamp;list(500/4, 500)', 'cpar;c(NA,NA)')
@@ -55,15 +55,15 @@ write_cases_data <- function(spp, dir=case_folder){
     writeLines(lcomp3, con=paste0(dir,"/", "lcomp3-", spp, ".txt"))
     writeLines(agecomp3, con=paste0(dir,"/", "agecomp3-", spp, ".txt"))
     writeLines(calcomp3, con=paste0(dir,"/", "calcomp3-", spp, ".txt"))
-    ## Scenario 4:
-    index4 <- c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
-    lcomp4 <- c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(20, 20)', 'cpar;c(NA,NA)')
-    agecomp4 <- c('fleets;NULL')
-    calcomp4 <- c('fleets;NULL')
-    writeLines(index4, con=paste0(dir,"/", "index4-", spp, ".txt"))
-    writeLines(lcomp4, con=paste0(dir,"/", "lcomp4-", spp, ".txt"))
-    writeLines(agecomp4, con=paste0(dir,"/", "agecomp4-", spp, ".txt"))
-    writeLines(calcomp4, con=paste0(dir,"/", "calcomp4-", spp, ".txt"))
+    ## ## Scenario 4:
+    ## index4 <- c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
+    ## lcomp4 <- c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(20, 20)', 'cpar;c(NA,NA)')
+    ## agecomp4 <- c('fleets;NULL')
+    ## calcomp4 <- c('fleets;NULL')
+    ## writeLines(index4, con=paste0(dir,"/", "index4-", spp, ".txt"))
+    ## writeLines(lcomp4, con=paste0(dir,"/", "lcomp4-", spp, ".txt"))
+    ## writeLines(agecomp4, con=paste0(dir,"/", "agecomp4-", spp, ".txt"))
+    ## writeLines(calcomp4, con=paste0(dir,"/", "calcomp4-", spp, ".txt"))
     ## Scenario 5:
     index5 <- c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
     lcomp5 <-  c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(20, 20)', 'cpar;c(NA,NA)')
@@ -82,24 +82,24 @@ write_cases_data <- function(spp, dir=case_folder){
     writeLines(lcomp6, con=paste0(dir,"/", "lcomp6-", spp, ".txt"))
     writeLines(agecomp6, con=paste0(dir,"/", "agecomp6-", spp, ".txt"))
     writeLines(calcomp6, con=paste0(dir,"/", "calcomp6-", spp, ".txt"))
-    ## Scenario 7:
-    index7 <- c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
-    lcomp7 <-  c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(50, 50)', 'cpar;c(NA,NA)')
-    agecomp7 <-  c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(10, 10)', 'cpar;c(NA,NA)')
-    calcomp7 <- c('fleets;NULL')
-    writeLines(index7, con=paste0(dir,"/", "index7-", spp, ".txt"))
-    writeLines(lcomp7, con=paste0(dir,"/", "lcomp7-", spp, ".txt"))
-    writeLines(agecomp7, con=paste0(dir,"/", "agecomp7-", spp, ".txt"))
-    writeLines(calcomp7, con=paste0(dir,"/", "calcomp7-", spp, ".txt"))
-    ## Scenario 8:
-    index8 <-  c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
-    lcomp8 <-   c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(50, 50)', 'cpar;c(NA,NA)')
-    agecomp8 <-  c('fleets;NULL')
-    calcomp8 <-   c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(10, 10)')
-    writeLines(index8, con=paste0(dir,"/", "index8-", spp, ".txt"))
-    writeLines(lcomp8, con=paste0(dir,"/", "lcomp8-", spp, ".txt"))
-    writeLines(agecomp8, con=paste0(dir,"/", "agecomp8-", spp, ".txt"))
-    writeLines(calcomp8, con=paste0(dir,"/", "calcomp8-", spp, ".txt"))
+    ## ## Scenario 7:
+    ## index7 <- c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
+    ## lcomp7 <-  c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(50, 50)', 'cpar;c(NA,NA)')
+    ## agecomp7 <-  c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(10, 10)', 'cpar;c(NA,NA)')
+    ## calcomp7 <- c('fleets;NULL')
+    ## writeLines(index7, con=paste0(dir,"/", "index7-", spp, ".txt"))
+    ## writeLines(lcomp7, con=paste0(dir,"/", "lcomp7-", spp, ".txt"))
+    ## writeLines(agecomp7, con=paste0(dir,"/", "agecomp7-", spp, ".txt"))
+    ## writeLines(calcomp7, con=paste0(dir,"/", "calcomp7-", spp, ".txt"))
+    ## ## Scenario 8:
+    ## index8 <-  c('fleets;c(2)', 'years;list(c(seq(94,100,by=2)))', 'sds_obs;list(.2)')
+    ## lcomp8 <-   c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(50, 50)', 'cpar;c(NA,NA)')
+    ## agecomp8 <-  c('fleets;NULL')
+    ## calcomp8 <-   c('fleets;c(1,2)', 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))', 'Nsamp;list(10, 10)')
+    ## writeLines(index8, con=paste0(dir,"/", "index8-", spp, ".txt"))
+    ## writeLines(lcomp8, con=paste0(dir,"/", "lcomp8-", spp, ".txt"))
+    ## writeLines(agecomp8, con=paste0(dir,"/", "agecomp8-", spp, ".txt"))
+    ## writeLines(calcomp8, con=paste0(dir,"/", "calcomp8-", spp, ".txt"))
 }
 ### ------------------------------------------------------------
 
@@ -204,45 +204,6 @@ write_cases_binning <- function(spp){
     }
 
 }
-
-## OLD case files
-## External binning cases. For this the change_data function shouldn't be
-## called at all, and instead the generated data should be in 1cm bins
-## using data0. em_binning0 is to ignore it and leave unchanged for use in internal cases.
-## em_binning0 <- c('lbin_method;2', 'pop_binwidth;1', 'pop_minimum_size;8',
-##                  'pop_maximum_size;202', 'bin_vector;seq(20,160,by=1)')
-## writeLines(em_binning0, con=paste0(case_folder,"/","em_binning0-cod.txt"))
-## em_binning1 <- c('lbin_method;2', 'pop_binwidth;1', 'pop_minimum_size;8',
-##                  'pop_maximum_size;202', 'bin_vector;seq(20,160,by=2)')
-## writeLines(em_binning1, con=paste0(case_folder,"/","em_binning1-cod.txt"))
-## em_binning2 <- c('lbin_method;2', 'pop_binwidth;1', 'pop_minimum_size;8',
-##                  'pop_maximum_size;202', 'bin_vector;seq(20,160,by=4)')
-## writeLines(em_binning2, con=paste0(case_folder,"/","em_binning2-cod.txt"))
-## em_binning3 <- c('lbin_method;2', 'pop_binwidth;1', 'pop_minimum_size;8',
-##                  'pop_maximum_size;202', 'bin_vector;seq(20,160,by=13)')
-## writeLines(em_binning3, con=paste0(case_folder,"/","em_binning3-cod.txt"))
-
-## em_binning11 <- c('lbin_method;2', 'pop_binwidth;2', 'pop_minimum_size;8',
-##                  'pop_maximum_size;202', 'bin_vector;seq(20,160,by=2)')
-## writeLines(em_binning11, con=paste0(case_folder,"/","em_binning11-cod.txt"))
-## em_binning12 <- c('lbin_method;2', 'pop_binwidth;4', 'pop_minimum_size;8',
-##                  'pop_maximum_size;202', 'bin_vector;seq(20,160,by=4)')
-## writeLines(em_binning12, con=paste0(case_folder,"/","em_binning12-cod.txt"))
-## em_binning13 <- c('lbin_method;2', 'pop_binwidth;13', 'pop_minimum_size;7',
-##                  'pop_maximum_size;202', 'bin_vector;seq(20,160,by=13)')
-## writeLines(em_binning13, con=paste0(case_folder,"/","em_binning13-cod.txt"))
-
-## data2 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
-##            'pop_binwidth; 4', 'pop_minimum_size; 8',
-##            'pop_maximum_size; 202', 'lcomp_constant; 1e-10',
-##            'tail_compression; -1')
-## writeLines(data2, con=paste0(case_folder,"/", "data2-cod.txt"))
-## data3 <- c('age_bins; NULL', 'len_bins; seq(20, 160, by=1)',
-##            'pop_binwidth; 13', 'pop_minimum_size; 8',
-##            'pop_maximum_size; 203', 'lcomp_constant; 1e-10',
-##            'tail_compression; -1')
-## writeLines(data3, con=paste0(case_folder,"/", "data3-cod.txt"))
-
 
 ## End of binning files
 ### ------------------------------------------------------------
