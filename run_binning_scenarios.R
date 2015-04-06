@@ -9,7 +9,7 @@ for(spp in species){
     scenarios <- expand_scenarios(cases=list(D=c(2,3), F=1, I=0,
                                   B=B.binning), species=spp)
     run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
-               parallel=TRUE, parallel_iterations=FALSE,
+               parallel=TRUE, parallel_iterations=TRUE,
                case_folder=case_folder, om_dir=ss3model(spp, "om"),
                em_dir=ss3model(spp, "em"), case_files=case_files,
                bias_adjust=FALSE, bias_nsim=10,
@@ -21,7 +21,7 @@ for(spp in species){
     scenarios <- expand_scenarios(cases=list(D=c(5,6), F=1, I=0,
                                   B=B.binning), species=spp)
     run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
-               parallel=TRUE, parallel_iterations=FALSE,
+               parallel=TRUE, parallel_iterations=TRUE,
                case_folder=case_folder, om_dir=ss3model(spp, "om"),
                em_dir=ss3model(spp, "em"), case_files=case_files,
                bias_adjust=FALSE, bias_nsim=10,
