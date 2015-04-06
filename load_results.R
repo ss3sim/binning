@@ -158,6 +158,19 @@ binning.ts <- calculate_re(binning.ts, add=TRUE)
 ### Step 3: Load and prep the tail compression and robustification data
 ## tail compression
 tcomp <- readRDS("results/results_tcomp.sc.RData")
+
+tcomp <- readRDS("results/results_tcomp.sc.RData")
+library("magrittr")
+x <- paste(tcomp$params_stuck_low_em, collapse = ";") %>%
+  strsplit(";")
+x <- unique(x[[1]])
+x <- x[-which(x == "NA")]
+stuck <- matrix(ncol = length(x), nrow = nrow(tcomp)) %>%
+  as.data.frame %>%
+  setNames(x)
+for (i in seq_along(x)) {
+  stuck[,i] <- grepl(x[i], tcomp$params_stuck_low_em)}
+
 tcomp$params_on_bound_om <- NULL
 tcomp$log_max_grad <- log(tcomp$max_grad)
 tcomp$converged <- ifelse(tcomp$max_grad<.1 & tcomp$params_on_bound_em==0, "yes", "no")

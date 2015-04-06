@@ -52,7 +52,9 @@ df2 <- ddply(df, .(species, data, dbin, binmatch), summarize,
              MARE.sum=sum(MARE),
              median.runtime=median.runtime[1])
 df2$binwidth <- with(df2, as.numeric(gsub("dbin=","", x=dbin)))
-g <- ggplot(df2, aes(log(median.runtime), log(MARE.median), size=binwidth, color=binmatch))+geom_point()+facet_grid(data~species)
+g <- ggplot(df2, aes(log(median.runtime), log(MARE.median), size=binwidth,
+                     color=binmatch))+geom_point()+facet_grid(data~species,
+                     scales='free')
 ggsave('plots/binning_performance_tradeoffs.png', g,  width=7, height=5)
 
 
