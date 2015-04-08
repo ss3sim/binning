@@ -56,4 +56,7 @@ source("load_results.R")
 ## Step 5: Make plots (not in paper), figures (in paper) and tables
 source("make_plots.R")
 source("make_tables.R")
+## use a minimum number of converged iterations for plotting scenario
+## relative errors
+count.min <- 10
 source("make_figures.R")
