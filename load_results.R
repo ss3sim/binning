@@ -26,7 +26,7 @@ bin.cases.df <-
                      pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
                      B=paste0("B",B.binning)))
 data.cases.df <-
-    data.frame(D=paste0("D",D.binning), data=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
+    data.frame(D=paste0("D",D.binning), data=c("Rich:A+L", "Rich:C+L", "Poor:A+L", "Poor:C+L"))
 tcomp.cases.df <-
     data.frame(species=rep(c('cod','flatfish','yellow'),each=4),
                tvalue=paste0("tcomp=", c(-1, 1e-3, 0.01, 0.1)),
@@ -40,7 +40,7 @@ bin.cases.df$pbin <- factor(bin.cases.df$pbin, levels= c("pbin=1",  "pbin=2", "p
                              "pbin=10",  "pbin=12", "pbin=20", "pbin=24"))
 bin.cases.df$dbin <- factor(bin.cases.df$dbin, levels=c("dbin=1",  "dbin=2", "dbin=4" , "dbin=5",
                              "dbin=10",  "dbin=12", "dbin=20", "dbin=24"))
-data.cases.df$data <- factor(data.cases.df$data, levels=c("Rich; A+L", "Rich; C+L", "Poor; A+L", "Poor; C+L"))
+data.cases.df$data <- factor(data.cases.df$data, levels=c("Rich:A+L", "Rich:C+L", "Poor:A+L", "Poor:C+L"))
 robust.cases.df$rvalue <- factor(robust.cases.df$rvalue,
           levels=c("robust=1e-10", "robust=1e-05", "robust=0.001",
           "robust=0.01"))
@@ -58,7 +58,8 @@ binning$runtime <- (binning$RunTime)
 binning <- merge(binning, bin.cases.df, by=c("species", "B"))
 binning <- merge(binning, data.cases.df, by=c("D"))
 binning$data.binwidth <- with(binning, as.numeric(gsub("dbin=", "", x=dbin)))
-binning$binmatch <- with(binning, ifelse(pbin=="pbin=1" & dbin!="dbin=1", "no match", "match"))
+binning$binmatch <-
+    with(binning, ifelse(pbin=="pbin=1", "pbin=1cm", "pbin=dbin"))
 binning.counts <- ddply(binning, .(data,data.binwidth, binmatch,species), summarize,
                           replicates=length(scenario),
                           pct.converged=100*mean(converged=="yes"))
@@ -94,7 +95,7 @@ selex.names <- re.names[grep("Sel_", re.names)]
 binning.long.selex <- droplevels(subset(binning.long, variable %in% selex.names))
 binning.long.selex$variable <- gsub("ery|ey|Size|_re", "", binning.long.selex$variable)
 binning.long.selex$variable <- gsub("_", ".", binning.long.selex$variable)
-management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re", "Catch_endyear_re")
+management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
 binning.long.management <- droplevels(subset(binning.long, variable %in% management.names))
 binning.long.management$variable <- gsub("_re", "", binning.long.management$variable)
 figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
@@ -158,8 +159,6 @@ binning.ts <- calculate_re(binning.ts, add=TRUE)
 ### Step 3: Load and prep the tail compression and robustification data
 ## tail compression
 tcomp <- readRDS("results/results_tcomp.sc.RData")
-
-tcomp <- readRDS("results/results_tcomp.sc.RData")
 library("magrittr")
 x <- paste(tcomp$params_stuck_low_em, collapse = ";") %>%
   strsplit(";")
@@ -202,6 +201,10 @@ tcomp.long.selex$variable <- gsub("_", ".", tcomp.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
 tcomp.long.management <- droplevels(subset(tcomp.long, variable %in% management.names))
 tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable)
+figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
+tcomp.long.figure <- droplevels(subset(tcomp.long, variable %in% figure.names))
+tcomp.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", tcomp.long.figure$variable)
+
 ## robustification
 robust <- readRDS("results/results_robust.sc.RData")
 robust$params_on_bound_om <- NULL
@@ -235,5 +238,9 @@ robust.long.selex$variable <- gsub("_", ".", robust.long.selex$variable)
 management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
 robust.long.management <- droplevels(subset(robust.long, variable %in% management.names))
 robust.long.management$variable <- gsub("_re", "", robust.long.management$variable)
+figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
+robust.long.figure <- droplevels(subset(robust.long, variable %in% figure.names))
+robust.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", robust.long.figure$variable)
+
 ## End tcomp and robust
 ### ------------------------------------------------------------
