@@ -57,15 +57,6 @@ for(spp in species){
             facet_grid(species~dbin+pbin)+
                 geom_hline(yintercept=log(.01), col='red')
     ggsave(paste0("plots/binning_convergence_", spp, ".png"),g, width=ggwidth, height=ggheight)
-    g <- ggplot(subset(binning.unfiltered, species==spp & binmatch=="no match"), aes(x=dbin, y=runtime, size=params_on_bound_em, color=converged))+
-        geom_jitter(alpha=.5)+ ylab("Runtime (minutes)")+
-            facet_grid(data~pbin) +
-                theme(axis.text.x=element_text(angle=90))#+ylim(0, 3)
-    ggsave(paste0("plots/binning_runtime_", spp, ".png"),g, width=ggwidth, height=ggheight)
-    g <- ggplot(subset(binning.unfiltered, species==spp & binmatch=="match"), aes(x=pbin, y=runtime, size=params_on_bound_em, color=converged))+
-        geom_jitter(alpha=.5)+ ylab("Runtime (minutes)")+
-            facet_grid(data~.) +  theme(axis.text.x=element_text(angle=90))#+ylim(0, 3)
-    ggsave(paste0("plots/binning_runtime_", spp, "2.png"),g, width=ggwidth, height=ggheight)
     ## Plot MAREs vs iteration to address stability
     g <- ggplot(data=subset(binning.long.growth.mares, species==spp), aes(x=replicate2, y=cMARE, group=variable, color=variable))+
         ylab("Centered MARE") +xlab("Replicate")
@@ -79,17 +70,17 @@ for(spp in species){
         ylab("Centered MARE") +xlab("Replicate")
     g <- g+geom_line(lwd=.5, alpha=1)+facet_grid(B~data)+ ylim(-.25, .25)
     ggsave(paste0("plots/binning_selex_MAREs_",spp, ".png"), width=ggwidth, height=ggheight, units="in")
-    ## time series plots
-    myylim <- ylim(-3,3)
-    g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="SpawnBio_re", horiz="data",
-                         vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
-    ggsave(paste0("plots/binning_ts_SBB_", spp, ".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="Recruit_0_re", horiz="data",
-                         vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
-    ggsave(paste0("plots/binning_ts_recruits_", spp, ".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="F_re", horiz="data",
-                         vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
-    ggsave(paste0("plots/binning_ts_F_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    ## ## time series plots
+    ## myylim <- ylim(-3,3)
+    ## g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="SpawnBio_re", horiz="data",
+    ##                      vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
+    ## ggsave(paste0("plots/binning_ts_SBB_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    ## g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="Recruit_0_re", horiz="data",
+    ##                      vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
+    ## ggsave(paste0("plots/binning_ts_recruits_", spp, ".png"),g, width=ggwidth, height=ggheight)
+    ## g <- plot_ts_boxplot(subset(binning.ts, species==spp), y="F_re", horiz="data",
+    ##                      vert="dbin", vert2="pbin", print=FALSE, rel=FALSE)+myylim
+    ## ggsave(paste0("plots/binning_ts_F_", spp, ".png"),g, width=ggwidth, height=ggheight)
     g <- ggplot(subset(binning.long.growth2, species==spp & B %in% c("B1","B2", "B3", "B4")), aes(x=B0, y=value, color=B)) + geom_point(alpha=.5)+
         facet_wrap('variable', scales='fixed')+xlim(-1,1)+ylim(-1,1) +           ggtitle("Pairwise RE with base case for unmatching bins")+
             geom_hline(yintercept=0, col=gray(.5))+geom_vline(xintercept=0, col=gray(.5))
@@ -101,9 +92,13 @@ for(spp in species){
     ggsave(paste0("plots/binning_scatter2_", spp, ".png"),g, width=ggwidth, height=ggheight)
 }
 g <- ggplot(binning.counts, aes(x=data.binwidth, y=pct.converged, color=binmatch, group=binmatch))+
-    geom_line()+ facet_grid(species~data, scales='free') +
+    geom_line()+ facet_grid(species~data, scales='fixed') +
         theme(axis.text.x=element_text(angle=90))
 ggsave("plots/binning_convergence_counts.png", g, width=ggwidth, height=ggheight)
+g <- ggplot(binning.counts, aes(x=data.binwidth, y=median.iterations, color=binmatch, group=binmatch))+
+    geom_point(aes(size=pct.converged))+ facet_grid(species~data, scales='free') + geom_line()+
+        theme(axis.text.x=element_text(angle=90))
+ggsave("plots/binning_convergence_iterations.png", g, width=ggwidth, height=ggheight)
 g <- ggplot(binning.runtime, aes(x=dbin, y=median.runtime, color=binmatch, group=binmatch))+
     geom_line()+ facet_grid(species~data, scales='free') +
     theme(axis.text.x=element_text(angle=90))+
@@ -115,7 +110,7 @@ ggsave("plots/binning_median_runtime.png", g, width=ggwidth, height=ggheight)
 ##     facet_grid(variable~species+B, scales="free_y")
 ## ggplot(scenarios.converged, aes(B, pct.converged))+geom_point()+facet_grid(species~data)
 
-x
+
 ## ## Temp code to explore correlations, needs to be fixed
 ## temp <- subset(binning, species=='cod')
 ## ggplot(temp, aes(L_at_Amin_Fem_GP_1_re, CV_young_Fem_GP_1_re))+

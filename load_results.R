@@ -14,16 +14,16 @@ popbins.maxsize$max.Linf.ratio <- with(popbins.maxsize, maxsize/Linf)
 ### Step 1: Make some quick data.frames to rename ggplot factors
 bin.cases.df <-
     rbind(data.frame(species=c('cod'),
-                     dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
-                     pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
+                     dbin=paste0("dbin=",c(1,2,5,10,20, 2,5,10,20)),
+                     pbin=paste0("pbin=", c(1,1,1,1,1, 2,5,10,20)),
                      B=paste0("B",B.binning)),
           data.frame(species=c('flatfish'),
                      dbin=paste0("dbin=",c(1,2,5,10,20, 2,5,10,20)),
                      pbin=paste0("pbin=", c(1,1,1,1,1, 2,5,10,20)),
                      B=paste0("B",B.binning)),
           data.frame(species=c('yellow'),
-                     dbin=paste0("dbin=",c(1,2,4,12,24, 2,4,12,24)),
-                     pbin=paste0("pbin=", c(1,1,1,1,1, 2,4,12,24)),
+                     dbin=paste0("dbin=",c(1,2,5,10,20, 2,5,10,20)),
+                     pbin=paste0("pbin=", c(1,1,1,1,1, 2,5,10,20)),
                      B=paste0("B",B.binning)))
 data.cases.df <-
     data.frame(D=paste0("D",D.binning), data=c("Rich:A+L", "Rich:C+L", "Poor:A+L", "Poor:C+L"))
@@ -62,7 +62,9 @@ binning$binmatch <-
     with(binning, ifelse(pbin=="pbin=1", "pbin=1cm", "pbin=dbin"))
 binning.counts <- ddply(binning, .(data,data.binwidth, binmatch,species), summarize,
                           replicates=length(scenario),
-                          pct.converged=100*mean(converged=="yes"))
+                          pct.converged=100*mean(converged=="yes"),
+                        median.iterations=median(Niterations),
+                        median.runtime=median(runtime))
 ## ## Get counts of which params were stuck
 ## z <- unique(do.call(c, strsplit(binning$params_stuck_low_em, split=';')))
 ## sapply(binning$params_stuck_low_em, function(i)
