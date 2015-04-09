@@ -8,7 +8,7 @@ width <- 7                             # inches
 height <- 5
 col.label <- gray(.2)
 col.border <- gray(.5)
-col.tick <- gray(.3)
+col.tick <- gray(.2)
 print.letter <- function(label="(a)",xy=c(0.1,0.925),...) {
     tmp <- par("usr")
     text.x <- tmp[1]+xy[1]*diff(tmp[1:2])   #x position, diff=difference

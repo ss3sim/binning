@@ -48,7 +48,7 @@ get_om_values <- function(species, binwidth, F_case="F1",
 
 ## Run the OM across bin widths for species. First do the scalar quantities
 ## which are in equilibrium so process error and F don't matter.
-binwidth <- 1:24
+binwidth <- 1:20
 popbins.binwidth.scalars <-
     ldply(F.cases, function(Fcase)
     ldply(species, function(spp)
@@ -69,7 +69,7 @@ saveRDS(popbins.binwidth.scalars, file='results/popbins.binwidth.scalars.RData')
 
 ## Run the OM across bin widths for species. Now do the time series which
 ## do depend on F and recdevs
-binwidth <- 1:24
+binwidth <- c(1,2,5,10,20)
 temp <-
     ldply(F.cases, function(Fcase)
     ldply(species, function(spp)
