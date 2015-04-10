@@ -18,7 +18,7 @@
 0 # F scalar (only used for Do_Forecast==5)
 #_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF  (enter actual year, or values of 0 or -integer to be rel. endyr)
  0 0 0 0
-#  1918987586 1699897195 1113540204 1936290657 # after processing 
+#  1413960770 1918989407 7628135 115 # after processing 
 0 # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) 
 0 # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) 
 0 # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) 

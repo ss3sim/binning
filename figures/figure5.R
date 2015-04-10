@@ -4,12 +4,13 @@ d <- ddply(d, .(species, dbin, variable), summarize,
             MARE=median(abs(value)),
             MRE=median(value),
             median.runtime=median(runtime),
-            count=length(value))
+            count=length(value),
+           pct.converged=pct.converged[1])
 d$binwidth <- with(d, as.numeric(gsub("dbin=","", x=dbin)))
 d <- ddply(d, .(species, variable), mutate,
       relative.runtime=median.runtime/median.runtime[which(binwidth==1)])
-d <- subset(d, count >= count.min & binwidth != 20)
 range(d$relative.runtime)
+range(d$MRE)
 
 ## ## get some measure of total MARE by plying over variable
 ## df2 <- ddply(df, .(species, data, dbin, binmatch), summarize,
@@ -41,7 +42,6 @@ myletters <- c(letters, "aa", "ab")
 for(i in seq_along(species)){
     for(j in seq_along(myvariables)){
         d.temp <- d[d$species==species[i] & d$variable==myvariables[j],]
-        d.temp <- subset(d, species==myspecies[i] & variable==myvariables[j])
         pch.cex <- .5*seq_along(d.temp$binwidth)
         plot(0,0, type='n', xlim=c(.2,1.1), ylim=c(-.24,.24), axes=FALSE, ann=FALSE)
         abline(h=0, col=col.border, lty=2)

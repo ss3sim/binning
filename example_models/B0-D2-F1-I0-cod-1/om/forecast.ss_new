@@ -18,15 +18,15 @@
 0 # F scalar (only used for Do_Forecast==5)
 #_Fcast_years:  beg_selex, end_selex, beg_relF, end_relF  (enter actual year, or values of 0 or -integer to be rel. endyr)
  0 0 0 0
-#  1918987586 1699897195 1113540204 1936290657 # after processing 
+#  1180659524 1667592815 7631713 29440 # after processing 
 0 # Control rule method (1=catch=f(SSB) west coast; 2=F=f(SSB) ) 
 0 # Control rule Biomass level for constant F (as frac of Bzero, e.g. 0.40); (Must be > the no F level below) 
 0 # Control rule Biomass level for no F (as frac of Bzero, e.g. 0.10) 
 0 # Control rule target as fraction of Flimit (e.g. 0.75) 
-0 #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)
-0 #_First forecast loop with stochastic recruitment
-0 #_Forecast loop control #3 (reserved for future bells&whistles) 
-0 #_Forecast loop control #4 (reserved for future bells&whistles) 
+1918987586 #_N forecast loops (1=OFL only; 2=ABC; 3=get F from forecast ABC catch with allocations applied)
+1699897195 #_First forecast loop with stochastic recruitment
+1113540204 #_Forecast loop control #3 (reserved for future bells&whistles) 
+1936290657 #_Forecast loop control #4 (reserved for future bells&whistles) 
 0 #_Forecast loop control #5 (reserved for future bells&whistles) 
 0  #FirstYear for caps and allocations (should be after years with fixed inputs) 
 0 # stddev of log(realized catch/target catch) in forecast (set value>0.0 to cause active impl_error)

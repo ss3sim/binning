@@ -1,6 +1,6 @@
 #V3.24O
-#_SS-V3.24O-safe-win64;_04/10/2013;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1
-#_Start_time: Mon Apr 06 22:23:40 2015
+#_SS-V3.24O-safe-win32;_04/10/2013;_Stock_Synthesis_by_Richard_Methot_(NOAA)_using_ADMB_11.1
+#_Start_time: Fri Apr 10 14:25:16 2015
 #_Number_of_datafiles: 2
 #C data file created using the SS_writedat function in the R package r4ss
 #C should work with SS version: 

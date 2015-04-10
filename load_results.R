@@ -145,7 +145,6 @@ binning.long.selex.mares <- ddply(binning.long.selex, .(species, data, B, variab
 ## bias.all.long$species <- do.call(rbind, strsplit(bias.all.long$scenario, split='-'))[,6]
 ## scenarios.converged <- ddply(bias.all.long, .(species, data, B), summarize,
 ##                              pct.converged=mean(converged))
-
 ## ## read in the time series data
 ## binning.ts <- readRDS("results/results_binning.ts.RData")
 ## binning.ts <- merge(binning.ts, subset(binning.unfiltered, select=c("ID",'converged')), by="ID")
@@ -227,6 +226,76 @@ tcomp.stuck.high <- ddply(tcomp.stuck.high, .(species, D, I, variable), summariz
 tcomp.stuck.high$which.bound <- "high"
 tcomp.stuck <- subset(rbind(tcomp.stuck.low, tcomp.stuck.high), pct.stuck>0)
 tcomp.stuck$variable <- gsub("Size|_Fem_GP_1", "", tcomp.stuck$variable)
+
+robust <- readRDS("results/results_robust.sc.RData")
+## process the main results
+robust$params_on_bound_om <- NULL
+robust$log_max_grad <- log(robust$max_grad)
+robust$converged <- ifelse(robust$max_grad<.1 & robust$params_on_bound_em==0, "yes", "no")
+robust <- calculate_re(robust, add=TRUE)
+robust$runtime <- robust$RunTime
+robust <- merge(robust, robust.cases.df, by=c("species", "I"))
+robust <- merge(robust, data.cases.df, by=c("D"))
+## Drop fixed params (columns of zeroes)
+robust$RecrDist_GP_1_re <- NULL
+robust <- robust[,-which(apply(robust, 2, function(x) all(x==0)))]
+robust <- ddply(robust, "scenario", mutate, pct.converged=mean(converged=="yes"))
+robust.unfiltered <- robust
+robust <- droplevels(subset(robust, converged=="yes"))
+robust.counts <- ddply(robust.unfiltered, .(rvalue, B, species, data), summarize,
+                          replicates=length(scenario),
+                          pct.converged=100*mean(converged=="yes"))
+re.names <- names(robust)[grep("_re", names(robust))]
+robust.long <-
+    melt(robust, measure.vars=re.names, id.vars=
+             c("species","replicate", "data", "B", "pct.converged",
+               "rvalue", "log_max_grad", "params_on_bound_em",
+               "runtime"))
+growth.names <- re.names[grep("GP_", re.names)]
+robust.long.growth <- droplevels(subset(robust.long, variable %in% growth.names))
+robust.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", robust.long.growth$variable)
+selex.names <- re.names[grep("Sel_", re.names)]
+robust.long.selex <- droplevels(subset(robust.long, variable %in% selex.names))
+robust.long.selex$variable <- gsub("ery|ey|Size|_re", "", robust.long.selex$variable)
+robust.long.selex$variable <- gsub("_", ".", robust.long.selex$variable)
+management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
+robust.long.management <- droplevels(subset(robust.long, variable %in% management.names))
+robust.long.management$variable <- gsub("_re", "", robust.long.management$variable)
+figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
+robust.long.figure <- droplevels(subset(robust.long, variable %in% figure.names))
+robust.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", robust.long.figure$variable)
+## This is a crazy way to get which params get stuck for which scenarios
+library("magrittr")
+x.low <- paste(robust.unfiltered$params_stuck_low_em, collapse = ";") %>%
+  strsplit(";")
+x.low <- unique(x.low[[1]])
+x.low <- x.low[-which(x.low == "NA")]
+stuck.low <- matrix(ncol = length(x.low), nrow = nrow(robust.unfiltered)) %>%
+  as.data.frame %>%
+  setNames(x.low)
+for (i in seq_along(x.low)) {
+  stuck.low[,i] <- grepl(x.low[i], robust.unfiltered$params_stuck_low_em)}
+robust.stuck.low <- cbind(robust.unfiltered[, c("species", "D", "I")], stuck.low)
+robust.stuck.low <- melt(robust.stuck.low, id.vars=c("species", "D","I"))
+robust.stuck.low <- ddply(robust.stuck.low, .(species, D, I, variable), summarize, pct.stuck=mean(value))
+robust.stuck.low$which.bound <- "low"
+x.high <- paste(robust.unfiltered$params_stuck_high_em, collapse = ";") %>%
+  strsplit(";")
+x.high <- unique(x.high[[1]])
+x.high <- x.high[-which(x.high == "NA")]
+stuck.high <- matrix(ncol = length(x.high), nrow = nrow(robust.unfiltered)) %>%
+  as.data.frame %>%
+  setNames(x.high)
+for (i in seq_along(x.high)) {
+  stuck.high[,i] <- grepl(x.high[i], robust.unfiltered$params_stuck_high_em)}
+robust.stuck.high <- cbind(robust.unfiltered[, c("species", "D", "I")], stuck.high)
+robust.stuck.high <- melt(robust.stuck.high, id.vars=c("species", "D","I"))
+robust.stuck.high <- ddply(robust.stuck.high, .(species, D, I, variable), summarize, pct.stuck=mean(value))
+robust.stuck.high$which.bound <- "high"
+robust.stuck <- subset(rbind(robust.stuck.low, robust.stuck.high), pct.stuck>0)
+robust.stuck$variable <- gsub("Size|_Fem_GP_1", "", robust.stuck$variable)
+
+
 
 
 

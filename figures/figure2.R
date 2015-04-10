@@ -1,28 +1,28 @@
 ## stripped this out of SSplotSelex -- just grabbed the pieces we need
-extract.data <- function(replist){
+extract.data <- function(replist, fl=1){
     attach(replist)
-        growdat <- replist$endgrowth
-        growdatF <- growdat[growdat$Gender == 1 & growdat$Morph == mainmorphs[1], ]
-        growdatF$Sd_Size <- growdatF$SD_Mid
-        growdatF$high <- qnorm(0.975, mean = growdatF$Len_Mid, sd = growdatF$Sd_Size)
-        growdatF$low <- qnorm(0.025, mean = growdatF$Len_Mid, sd = growdatF$Sd_Size)
-        plotlenselex <- as.numeric(sizeselex[sizeselex$Factor ==
-                                             "Lsel" & sizeselex$year == endyr & sizeselex$Fleet ==
-                                             1 & sizeselex$gender == 1, -(1:5)])
-        plotageselex <-
-            as.numeric(ageselex[ageselex$factor ==
-                                "Asel" & ageselex$year == endyr & ageselex$fleet ==
-                                1 & ageselex$gender == 1, -(1:7)])
-        x <- seq(0, accuage, by = 1)
-        y <- lbinspop
-        z <- plotageselex %o% plotlenselex
-    temp <- subset(replist$lendbase, Fleet==1, select=c("Bin", "Exp", "Yr"))
-    lencomp <- ddply(temp, .(Bin), summarize, mean.exp=mean(Exp/N))
-    temp <- subset(replist$agedbase, Fleet==1, select=c("Bin", "Exp", "Yr"))
+    on.exit(detach(replist))
+    growdat <- replist$endgrowth
+    growdatF <- growdat[growdat$Gender == 1 & growdat$Morph == mainmorphs[1], ]
+    growdatF$Sd_Size <- growdatF$SD_Mid
+    growdatF$high <- qnorm(0.975, mean = growdatF$Len_Mid, sd = growdatF$Sd_Size)
+    growdatF$low <- qnorm(0.025, mean = growdatF$Len_Mid, sd = growdatF$Sd_Size)
+    plotlenselex <- as.numeric(sizeselex[sizeselex$Factor ==
+                                         "Lsel" & sizeselex$year == endyr & sizeselex$Fleet ==
+                                         fl & sizeselex$gender == 1, -(1:5)])
+    plotageselex <-
+        as.numeric(ageselex[ageselex$factor ==
+                            "Asel" & ageselex$year == endyr & ageselex$fleet ==
+                            1 & ageselex$gender == 1, -(1:7)])
+    x <- seq(0, accuage, by = 1)
+    y <- lbinspop
+    z <- plotageselex %o% plotlenselex
+    temp <- replist$lendbase[replist$lendbase$Fleet==fl, c("Bin", "Exp", "Yr")]
+    lencomp <- ddply(temp, .(Bin), summarize, mean.exp=mean(Exp))
+    temp <- replist$agedbase[replist$agedbase$Fleet==fl, c("Bin", "Exp", "Yr")]
     agecomp <- ddply(temp, .(Bin), summarize, mean.exp=mean(Exp))
-        xx <- list(x=x, y=y, z=z, mid=growdatF$Len_Mid, low=growdatF$low,
-                   high=growdatF$high, lencomp=lencomp, agecomp=agecomp)
-    detach(replist)
+    xx <- list(x=x, y=y, z=z, mid=growdatF$Len_Mid, low=growdatF$low,
+               high=growdatF$high, lencomp=lencomp, agecomp=agecomp)
     return(xx)
 }
 add.lines <- function(x, low, mid, high){
@@ -34,13 +34,16 @@ add.lines <- function(x, low, mid, high){
     lines(x, low, col = col1, lwd = 1, lty = "dashed")
 }
 ## read in the data once
-flatfish <- extract.data(r4ss::SS_output(file.path("B0-D2-F1-I0-flatfish", "1", "om/"), covar=F, forecast=F,
-                           ncols=300, readwt=FALSE, printstats=FALSE, verbose=FALSE))
-cod <- extract.data(r4ss::SS_output(file.path("B0-D2-F1-I0-cod", "1", "om/"), covar=F, forecast=F,
-                           ncols=300, readwt=FALSE, printstats=FALSE, verbose=FALSE))
-yellow <- extract.data(r4ss::SS_output(file.path("xB0-D2-F1-I0-yellow/", "1", "om/"), covar=F, forecast=F,
-                           ncols=300, readwt=FALSE, printstats=FALSE, verbose=FALSE))
-replist.list <- list(flatfish,cod,yellow)
+flatfish <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-flatfish-1", "om/"), covar=F, forecast=F,
+                           ncols=300, readwt=FALSE, printstats=FALSE,
+                                         verbose=FALSE, NoCompOK=TRUE))
+cod <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-cod-1", "om/"), covar=F, forecast=F,
+                           ncols=300, readwt=FALSE, printstats=FALSE,
+                                         verbose=FALSE, NoCompOK=TRUE))
+yellow <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-yellow-1", "om/"), covar=F, forecast=F,
+                           ncols=300, readwt=FALSE, printstats=FALSE,
+                                         verbose=FALSE, NoCompOK=TRUE))
+replist.list <- list(cod,flatfish, yellow)
 
 ## start of figure
 make.file("png", filename="figures/figure2_expdesign.png", width=width,
@@ -49,7 +52,7 @@ col1 <- 'black'
 par(mar=c(2,.5,.5,.75), tck=-0.015, oma=c(.5,2,0,0),
     mgp=c(.5, .075,0), mfcol=c(1,1), cex.lab=.9, cex.axis=.9,
     col.axis=col.label, xpd=TRUE)
-bin.widths <- list(c(2,5,10,20), c(2,4,12,24), c(2,4,12,24))
+bin.widths <- list(c(2,5,10,20), c(2,5,10,20), c(2,5,10,20))
 n.contours <- 6
 ## cols.palette <- RColorBrewer::brewer.pal(n.contours, "Blues")
 cols.palette <- rev(gray.colors(n.contours))
@@ -77,7 +80,7 @@ with(replist.list[[i]],{
     axis(2, col=col.border, mgp=par()$mgp, tck=par()$tck)
     mtext("Age", side=1, line=1, cex=par()$cex.lab)
     if(i==1) mtext("Length (cm)", side=2, line=1,cex=par()$cex.lab)
-    mtext(c("Flatfish", "Cod", "Rockfish")[i], side=3, line=-1.6, cex=par()$cex.lab*1.1)
+    mtext(c("Cod","Flatfish", "Rockfish")[i], side=3, line=-1.6, cex=par()$cex.lab*1.1)
 })}
 cex.fishery <- 1.25
 cex.survey <- 1
@@ -93,7 +96,7 @@ with(agecomp2, points(years[[1]], y=rep(1, len=length(years[[1]])), cex=cex.fish
 with(agecomp2, points(years[[2]], y=rep(1.25, len=length(years[[2]])), cex=cex.survey, pch=16))
 points(x=25:100, y=rep(3.75, len=76), cex=cex.fishery)
 axis(1, at=seq(25,100, by=25), col=col.border, mgp=par()$mgp, tck=par()$tck)
-text(x=90, y=c(1.5,2.5,3.25,4), labels=c("Lengths", "Ages", "Index", "Catches"))
+text(x=90, y=c(1.5,2.5,3.25,4), labels=c("Lengths (N=", "Ages", "Index", "Catches"))
 mtext("Data Rich", side=3, line=-1.6, cex=1)
 box(col=col.border)
 ## add data poor
