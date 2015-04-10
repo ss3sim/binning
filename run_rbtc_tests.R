@@ -45,7 +45,7 @@ for(spp in species){
                em_dir=ss3model(spp, "em"), case_files=case_files)
 }
 ## Read in results
-scenarios.robust.all <- expand_scenarios(cases=list(D=c(2,3,5,6), F=1, I=11:14, B=0), species=species)
+scenarios.robust.all <- expand_scenarios(cases=list(D=c(2,3,5,6), F=1, I=21:24, B=0), species=species)
 get_results_all(user=scenarios.robust.all, parallel=TRUE, over=TRUE)
 xx <- read.csv("ss3sim_scalar.csv")
 saveRDS(xx, file="results/results_robust.sc.RData")
