@@ -65,5 +65,5 @@ mtext("Data Poor", side=2, line=.9, cex=.6, outer=TRUE, at=.25)
 mtext("Robustification Constant", side=1, line=1.95, cex=par()$cex.lab, outer=TRUE)
 mtext("Relative Error", side=2, line=1.7, cex=par()$cex.lab, outer=TRUE)
 dev.off()
-
 }
+
