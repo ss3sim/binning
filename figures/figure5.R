@@ -1,5 +1,8 @@
+## performance tradeoffs
+
 ## manipulate the existing long data frame into what we want for plotting
-d <- droplevels(subset(binning.long.figure, binmatch=="pbin=1cm" & data ==c("Rich:C+L")))
+d <- droplevels(subset(binning.long.figure, binmatch=="pbin=1cm" & data
+                       ==c("Rich:C+L") & pct.converged > .5))
 d <- ddply(d, .(species, dbin, variable), summarize,
             MARE=median(abs(value)),
             MRE=median(value),
@@ -7,6 +10,7 @@ d <- ddply(d, .(species, dbin, variable), summarize,
             count=length(value),
            pct.converged=pct.converged[1])
 d$binwidth <- with(d, as.numeric(gsub("dbin=","", x=dbin)))
+d <- subset(d, binwidth < 20)
 d <- ddply(d, .(species, variable), mutate,
       relative.runtime=median.runtime/median.runtime[which(binwidth==1)])
 range(d$relative.runtime)
@@ -27,14 +31,14 @@ range(d$MRE)
 make.file(file.type, filename='figures/figure5_tradeoffs.png',
           res=500, width=width, height=4)
 par(mar=c(0,0,0,0), tck=-0.03, oma=c(2.5,3.5,1.5,.5),
-    mgp=c(.5, .2,0), mfrow=c(3,7), cex.lab=.8, cex.axis=.75,
+    mgp=c(.5, .2,0), mfrow=c(3,7), cex.lab=.9, cex.axis=.8,
     col.axis=col.label, xpd=FALSE)
 myvariables <- c("CV_young", "CV_old", "L_at_Amin", "L_at_Amax",
-                 "VonBert_K", "SSB_MSY", "depletion")
+                 "VonBert_K", "SSB_MSY", "depletion")[c(6,7, 1:5)]
 myvariables.labels <- c(expression(CV[young]), expression(CV[old]),
                         expression(L[min]), expression(L[infinity]),
                         expression(italic(k)), expression(SSB[MSY]),
-                        "Depletion")
+                        "Depletion")[c(6,7, 1:5)]
 myspecies <- species
 species.labels <- c("cod", "flatfish", "rockfish")
 xy <- c(.1, .05); k <- 1
@@ -43,13 +47,13 @@ for(i in seq_along(species)){
     for(j in seq_along(myvariables)){
         d.temp <- d[d$species==species[i] & d$variable==myvariables[j],]
         pch.cex <- .5*seq_along(d.temp$binwidth)
-        plot(0,0, type='n', xlim=c(.2,1.1), ylim=c(-.24,.24), axes=FALSE, ann=FALSE)
+        plot(0,0, type='n', xlim=c(.27,1.05), ylim=c(-.17,.17), axes=FALSE, ann=FALSE)
         abline(h=0, col=col.border, lty=2)
         ## only make plots if had enough converged iterations
         with(d.temp, lines(x=relative.runtime, y=MRE, pch=16, col=gray(.5), lwd=1.5))
         with(d.temp, points(x=relative.runtime, y=MRE, pch=16, cex=pch.cex,
                             col=rgb(0,0,0,.5)))
-        print.letter(paste0("(", myletters[k], ")"), xy=xy, cex=.7); k <- k+1
+        print.letter(paste0("(", myletters[k], ")"), xy=xy, cex=.8); k <- k+1
         if( i==1 & j==1)
             legend("top", legend=c(1,2,5,10), pch=16, pt.cex=pch.cex,
                    bty='n',horiz=TRUE, cex=.7, adj=0, xjust=3, col=rgb(0,0,0,.5),
@@ -64,7 +68,7 @@ for(i in seq_along(species)){
         box(col=col.border)
     }
 }
-mtext("Relative Run Time", side=1, line=1.1, cex=par()$cex.lab, outer=TRUE)
+mtext("Relative Run Time", side=1, line=1.25, cex=par()$cex.lab, outer=TRUE)
 mtext("Median Relative Error", side=2, line=2, cex=par()$cex.lab, outer=TRUE)
 dev.off()
 

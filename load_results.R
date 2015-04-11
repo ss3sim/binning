@@ -53,6 +53,7 @@ robust.cases.df$rvalue <- factor(robust.cases.df$rvalue,
 binning <- readRDS("results/results_binning.sc.RData")
 binning$log_max_grad <- log(binning$max_grad)
 binning$converged <- ifelse(binning$max_grad<.1 & binning$params_on_bound_em==0, "yes", "no")
+binning <- ddply(binning, "scenario", mutate, pct.converged=mean(converged=="yes"))
 binning <- calculate_re(binning, add=TRUE)
 binning$runtime <- (binning$RunTime)
 binning <- merge(binning, bin.cases.df, by=c("species", "B"))
@@ -87,7 +88,7 @@ re.names <- names(binning)[grep("_re", names(binning))]
 binning.long <-
     melt(binning, measure.vars=re.names, id.vars=
              c("species","replicate", "data", "B", "dbin", "binmatch",
-               "data.binwidth",
+               "data.binwidth", "pct.converged",
                "pbin", "log_max_grad", "params_on_bound_em",
                "runtime"))
 growth.names <- re.names[grep("GP_", re.names)]
@@ -341,3 +342,11 @@ robust.stuck$variable <- gsub("Size|_Fem_GP_1", "", robust.stuck$variable)
 
 ## End tcomp and robust
 ### ------------------------------------------------------------
+
+
+## Verify that these particular replicates are the same since they should
+## be
+print("these should be the same:")
+print(rbind(binning[binning$scenario=='B0-D2-F1-I0-cod' & binning$replicate == 1,  c("depletion_em", "depletion_om")],
+tcomp[tcomp$scenario=='B0-D2-F1-I11-cod' & tcomp$replicate == 1, c("depletion_em", "depletion_om")],
+robust[robust$scenario=='B0-D2-F1-I21-cod' & robust$replicate == 1,  c("depletion_em", "depletion_om")]))

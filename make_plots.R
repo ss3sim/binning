@@ -145,6 +145,7 @@ ggsave("plots/tcomp_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
 ### end of  compression plots
 ### ------------------------------------------------------------
 
+
 ##### For robustification constant
 for(spp in species){
     g <- plot_scalar_boxplot(subset(robust.long.growth, species==spp ),
@@ -176,8 +177,9 @@ ggsave("plots/robust_convergence_counts.png", g, width=1.25*ggwidth, height=gghe
 g <- ggplot(robust.stuck, aes(I, pct.stuck, group=which.bound, color=which.bound))+geom_line(lwd=1.5)+
     facet_grid(species+D~variable) + ylim(0,1)
 ggsave("plots/robust_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
-### end of  compression plots
+### end of  robust plots
 ### ------------------------------------------------------------
+
 
 
 
