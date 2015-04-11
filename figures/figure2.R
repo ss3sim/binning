@@ -57,11 +57,13 @@ n.contours <- 6
 ## cols.palette <- RColorBrewer::brewer.pal(n.contours, "Blues")
 cols.palette <- rev(gray.colors(n.contours))
 layout(mat=matrix(c(1,1,2,2,3,3,4,4,4,5,5,5), nrow=2, byrow=TRUE), heights=c(1,.5))
+xy <- c(.95, .97); xy2 <- c(.95,.93);k <- 1
 for(i in 1:3){
 with(replist.list[[i]],{
     offset <- list(6,6, 16)[[i]]#(max(x)-min(x))/7
     plot(0,0, yaxs='i', xaxs='i', ylim=c(0, max(y)*1.01), xlim=c(-offset*1.1, max(x)+offset/2), type='n',
          axes=FALSE, ann=FALSE)
+    print.letter(paste0("(",letters[k], ")"), xy=xy);k <<- k+1
     contour(x, y, z, nlevels=n.contours , col=cols.palette, lwd=1,
             axes=FALSE, add=TRUE)
     box(col=col.border)
@@ -86,6 +88,7 @@ cex.fishery <- 1.25
 cex.survey <- 1
 ## add data rich
 plot(x=25:100, ylim=c(1,4.5), axes=FALSE, ann=FALSE, xlim=c(25,100))
+print.letter(paste0("(",letters[k], ")"), xy=xy2);k <<- k+1
 lcomp2 <- ss3sim:::get_args("cases/lcomp2-cod.txt")
 with(lcomp2, points(years[[1]], y=rep(2, len=length(years[[1]])), cex=cex.fishery))
 with(lcomp2, points(years[[2]], y=rep(2.25, len=length(years[[2]])), cex=cex.survey, pch=16))
@@ -103,6 +106,7 @@ box(col=col.border)
 mtext("Year", side=1, line=1,cex=par()$cex.lab)
 mtext("Data Type", side=2, line=.75 ,cex=par()$cex.lab)
 plot(x=25:100, ylim=c(1,4.5), axes=FALSE, ann=FALSE, xlim=c(25,100))
+print.letter(paste0("(",letters[k], ")"), xy=xy2);k <<- k+1
 lcomp5 <- ss3sim:::get_args("cases/lcomp5-cod.txt")
 with(lcomp5, points(years[[1]], y=rep(2, len=length(years[[1]])), cex=cex.fishery))
 with(lcomp5, points(years[[2]], y=rep(2.25, len=length(years[[2]])), cex=cex.survey, pch=16))

@@ -105,6 +105,10 @@ g <- ggplot(binning.runtime, aes(x=dbin, y=median.runtime, color=binmatch, group
     geom_point(aes(size=(replicates)))+
     geom_linerange(aes(ymin=lower.runtime, ymax=upper.runtime))
 ggsave("plots/binning_median_runtime.png", g, width=ggwidth, height=ggheight)
+g <- ggplot(binning.stuck, aes(data.binwidth, pct.stuck, color=which.bound))+geom_point(lwd=1.5)+
+    facet_grid(species+data+binmatch~variable) + ylim(0,1)
+ggsave("plots/binning_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
+
 ## ## quick plots of bias adjustment
 ## ggplot(subset(bias.all.long, species=='flatfish'), aes(x=data, y=value))+geom_point() +
 ##     facet_grid(variable~species+B, scales="free_y")

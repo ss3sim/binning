@@ -67,9 +67,7 @@ binning.counts <- ddply(binning, .(data,data.binwidth, binmatch,species), summar
                         median.iterations=median(Niterations),
                         median.runtime=median(runtime))
 ## ## Get counts of which params were stuck
-## z <- unique(do.call(c, strsplit(binning$params_stuck_low_em, split=';')))
-## sapply(binning$params_stuck_low_em, function(i)
-##     sum(grep(i, x=strsplit(zz, split=';')), na.rm=TRUE))
+
 ## Drop fixed params (columns of zeroes)
 binning$RecrDist_GP_1_re <- NULL
 binning <- binning[,-which(apply(binning, 2, function(x) all(x==0)))]
@@ -125,6 +123,39 @@ binning.long.selex.mares <- ddply(binning.long.selex, .(species, data, B, variab
                        replicate2=1:length(replicate),
                        cMARE=my.median(abs(value))-median(abs(value)),
                        MARE=my.median(abs(value)))
+## This is a crazy way to get which params get stuck for which scenarios
+library("magrittr")
+x.low <- paste(binning.unfiltered$params_stuck_low_em, collapse = ";") %>%
+  strsplit(";")
+x.low <- unique(x.low[[1]])
+x.low <- x.low[-which(x.low == "NA")]
+stuck.low <- matrix(ncol = length(x.low), nrow = nrow(binning.unfiltered)) %>%
+  as.data.frame %>%
+  setNames(x.low)
+for (i in seq_along(x.low)) {
+  stuck.low[,i] <- grepl(x.low[i], binning.unfiltered$params_stuck_low_em)}
+binning.stuck.low <- cbind(binning.unfiltered[, c("species", "data.binwidth", "binmatch", "data")], stuck.low)
+binning.stuck.low <- melt(binning.stuck.low, id.vars=c("species", "data.binwidth","binmatch", "data"))
+binning.stuck.low <- ddply(binning.stuck.low, .(species, data, binmatch, data.binwidth, variable), summarize, pct.stuck=mean(value))
+binning.stuck.low$which.bound <- "low"
+x.high <- paste(binning.unfiltered$params_stuck_high_em, collapse = ";") %>%
+  strsplit(";")
+x.high <- unique(x.high[[1]])
+x.high <- x.high[-which(x.high == "NA")]
+stuck.high <- matrix(ncol = length(x.high), nrow = nrow(binning.unfiltered)) %>%
+  as.data.frame %>%
+  setNames(x.high)
+for (i in seq_along(x.high)) {
+  stuck.high[,i] <- grepl(x.high[i], binning.unfiltered$params_stuck_high_em)}
+binning.stuck.high <- cbind(binning.unfiltered[, c("species", "data.binwidth", "binmatch", "data")], stuck.high)
+binning.stuck.high <- melt(binning.stuck.high, id.vars=c("species", "data.binwidth","binmatch", "data"))
+binning.stuck.high <- ddply(binning.stuck.high, .(species, data, binmatch, data.binwidth, variable), summarize, pct.stuck=mean(value))
+binning.stuck.high$which.bound <- "high"
+binning.stuck <- subset(rbind(binning.stuck.low, binning.stuck.high), pct.stuck>0)
+binning.stuck$variable <- gsub("Size|_Fem_GP_1", "", binning.stuck$variable)
+
+
+
 ## ## Read in the bias adjustment parameters by iteration
 ## get_results_bias <- function(scenarios, directory=getwd()){
 ##     temp <- list()
