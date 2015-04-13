@@ -33,7 +33,7 @@ for(i in seq_along(mydata)){
         ##               xaxis=FALSE, yaxis=FALSE, ylim=c(-1.5,1.5),
         ##               mare_pos=.5, xlim=c(1,20))
         d.temp <- droplevels(subset(d, data==mydata[i] & variable==myvariables[j]))
-        plot(0,0, type='n', xlim=c(.9,5.5), ylim=c(-.35,.35), axes=FALSE, ann=FALSE)
+        plot(0,0, type='n', xlim=c(.9,5.5), ylim=re.lim.bin, axes=FALSE, ann=FALSE)
         abline(h=0, col=col.border, lty=2)
         ## only make plots if had enough converged iterations
         d.temp1 <- subset(d.temp, pct.converged > pct.converged.min)
@@ -41,21 +41,21 @@ for(i in seq_along(mydata)){
         with(d.temp1, {
             points(x=binwidth, y=median_, pch=16, cex=.85, col=color)
             segments(x0=binwidth, y0=l2, y1=u2, col=color, lwd=.7)
-            text(x=text_pos, y=.28+ifelse(color=='black',0, .05),
+            text(x=text_pos, y=mare.adj.bin+ifelse(color=='black',0, mare.offset.bin),
                  labels=mare, col=color, adj=c(0,0), cex=.8)})
-        if(NROW(d.temp2)>0){with(d.temp2, {
-            points(binwidth, y=rep(0, NROW(d.temp2)), pch="x",
-                   col=color, cex=.7)
-            text(x=text_pos, y=.28+ifelse(color=='black',0, .05),
-                 labels="x", col=color, adj=c(0,0), cex=.8)})
-                        }
+        ## if(NROW(d.temp2)>0){with(d.temp2, {
+        ##     points(binwidth, y=rep(0, NROW(d.temp2)), pch="x",
+        ##            col=color, cex=.7)
+        ##     text(x=text_pos, y=mare.adj.bin+ifelse(color=='black',0, mare.offset.bin),
+        ##          labels="x", col=color, adj=c(0,0), cex=.8)})
+        ##}
         print.letter(paste0("(", myletters[k], ")"), xy=xy, cex=.9); k <- k+1
         if(i==1) mtext(myvariables.labels[j], side=3, line=0, cex=par()$cex.lab)
         if(i==length(mydata))
             axis(1, at=1:5, labels=c(1,2,5,10,20), col=col.tick, mgp=par()$mgp, tck=par()$tck)
         if(j==1){
             ## mtext(mydata.labels[i], side=2, line=.9, cex=.7)
-            axis(2, col=col.tick, mgp=par()$mgp, tck=par()$tck)
+            axis(2, col=col.tick, at=re.at.bin, mgp=par()$mgp, tck=par()$tck)
         }
         box(col=col.border)
     }

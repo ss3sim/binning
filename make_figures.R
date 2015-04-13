@@ -6,6 +6,7 @@ library(dplyr)
 ## global options
 width <- 7                             # inches
 height <- 5
+width2 <- 3
 col.label <- gray(.2)
 col.border <- gray(.5)
 col.tick <- gray(.2)
@@ -29,6 +30,18 @@ make.file <- function(type=c("png","pdf", "none"), filename,
 }
 
 file.type <- 'png'
+
+## These are fine tune adjustments for the y limits and MARE placement on
+## the figures.
+mare.adj.rbtc <- .725
+mare.offset.rbtc <- .15
+re.lim.rbtc <- c(-.95,.95)
+re.at.rbtc <- c(-.75,0, .75)
+mare.adj.bin <- .4
+mare.offset.bin <- .07
+re.lim.bin <- c(-.5,.5)
+re.at.bin <- c(-.25,0, .25)
+
 ## 1. image plot / figure/table of lit. review
 source("figures/figure1.R")
 ## 2. experimental design
