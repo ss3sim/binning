@@ -8,7 +8,7 @@ library(plyr)
 
 ### ------------------------------------------------------------
 ## First section is popbin effect
-p <- popbins.binwidth[,c("species", "binwidth", 'F', paste0(scalars, "_RE"))] %>%
+p <- popbins.binwidth.scalars[,c("species", "binwidth", 'F', paste0(scalars, "_RE"))] %>%
         melt(id.vars=c('species','F', "binwidth")) %>%
   ggplot(aes(x=binwidth, y=value, colour=variable)) + geom_line() +
       facet_grid(species~F)+ xlab("Population bin width (cm)") +
@@ -27,7 +27,12 @@ p <- popbins.maxsize[,c("species", "max.Linf.ratio", 'F', paste0(scalars, "_RE")
           xlab("Population max bin:Linf ratio") +
     ylab("Relative change from base case")
 ggsave(paste0("plots/popbins_maxsize.png"),p, width=ggwidth, height=ggheight)
-
+g <- ggplot(popbins.k.scalars, aes(k, depletion_RE, group=sigmaR, color=factor(sigmaR)))+geom_line()
+ggsave("plots/popbins_k.png", g, width=ggwidth, height=ggheight)
+g <- ggplot(popbins.Linf.scalars, aes(Linf, depletion_RE, group=sigmaR, color=factor(sigmaR)))+geom_line()
+ggsave("plots/popbins_Linf.png", g, width=ggwidth, height=ggheight)
+g <- ggplot(popbins.Lmin.scalars, aes(Lmin, depletion_RE, group=sigmaR, color=factor(sigmaR)))+geom_line()
+ggsave("plots/popbins_Lmin.png", g, width=ggwidth, height=ggheight)
 ### ------------------------------------------------------------
 
 

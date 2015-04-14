@@ -9,6 +9,9 @@ popbins.minsize <- readRDS(file='results/popbins.minsize.RData')
 popbins.maxsize <- readRDS(file='results/popbins.maxsize.RData')
 popbins.maxsize <- merge(Linf.df, popbins.maxsize, by='species')
 popbins.maxsize$max.Linf.ratio <- with(popbins.maxsize, maxsize/Linf)
+popbins.k.scalars <- readRDS(file='results/popbins.k.scalars.RData')
+popbins.Linf.scalars <- readRDS(file='results/popbins.Linf.scalars.RData')
+popbins.Lmin.scalars <- readRDS(file='results/popbins.Lmin.scalars.RData')
 
 ###  ------------------------------------------------------------
 ### Step 1: Make some quick data.frames to rename ggplot factors

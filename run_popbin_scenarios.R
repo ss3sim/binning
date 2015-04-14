@@ -1,15 +1,11 @@
 ## This file runs scenarios for what happens to model as pop bins increase
 library(plyr)
 library(dplyr)
-## Some values vary across species so need to make lists for this
-sigmar.list <- list('cod'=.4, 'flatfish'=.7, 'yellow'=.5)
-scalars <- c("SSB_MSY", "TotYield_MSY", "SSB_Unfished", "depletion")
-F.cases <- "F1"
-scalar_re <- function(x) {(x - x[1]) / x[1]}
 ## This function returns the management values for a given set of
 ## parameters. It is designed to be looped over. Be careful of wd if an
 ## error occurs.
-get_om_values <- function(species, binwidth, F_case="F1",
+get_om_values <- function(species, binwidth, F_case="F1", k=NULL,
+                          Lmin=NULL, Linf=NULL,
                           sigmaR, iteration, pop_minimum_size=NULL,
                           pop_maximum_size=NULL, type = c("scalar", "timeseries")){
     type <- type[1]
@@ -26,7 +22,22 @@ get_om_values <- function(species, binwidth, F_case="F1",
                 len_bins=seq(pop_minimum_size, pop_maximum_size,
                 by=binwidth), pop_binwidth=binwidth,
                 pop_minimum_size=pop_minimum_size, pop_maximum_size =
-                    pop_maximum_size)
+                pop_maximum_size)
+    if(!is.null(k)){
+        par <- readLines("ss3.par")
+        par[which(par == "# MGparm[4]:")+1] <- k
+        writeLines(par, con="ss3.par")
+    }
+    if(!is.null(Linf)){
+        par <- readLines("ss3.par")
+        par[which(par == "# MGparm[3]:")+1] <- Linf
+        writeLines(par, con="ss3.par")
+    }
+    if(!is.null(Lmin)){
+        par <- readLines("ss3.par")
+        par[which(par == "# MGparm[2]:")+1] <- Lmin
+        writeLines(par, con="ss3.par")
+    }
     args <- ss3sim:::get_args(system.file("cases", paste0(F_case, "-", species, ".txt"),
                                           package="ss3models"))
     ss3sim::change_f(years=args$years, years_alter=args$years_alter,
@@ -39,12 +50,18 @@ get_om_values <- function(species, binwidth, F_case="F1",
     unlink(species, recursive=TRUE, force=TRUE)
     Sys.sleep(0.05) # give ample time for deletion of folder
     if (type == "scalar")
-      result <- ss3sim::get_results_scalar(o)
+        result <- ss3sim::get_results_scalar(o)
     if (type == "timeseries")
-      result <- ss3sim::get_results_timeseries(o)
+        result <- ss3sim::get_results_timeseries(o)
     return(result)
 }
 
+
+## Some values vary across species so need to make lists for this
+sigmar.list <- list('cod'=.4, 'flatfish'=.7, 'yellow'=.5)
+scalars <- c("SSB_MSY", "TotYield_MSY", "SSB_Unfished", "depletion")
+F.cases <- "F1"
+scalar_re <- function(x) {(x - x[1]) / x[1]}
 
 ## Run the OM across bin widths for species. First do the scalar quantities
 ## which are in equilibrium so process error and F don't matter.
@@ -90,6 +107,67 @@ popbins.binwidth.ts <- temp %>%
     SpawnBio_RE = (SpawnBio - SpawnBio_bin1) / SpawnBio_bin1,
     Recruit_0_RE = (Recruit_0 - Recruit_0_bin1) / Recruit_0_bin1)
 saveRDS(popbins.binwidth.ts, file='results/popbins.binwidth.ts.RData')
+
+## Try varying the growth parameters to test our hypothesis of nonlinearity
+k.seq <-  seq(.05, .1, len=10)
+spp <- "yellow"
+popbins.k.scalars <-
+    ldply(c(.0001, sigmar.list[[spp]]), function(sigmaR)
+    ldply(c(1,20), function(bw)
+    ldply(k.seq, function(k)
+        data.frame("k"=k, "binwidth"=bw, "sigmaR"=sigmaR, 'species'=spp, 'F'="F1",
+                   get_om_values(species=spp, k=k,
+                                 binwidth=bw, sigmaR=sigmaR,
+                                 iteration=1, F_case="F1",
+                                 pop_minimum_size=1,
+                                 pop_maximum_size=200)))))
+popbins.k.scalars <- popbins.k.scalars[,c('binwidth', 'k','sigmaR', scalars)]
+popbins.k.scalars <- ddply(popbins.k.scalars, .(species, F, k, sigmaR),
+     mutate, SSB_MSY_RE=scalar_re(SSB_MSY), len=length(k),
+    TotYield_MSY_RE=scalar_re(TotYield_MSY),
+    SSB_Unfished_RE=scalar_re(SSB_Unfished),
+    depletion_RE=scalar_re(depletion))
+popbins.k.scalars <- subset(popbins.k.scalars, binwidth==20)
+saveRDS(popbins.k.scalars, file='results/popbins.k.scalars.RData')
+Linf.seq <-  seq(50, 70, len=10)
+popbins.Linf.scalars <-
+    ldply(c(.0001, sigmar.list[[spp]]), function(sigmaR)
+    ldply(c(1,20), function(bw)
+    ldply(Linf.seq, function(Linf)
+        data.frame("Linf"=Linf, "binwidth"=bw, "sigmaR"=sigmaR, 'species'=spp, 'F'="F1",
+                   get_om_values(species=spp, Linf=Linf,
+                                 binwidth=bw, sigmaR=sigmaR,
+                                 iteration=1, F_case="F1",
+                                 pop_minimum_size=1,
+                                 pop_maximum_size=200)))))
+popbins.Linf.scalars <- popbins.Linf.scalars[,c('binwidth', 'Linf','sigmaR', scalars)]
+popbins.Linf.scalars <- ddply(popbins.Linf.scalars, .(species, F, Linf, sigmaR),
+     mutate, SSB_MSY_RE=scalar_re(SSB_MSY), len=length(Linf),
+    TotYield_MSY_RE=scalar_re(TotYield_MSY),
+    SSB_Unfished_RE=scalar_re(SSB_Unfished),
+    depletion_RE=scalar_re(depletion))
+popbins.Linf.scalars <- subset(popbins.Linf.scalars, binwidth==20)
+saveRDS(popbins.Linf.scalars, file='results/popbins.Linf.scalars.RData')
+Lmin.seq <-  seq(10, 30, len=10)
+popbins.Lmin.scalars <-
+    ldply(c(.0001, sigmar.list[[spp]]), function(sigmaR)
+    ldply(c(1,20), function(bw)
+    ldply(Lmin.seq, function(Lmin)
+        data.frame("Lmin"=Lmin, "binwidth"=bw, "sigmaR"=sigmaR, 'species'=spp, 'F'="F1",
+                   get_om_values(species=spp, Lmin=Lmin,
+                                 binwidth=bw, sigmaR=sigmaR,
+                                 iteration=1, F_case="F1",
+                                 pop_minimum_size=1,
+                                 pop_maximum_size=200)))))
+popbins.Lmin.scalars <- popbins.Lmin.scalars[,c('binwidth', 'Lmin','sigmaR', scalars)]
+popbins.Lmin.scalars <- ddply(popbins.Lmin.scalars, .(species, F, Lmin, sigmaR),
+     mutate, SSB_MSY_RE=scalar_re(SSB_MSY), len=length(Lmin),
+    TotYield_MSY_RE=scalar_re(TotYield_MSY),
+    SSB_Unfished_RE=scalar_re(SSB_Unfished),
+    depletion_RE=scalar_re(depletion))
+popbins.Lmin.scalars <- subset(popbins.Lmin.scalars, binwidth==20)
+saveRDS(popbins.Lmin.scalars, file='results/popbins.Lmin.scalars.RData')
+## end of growth parameter exploration
 
 
 ## ## ## These weren't that interestign so turning off for now
