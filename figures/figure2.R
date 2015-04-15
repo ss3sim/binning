@@ -99,7 +99,7 @@ with(agecomp2, points(years[[1]], y=rep(1, len=length(years[[1]])), cex=cex.fish
 with(agecomp2, points(years[[2]], y=rep(1.25, len=length(years[[2]])), cex=cex.survey, pch=16))
 points(x=25:100, y=rep(3.75, len=76), cex=cex.fishery)
 axis(1, at=seq(25,100, by=25), col=col.border, mgp=par()$mgp, tck=par()$tck)
-text(x=90, y=c(1.5,2.5,3.25,4), labels=c("Lengths (N=", "Ages", "Index", "Catches"))
+text(x=90, y=c(1.5,2.5,3.25,4), labels=c("Lengths", "Ages", "Index", "Catches"))
 mtext("Data Rich", side=3, line=-1.6, cex=1)
 box(col=col.border)
 ## add data poor
