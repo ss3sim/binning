@@ -29,12 +29,12 @@ make.file <- function(type=c("png","pdf", "none"), filename,
     else if(dev.cur()==1) dev.new(width=width, height=height)
 }
 
-file.type <- 'png'
+file.type <- 'pdf'
 
 ## These are fine tune adjustments for the y limits and MARE placement on
 ## the figures.
 mare.adj.rbtc <- .725
-mare.offset.rbtc <- .15
+mare.offset.rbtc <- .16
 re.lim.rbtc <- c(-.95,.95)
 re.at.rbtc <- c(-.75,0, .75)
 mare.adj.bin <- .4
@@ -71,15 +71,15 @@ binning.counts2 <- ddply(binning.counts2, .(species, data.case, data.type), muta
 g <- ggplot(binning.counts2, aes(x=data.binwidth, y=iterations.normalized, lty=match, group=binmatch))+
     geom_line()+ facet_grid(species~data.case+data.type, scales='free') +
     theme_bw() + xlab("Data Binwidth (cm)")+ylab("Normalized Median Iterations") + theme(legend.position="none")
-ggsave("figures/figureS_iterations.png", g, width=9, height=5, dpi=500)
+ggsave(paste0("figures/figureS9_iterations.", file.type), g, width=9, height=5, dpi=500)
 g <- ggplot(binning.counts2, aes(x=data.binwidth, y=(runtime.normalized), lty=match, group=binmatch))+
     geom_line()+ facet_grid(species~data.case+data.type, scales='free') +
     theme_bw() + xlab("Data Binwidth (cm)")+ylab("Normalized Median Runtime") + theme(legend.position="none")
-ggsave("figures/figureS_runtime.png", g, width=9, height=5, dpi=500)
+ggsave(paste0("figures/figureS4_runtime.", file.type), g, width=9, height=5, dpi=500)
 g <- ggplot(binning.counts2, aes(x=data.binwidth, y=(pct.converged), lty=match, group=binmatch))+
-    geom_line()+ facet_grid(species~data.case+data.type, scales='free') +
+    geom_line()+ facet_grid(species~data.case+data.type, scales='free') + ylim(0,100)+
     theme_bw() + xlab("Data Binwidth (cm)")+ylab("Convergece Rate") + theme(legend.position="none")
-ggsave("figures/figureS_convergence.png", g, width=9, height=5, dpi=500)
+ggsave(paste0("figures/figureS3_convergence.", file.type), g, width=9, height=5, dpi=500)
 
 
 ## ## Some old code from playing with figures for convergence of rbtc. Not

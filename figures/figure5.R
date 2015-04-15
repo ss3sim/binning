@@ -28,9 +28,9 @@ range(d$MRE)
 ##     facet_grid(species~variable, scales='free_x')+geom_point() + ylim(-.2,.2)
 ## ggsave('figures/figure5_performance_tradeoffs.png', g,  width=7, height=5)
 
-make.file(file.type, filename='figures/figure5_tradeoffs.png',
+make.file(file.type, filename='figures/figure5_tradeoffs',
           res=500, width=width, height=4)
-par(mar=c(0,0,0,0), tck=-0.03, oma=c(2.5,3.5,1.5,.5),
+par(mar=c(0,0,0,0), tck=-0.03, oma=c(2.5,3.5,2,.5),
     mgp=c(.5, .2,0), mfrow=c(3,7), cex.lab=.9, cex.axis=.8,
     col.axis=col.label, xpd=FALSE)
 myvariables <- c("CV_young", "CV_old", "L_at_Amin", "L_at_Amax",
@@ -40,7 +40,7 @@ myvariables.labels <- c(expression(CV[young]), expression(CV[old]),
                         expression(italic(k)), expression(SSB[MSY]),
                         "Depletion")[c(6,7, 1:5)]
 myspecies <- species
-species.labels <- c("cod", "flatfish", "rockfish")
+species.labels <- c("Cod", "Flatfish", "Rockfish")
 xy <- c(.1, .05); k <- 1
 myletters <- c(letters, "aa", "ab")
 for(i in seq_along(species)){

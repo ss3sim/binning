@@ -4,7 +4,7 @@
 
 xy <- c(.07,.925)
 mycols <- rev(gray.colors(4, end=.7, start=0))
-make.file(file.type, filename="figures/figure3_popbins.png", width=3.5,
+make.file(file.type, filename="figures/figure3_popbins", width=3.5,
           height=4.5, res=500)
 par(mar=0*c(.5,.5,.5,.75), tck=-0.015, oma=c(2.75,4,3,.75),
     mgp=c(.5, .2,0), mfrow=c(3,2), cex.lab=.8, cex.axis=.9,
@@ -20,7 +20,7 @@ plot(0,0, xlim=c(0,20), ylim=c(-.36,.36), type='n', axes=FALSE, ann=FALSE)
 print.letter(paste0("(", letters[k], ")"), xy=xy, cex=1); k <- k+1
 abline(h=0, lty=1, col=col.border, lwd=.5)
 with(sc, lines(binwidth, SSB_MSY_RE))
-with(sc, lines(binwidth, depletion_RE, lty=3))
+with(sc, lines(binwidth, depletion_RE, lty=2))
 if(xoutside){
 axis(1, col=col.tick, mgp=par()$mgp, tck=par()$tck)
 mtext("Bin Width (cm)", side=1, line=1.5, cex=par()$cex.lab)
@@ -33,7 +33,7 @@ mtext(list('flatfish'='Flatfish', 'cod'='Cod', 'yellow'='Rockfish')[[spp]],
 if(youtside) mtext("Management\nQuantities", side=3, line=.25, cex=.9)
 if(spp=='cod')
     legend("bottomright", legend=c(expression(SSB[MSY]), "Depletion"), col=1,
-           bty='n', title="Quantity", lty=c(1,3))
+           bty='n', title="Quantity", lty=c(1,2))
 plot(0,0, xlim=c(0,101), ylim=c(-.3,.3), type='n', axes=FALSE, ann=FALSE)
 print.letter(paste0("(", letters[k], ")"), xy=xy); k <- k+1
 for(i in 1:4){

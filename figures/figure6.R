@@ -13,7 +13,7 @@ d$color <- ifelse(as.character(d$data) %in% c("Rich:A+L", "Poor:A+L"), "black", 
 d$text_pos <- ifelse(d$color!="black", -.1, .1)-.1
 d$xvalue <- as.numeric(as.factor(d$tvalue))
 d$xvalue <- d$xvalue+ifelse(d$color=="black", 0, .2)
-make.file(file.type, filename=paste0('figures/figure6_tcomp_errors_', spp,".png"),
+make.file(file.type, filename=paste0('figures/figure6_tcomp_errors_', spp),
           res=500, width=width, height=3)
 par(mar=0*c(.1,.1,.1,.1), tck=-0.03, oma=c(3,3,1.5,.75),
     mgp=c(.5, .075,0), mfrow=c(2,7), cex.lab=.8, cex.axis=.8,
@@ -40,13 +40,13 @@ for(i in seq_along(mydata)){
         with(d.temp1, {
             points(x=xvalue, y=median_, pch=16, cex=.85, col=color)
             segments(x0=xvalue, y0=l2, y1=u2, col=color, lwd=.7)
-            text(x=xvalue, y=mare.adj.rbtc+ifelse(color=='black',0, mare.offset.bin),
+            text(x=xvalue, y=mare.adj.rbtc+ifelse(color=='black',0, mare.offset.rbtc),
                  labels=mare, col=color, adj=c(0,0), cex=.8)})
         ## if(NROW(d.temp2)>0){
         ##     with(d.temp2, {
         ##     points(xvalue, y=rep(0, NROW(d.temp2)), pch="x",
         ##            col=color, cex=.7)
-        ##     text(x=xvalue, y=mare.adj.rbtc+ifelse(color=='black',0, mare.offset.bin),
+        ##     text(x=xvalue, y=mare.adj.rbtc+ifelse(color=='black',0, mare.offset.rbtc),
         ##          labels="x", col=color, adj=c(0,0), cex=.8)})
         ##                 }
         print.letter(paste0("(", myletters[k], ")"), xy=xy, cex=.9); k <- k+1

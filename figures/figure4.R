@@ -12,7 +12,7 @@ d$color <- ifelse(d$binmatch=="pbin=1cm", "black", gray(.5))
 d$binwidth <- as.numeric(as.factor(d$data.binwidth))
 d$text_pos <- d$binwidth-ifelse(d$binmatch!="pbin=1cm", -.1, .1)-.1
 d$binwidth <- d$binwidth+ifelse(d$binmatch=="pbin=1cm", 0, .2)
-make.file(file.type, filename=paste0('figures/figure4_binning_errors_', spp,".png"),
+make.file(file.type, filename=paste0('figures/figure4_binning_errors_', spp),
           res=500, width=width, height=3)
 par(mar=0*c(.1,.1,.1,.1), tck=-0.03, oma=c(2.5,3,1.5,.75),
     mgp=c(.5, .075,0), mfrow=c(2,7), cex.lab=.8, cex.axis=.8,

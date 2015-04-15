@@ -46,7 +46,7 @@ yellow <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-yel
 replist.list <- list(cod,flatfish, yellow)
 
 ## start of figure
-make.file("png", filename="figures/figure2_expdesign.png", width=width,
+make.file(file.type, filename="figures/figure2_expdesign", width=width,
           height=6, res=500)
 col1 <- 'black'
 par(mar=c(2,.5,.5,.75), tck=-0.015, oma=c(.5,2,0,0),

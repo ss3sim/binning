@@ -13,7 +13,7 @@ d$color <- ifelse(as.character(d$data) %in% c("Rich:A+L", "Poor:A+L"), "black", 
 d$text_pos <- ifelse(d$color!="black", -.1, .1)-.1
 d$xvalue <- as.numeric(as.factor(d$rvalue))
 d$xvalue <- d$xvalue+ifelse(d$color=="black", 0, .2)
-make.file(file.type, filename=paste0('figures/figure7_robust_errors_', spp,".png"),
+make.file(file.type, filename=paste0('figures/figure7_robust_errors_', spp),
           res=500, width=width, height=3)
 par(mar=0*c(.1,.1,.1,.1), tck=-0.03, oma=c(3,3,1.5,.75),
     mgp=c(.5, .075,0), mfrow=c(2,7), cex.lab=.8, cex.axis=.8,
