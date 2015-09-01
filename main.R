@@ -1,17 +1,11 @@
 ### This file is the central place to develop and then run the analysis for
 ### the paper. It sources other files that do particular tasks.
 
-### In progress!
-
-### TO DO before rerunning the simulation
-## 1.) Drop E991 and instead use biomass at end of year
-## 1.) Revisit data sets and sample sizes
-
 ### ------------------------------------------------------------
 ## Step 0: Prepare the R workspace and generate case files
 cores <- 4   # parallel cores
-devtools::install_github("ss3sim/ss3sim")
-devtools::install_github('ss3sim/ss3models', ref='turn_on_cumreport_files')
+## devtools::install_github("ss3sim/ss3sim")
+## devtools::install_github('ss3sim/ss3models')
 ## sample sizes
 Nsim.datapoor <- 200
 Nsim.datarich <- 100
