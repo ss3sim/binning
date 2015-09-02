@@ -112,18 +112,25 @@ binning.long.growth2 <-
 rm(temp)
 ## Now make running MARE calculations. Takes a while to run these calcs!!!
 my.median <- function(x) {sapply(1:length(x), function(i) {median(x[1:i])})}
-binning.long.growth.mares <- ddply(binning.long.growth, .(species, data, B, variable), .fun=mutate,
-                       replicate2=1:length(replicate),
-                       cMARE=my.median(abs(value))-median(abs(value)),
-                       MARE=my.median(abs(value)))
-binning.long.management.mares <- ddply(binning.long.management, .(species, data, B, variable), .fun=mutate,
-                       replicate2=1:length(replicate),
-                       cMARE=my.median(abs(value))-median(abs(value)),
-                       MARE=my.median(abs(value)))
-binning.long.selex.mares <- ddply(binning.long.selex, .(species, data, B, variable), .fun=mutate,
-                       replicate2=1:length(replicate),
-                       cMARE=my.median(abs(value))-median(abs(value)),
-                       MARE=my.median(abs(value)))
+binning.long.growth.mares <-
+    group_by(binning.long.growth, species, data, B, variable) %>%
+        dplyr::mutate(
+            replicate2=1:length(replicate),
+            cMARE=my.median(abs(value))-median(abs(value)),
+            MARE=my.median(abs(value)))
+binning.long.management.mares <-
+    group_by(binning.long.management, species, data, B, variable) %>%
+        dplyr::mutate(
+            replicate2=1:length(replicate),
+            cMARE=my.median(abs(value))-median(abs(value)),
+            MARE=my.median(abs(value)))
+binning.long.selex.mares <-
+    group_by(binning.long.selex, species, data, B, variable) %>%
+        dplyr::mutate(
+            replicate2=1:length(replicate),
+            cMARE=my.median(abs(value))-median(abs(value)),
+            MARE=my.median(abs(value)))
+
 ## This is a crazy way to get which params get stuck for which scenarios
 library("magrittr")
 x.low <- paste(binning.unfiltered$params_stuck_low_em, collapse = ";") %>%
