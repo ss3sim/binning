@@ -58,33 +58,33 @@ ggplot(yy, aes(year, varSSB))+geom_line()+facet_wrap('species', scales='free')
 
 
 
-## ## use ss3sim function to extend burn in for yellow model
-## setwd('yellow/om')
-## ss3sim::change_year(year_begin=1, year_end=200, burnin=0,
-##                     ctl_file_in='ss3.ctl',
-##                     ctl_file_out='ss3_new.ctl',
-##                     dat_file_in='ss3.dat',
-##                     dat_file_out='ss3_new.dat',
-##                     par_file_in='ss3.par',
-##                     par_file_out='ss3_new.par',
-##                     str_file_in='starter.ss',
-##                     str_file_out='starter_new.ss',
-##                     for_file_in='forecast.ss',
-##                     for_file_out='forecast_new.ss')
-## setwd('../em')
-## ss3sim::change_year(year_begin=1, year_end=200, burnin=0,
-##                     ctl_file_in='ss3.ctl',
-##                     ctl_file_out='ss3_new.ctl',
-##                     dat_file_in=NULL,
-##                     par_file_in=NULL,
-##                     str_file_in='starter.ss',
-##                     str_file_out='starter_new.ss',
-##                     for_file_in='forecast.ss',
-##                     for_file_out='forecast_new.ss')
+## use ss3sim function to extend burn in for yellow model
+setwd('yellow/om')
+ss3sim::change_year(year_begin=1, year_end=500, burnin=0,
+                    ctl_file_in='ss3.ctl',
+                    ctl_file_out='ss3_new.ctl',
+                    dat_file_in='ss3.dat',
+                    dat_file_out='ss3_new.dat',
+                    par_file_in='ss3.par',
+                    par_file_out='ss3_new.par',
+                    str_file_in='starter.ss',
+                    str_file_out='starter_new.ss',
+                    for_file_in='forecast.ss',
+                    for_file_out='forecast_new.ss')
+setwd('../em')
+ss3sim::change_year(year_begin=1, year_end=200, burnin=0,
+                    ctl_file_in='ss3.ctl',
+                    ctl_file_out='ss3_new.ctl',
+                    dat_file_in=NULL,
+                    par_file_in=NULL,
+                    str_file_in='starter.ss',
+                    str_file_out='starter_new.ss',
+                    for_file_in='forecast.ss',
+                    for_file_out='forecast_new.ss')
 
 setwd('C:/Users/Cole/binning/')
 spp <- 'yellow'
-F99 <-  c('years;1:200', 'years_alter;1:200', 'fvals;rep(0,200)')
+F99 <-  c('years;1:500', 'years_alter;1:500', 'fvals;rep(0,500)')
 writeLines(F99, con=paste0("cases/", "F99-", spp, ".txt"))
 case_files <- list(F="F", D=c("index","lcomp","agecomp"))
 scenarios <- expand_scenarios(cases=list(D=2, F=99), species=spp)
@@ -95,7 +95,6 @@ run_ss3sim(iterations=1:500, scenarios=scenarios,
            em_dir='yellow/em', case_files=case_files,
            admb_options= " -maxfn 1 -phase 50",
            call_change_data=TRUE)
-
 get_results_all(parallel=TRUE)
 
 xx <- read.csv("ss3sim_ts.csv")
