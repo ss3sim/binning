@@ -6,9 +6,10 @@
 cores <- 4   # parallel cores
 ## devtools::install_github("ss3sim/ss3sim")
 ## devtools::install_github('ss3sim/ss3models')
+## devtools::install_github('r4ss/r4ss')
 ## sample sizes
-Nsim.datapoor <- 200
-Nsim.datarich <- 100
+Nsim.datapoor <- 400
+Nsim.datarich <- 200
 Nsim.biasruns <- 10 # only run for binning section due to poor convergence
 ## major cases for binning section
 D.binning <- c(2,3,5,6)
@@ -32,7 +33,7 @@ for(spp in species) {
 
 ### ------------------------------------------------------------
 ## Step 1: Run the OM tests for pop bins
-source("run_popbin_scenarios")
+source("run_popbin_scenarios.R")
 
 ### ------------------------------------------------------------
 ## Step 2: Run the EM binning scenarios
