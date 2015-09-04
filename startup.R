@@ -6,6 +6,13 @@
 ## update.packages(c('r4ss','knitr', 'devtools', 'roxygen2'))
 ## Load the neccessary libraries
 case_folder <- 'cases'
+## Used to get models from the ss3models package, but manually moved them
+## into this repo for better long-term reproducibility. The F case files
+## are also there.
+em.paths <- list('cod'='models/cod/em', 'flatfish'='models/flatfish/em',
+                 'yellow'='models/yellow/em')
+om.paths <- list('cod'='models/cod/om', 'flatfish'='models/flatfish/om',
+                 'yellow'='models/yellow/om')
 ## devtools::install_github("ss3sim/ss3sim")
 ## devtools::install_github('ss3sim/ss3models')
 ## install("../ss3sim")
@@ -23,7 +30,7 @@ registerDoParallel(cores = cores)
 library("foreach")
 message(paste(getDoParWorkers(), "cores have been registered for",
     "parallel processing."))
-message("Loading functions to write case files...")
+message("Writing case files...")
 
 ### ------------------------------------------------------------
 write_cases_data <- function(spp, dir=case_folder){
@@ -205,5 +212,17 @@ write_cases_binning <- function(spp){
 
 }
 
-## End of binning files
+## Create case files dynamically for reproducibility
+unlink('cases', TRUE)
+dir.create('cases')
+for(spp in species) {
+    ## Get the F cases from the package since based on Fmsy
+    file.copy(from=paste0("models/F1-", spp,'.txt'), to=case_folder)
+    ## write the data and binning cases
+    write_cases_data(spp=spp)
+    write_cases_binning(spp=spp)
+}
+
+## End of writing cases
 ### ------------------------------------------------------------
+message("Done loading workspace and preparing for simulation")
