@@ -59,8 +59,8 @@ ggplot(yy, aes(year, varSSB))+geom_line()+facet_wrap('species', scales='free')
 
 
 ## use ss3sim function to extend burn in for yellow model
-setwd('../ss3models/inst/models/yellow/om')
-ss3sim::change_year(year_begin=1, year_end=200, burnin=0,
+setwd('C:/Users/Cole/ss3models/inst/models/yellow-long/om')
+ss3sim::change_year(year_begin=1, year_end=175, burnin=0,
                     ctl_file_in='ss3.ctl',
                     ctl_file_out='ss3_new.ctl',
                     dat_file_in='ss3.dat',
@@ -72,7 +72,7 @@ ss3sim::change_year(year_begin=1, year_end=200, burnin=0,
                     for_file_in='forecast.ss',
                     for_file_out='forecast_new.ss')
 setwd('../em')
-ss3sim::change_year(year_begin=1, year_end=200, burnin=0,
+ss3sim::change_year(year_begin=1, year_end=175, burnin=100,
                     ctl_file_in='ss3.ctl',
                     ctl_file_out='ss3_new.ctl',
                     dat_file_in=NULL,

@@ -5,7 +5,7 @@
 ## Step 0: Prepare the R workspace and generate case files
 cores <- 4   # parallel cores
 ## devtools::install_github("ss3sim/ss3sim")
-## devtools::install_github('ss3sim/ss3models', ref='longer_burnin')
+## devtools::install_github('ss3sim/ss3models')
 ## devtools::install_github('r4ss/r4ss')
 ## sample sizes
 Nsim.datapoor <- 400
@@ -17,7 +17,7 @@ B.binning <- c(0:4, 11:14)
 ## major cases for robust/tcomp section
 D.rbtc <- D.binning
 B.rbtc <- 0
-species <- c('cod','flatfish','yellow')
+species <- c('cod','flatfish','yellow-long')
 source("startup.R")
 ### ------------------------------------------------------------
 

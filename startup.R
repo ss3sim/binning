@@ -10,9 +10,9 @@ case_folder <- 'cases'
 ## into this repo for better long-term reproducibility. The F case files
 ## are also there.
 em.paths <- list('cod'='models/cod/em', 'flatfish'='models/flatfish/em',
-                 'yellow'='models/yellow/em')
+                 'yellow-long'='models/yellow-long/em')
 om.paths <- list('cod'='models/cod/om', 'flatfish'='models/flatfish/om',
-                 'yellow'='models/yellow/om')
+                 'yellow-long'='models/yellow-long/om')
 ## devtools::install_github("ss3sim/ss3sim")
 ## devtools::install_github('ss3sim/ss3models')
 ## install("../ss3sim")
@@ -163,7 +163,7 @@ write_cases_binning <- function(spp){
         write_bincase(species=spp, binwidth=10, lbmin=dmin, lbmax=dmax, matchpop=TRUE, pmin=pmin, pmax=pmax, ID=3)
         write_bincase(species=spp, binwidth=20, lbmin=dmin, lbmax=dmax, matchpop=FALSE, pmin=pmin, pmax=pmax, ID=4)
         write_bincase(species=spp, binwidth=20, lbmin=dmin, lbmax=dmax, matchpop=TRUE, pmin=pmin, pmax=pmax, ID=4)
-    } else if (spp == 'yellow') {
+    } else if (spp == 'yellow-long') {
         pmin <- 10; pmax <- 110
         dmin <- pmin; dmax <- pmax
         len_bins = "seq(10, 110, by=1)"
