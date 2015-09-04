@@ -3,7 +3,7 @@
 
 ### ------------------------------------------------------------
 ## Step 0: Prepare the R workspace and generate case files
-cores <- 4   # parallel cores
+cores <- 5   # parallel cores
 ## devtools::install_github("ss3sim/ss3sim")
 ## devtools::install_github('ss3sim/ss3models')
 ## devtools::install_github('r4ss/r4ss')
