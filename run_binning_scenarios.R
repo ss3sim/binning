@@ -10,8 +10,8 @@ for(spp in species){
                                   B=B.binning), species=spp)
     run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
                parallel=TRUE, parallel_iterations=TRUE,
-               case_folder=case_folder, om_dir=ss3model(spp, "om"),
-               em_dir=ss3model(spp, "em"), case_files=case_files,
+               case_folder=case_folder, om_dir=om.paths[spp],
+               em_dir=em.paths[spp], case_files=case_files,
                bias_adjust=FALSE, bias_nsim=10,
                ## admb_options= " -maxfn 1 -phase 50",
                call_change_data=TRUE)
@@ -22,8 +22,8 @@ for(spp in species){
                                   B=B.binning), species=spp)
     run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
                parallel=TRUE, parallel_iterations=TRUE,
-               case_folder=case_folder, om_dir=ss3model(spp, "om"),
-               em_dir=ss3model(spp, "em"), case_files=case_files,
+               case_folder=case_folder, om_dir=om.paths[spp],
+               em_dir=em.paths[spp], case_files=case_files,
                bias_adjust=FALSE, bias_nsim=10,
                ## admb_options= " -maxfn 1 -phase 50",
                call_change_data=TRUE)
