@@ -14,11 +14,9 @@ em.paths <- list('cod'='models/cod/em', 'flatfish'='models/flatfish/em',
 om.paths <- list('cod'='models/cod/om', 'flatfish'='models/flatfish/om',
                  'yellow-long'='models/yellow-long/om')
 ## devtools::install_github("ss3sim/ss3sim")
-## devtools::install_github('ss3sim/ss3models')
 ## install("../ss3sim")
 ## install("../ss3models")
 library(ss3sim)
-library(ss3models)
 library(reshape2)
 library(r4ss)
 library(ggplot2)
