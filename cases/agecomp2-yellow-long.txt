@@ -1,4 +1,4 @@
 fleets;c(1,2)
-years;list(75+c(36,46,seq(51,66,by=5),71:100), seq(76,100, by=2))
+years;list(75+c(36,46,seq(51,66,by=5),71:100), 75+seq(76,100, by=2))
 Nsamp;list(500/4, 500)
 cpar;c(NA,NA)

@@ -39,13 +39,13 @@ write_cases_data <- function(spp, dir=case_folder){
         ## just add 75 more years due to the extra burn in
         index.years1 <- 'years;list(75+seq(76,100, by=2))'
         index.years2 <- 'years;list(75+c(seq(94,100,by=2)))'
-        comp.years1 <- 'years;list(75+c(36,46,seq(51,66,by=5),71:100), seq(76,100, by=2))'
-        comp.years2 <- 'years;list(75+c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))'
+        comp.years1 <- 'years;list(75+c(36,46,seq(51,66,by=5),71:100), 75+seq(76,100, by=2))'
+        comp.years2 <- 'years;list(75+c(seq(86,90,by=10), 91:100), 75+seq(94,100,by=2))'
     } else {
         index.years1 <- 'years;list(seq(76,100, by=2))'
         index.years2 <- 'years;list(c(seq(94,100,by=2)))'
         comp.years1 <- 'years;list(c(36,46,seq(51,66,by=5),71:100), seq(76,100, by=2))'
-        comp.years2 <- 'years;list(c(seq(86,90,by=10), 91:100), c(seq(94,100,by=2)))'
+        comp.years2 <- 'years;list(c(seq(86,90,by=10), 91:100), seq(94,100,by=2))'
     }
     ## ## Scenario 1:
     ## index1 <- c('fleets;c(2)', index.years1, 'sds_obs;list(.2)')
