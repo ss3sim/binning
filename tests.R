@@ -59,8 +59,8 @@ ggplot(yy, aes(year, varSSB))+geom_line()+facet_wrap('species', scales='free')
 
 
 ## use ss3sim function to extend burn in for yellow model
-setwd('yellow/om')
-ss3sim::change_year(year_begin=1, year_end=500, burnin=0,
+setwd('../ss3models/inst/models/yellow/om')
+ss3sim::change_year(year_begin=1, year_end=200, burnin=0,
                     ctl_file_in='ss3.ctl',
                     ctl_file_out='ss3_new.ctl',
                     dat_file_in='ss3.dat',
@@ -99,11 +99,23 @@ get_results_all(parallel=TRUE)
 
 xx <- read.csv("ss3sim_ts.csv")
 xx <- ddply(xx, .(species), mutate, SSB_OM=(SpawnBio_om-SpawnBio_om[1])/SpawnBio_om[1] )
+levels(xx$species) <- c('cod', 'flatfish', 'rockfish')
 plot_ts_lines(xx, y='SSB_OM', vert='species', rel=TRUE)
 ## look at variance over time
 yy <- ddply(xx, .(species, year), transform, sdSSB=sd(SpawnBio_om), sdSSBnorm=sd(SSB_OM))
-ggplot(yy, aes(year, sdSSB))+geom_line()+ facet_wrap('species', scales='free') +
-    ylab('Stdev of SSB_om')
-ggplot(yy, aes(year, sdSSBnorm))+geom_line()+ facet_wrap('species', scales='free') +
-    ylab('Stdev of RE of SSB_om')
-ggsave('plots/burn_in_test2.png', width=7, height=5)
+## ggplot(yy, aes(year, sdSSB))+geom_line()+ facet_wrap('species', scales='free') +
+##     ylab('Stdev of SSB_om')
+g <- ggplot(yy, aes(year, sdSSB))+geom_line()+ facet_wrap('species', ncol=1, scales='free') +
+    ylab('SD of SSB')+ theme_bw()
+ggsave('plots/burn_in_test2.png', g, width=7, height=5)
+
+
+## is the max gradient OK?
+xx <- binning.unfiltered
+levels(xx$species) <- c('cod', 'flatfish', 'rockfish')
+xx$model.binwidth <- as.numeric(gsub('pbin=', '', x=xx$pbin))
+g <- ggplot(xx, aes(log_max_grad, SSB_MSY_re, color=model.binwidth))+
+    geom_point(alpha=.5)+
+    facet_grid(data~species)  + ylim(-2,2) + geom_vline(xintercept=log(.1)) +
+        theme_bw()
+ggsave('plots/gradient_checks.png', g, width=9, height=5)
