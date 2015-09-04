@@ -10,6 +10,7 @@ Current contributors: Cole Monnahan, Kotaro Ono, Merrill Rudd, Sean
 Anderson, et al.
 
 To reproduce this study:
+
 1. Clone this repository into a local folder.
 
 2. Open the main.R script in R, set working directory to that folder. Use
