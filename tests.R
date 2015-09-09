@@ -31,7 +31,7 @@ stop("don't source this file")
 ##         xlab("log(SSB(26)) in OM") +ylab("log(SSB(100)) in OM")
 ## ggsave('plots/burn_in_test.png', width=7, height=5)
 
-## Run a bunch of scenarios with no fishing and no EM to see if behaving right
+## Run a bunch of scenarios with no EM to see if behaving right
 Nsim <- 100
 for(spp in c('cod','yellow-long', 'flatfish')){
     F99 <-  ifelse(spp=='yellow-long',
@@ -127,3 +127,52 @@ yellow.lencomp <- SS_readdat('ss3.dat', verbose=FALSE)$lencomp
 round(100*yellow.lencomp[nrow(yellow.lencomp), ncol(yellow.lencomp)]/sum(yellow.lencomp[nrow(yellow.lencomp), -(1:6)]),3)
 plot(as.numeric(yellow.lencomp[nrow(yellow.lencomp), -(1:6)]))
 
+
+## Run models with tons of data as self-test. First make new cases needed
+for(spp in species){
+    ## copy the F cases to make it easier to run w and w/o bias_adjust
+    file.copy(paste0('cases/F1-',spp, '.txt'), paste0('cases/F101-',spp, '.txt'))
+    file.copy(paste0('cases/F1-',spp, '.txt'), paste0('cases/F102-',spp, '.txt'))
+    if(spp=='yellow-long'){
+        ## just add 75 more years due to the extra burn in
+        index.years99 <- 'years;list(75+26:100)'
+        comp.years99 <- 'years;list(75+26:100, 75+26:100)'
+    } else {
+        index.years99 <- 'years;list(26:100)'
+        comp.years99 <- 'years;list(26:100, 26:100)'
+    }
+    index99 <- c('fleets;c(2)', index.years99 , 'sds_obs;list(.05)')
+    lcomp99 <- c('fleets;c(1,2)', comp.years99, 'Nsamp;list(1000, 1000)', 'cpar;c(NA,NA)')
+    agecomp99 <- c('fleets;c(1,2)', comp.years99, 'Nsamp;list(1000, 1000)', 'cpar;c(NA,NA)')
+    writeLines(index99, con=paste0(case_folder,"/", "index99-", spp, ".txt"))
+    writeLines(lcomp99, con=paste0(case_folder,"/", "lcomp99-", spp, ".txt"))
+    writeLines(agecomp99, con=paste0(case_folder,"/", "agecomp99-", spp, ".txt"))
+}
+## now run model with and without bias adjustment
+case_files <- list(F="F", D=c("index","lcomp","agecomp"))
+## get_caseargs(case_folder, scenario=scenarios[1], case_files=case_files)
+scenarios <- expand_scenarios(cases=list(D=c(2,99), F=101), species=spp)
+run_ss3sim(iterations=1:100, scenarios=scenarios,
+           parallel=TRUE, parallel_iterations=TRUE,
+           case_folder=case_folder, om_dir=om.paths[spp],
+           em_dir=em.paths[spp], case_files=case_files,
+           call_change_data=TRUE)
+scenarios <- expand_scenarios(cases=list(D=c(2,99), F=102), species=spp)
+run_ss3sim(iterations=1:1, scenarios=scenarios,
+           parallel=TRUE, parallel_iterations=TRUE,
+           bias_adjust=TRUE, bias_nsim=11,
+           case_folder=case_folder, om_dir=om.paths[spp],
+           em_dir=em.paths[spp], case_files=case_files,
+           call_change_data=TRUE)
+
+get_results_all(user=expand_scenarios(cases=list(D=99, F=1), species=species))
+
+cod.out <- SS_output('D99-F1-cod/1/em', forecast=FALSE, covar=FALSE,
+                 NoCompOK=TRUE, ncols=250, verbose=FALSE)
+SS_plots(replist=cod.out, png=TRUE, uncertainty=FALSE, html=FALSE)
+flatfish.out <- SS_output('D99-F1-flatfish/1/em', forecast=FALSE, covar=FALSE,
+                 NoCompOK=TRUE, ncols=250, verbose=FALSE)
+SS_plots(replist=flatfish.out, png=TRUE, uncertainty=FALSE, html=FALSE)
+yellow.out <- SS_output('D99-F1-yellow-long/1/em', forecast=FALSE, covar=FALSE,
+                 NoCompOK=TRUE, ncols=250, verbose=FALSE)
+SS_plots(replist=yellow.out, png=TRUE, uncertainty=FALSE, html=FALSE)
