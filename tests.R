@@ -147,7 +147,6 @@ for(spp in species){
     writeLines(index99, con=paste0(case_folder,"/", "index99-", spp, ".txt"))
     writeLines(lcomp99, con=paste0(case_folder,"/", "lcomp99-", spp, ".txt"))
     writeLines(agecomp99, con=paste0(case_folder,"/", "agecomp99-", spp, ".txt"))
-}
 ## now run model with and without bias adjustment
 case_files <- list(F="F", D=c("index","lcomp","agecomp"))
 ## get_caseargs(case_folder, scenario=scenarios[1], case_files=case_files)
@@ -158,14 +157,17 @@ run_ss3sim(iterations=1:100, scenarios=scenarios,
            em_dir=em.paths[spp], case_files=case_files,
            call_change_data=TRUE)
 scenarios <- expand_scenarios(cases=list(D=c(2,99), F=102), species=spp)
-run_ss3sim(iterations=1:1, scenarios=scenarios,
+run_ss3sim(iterations=1:100, scenarios=scenarios,
            parallel=TRUE, parallel_iterations=TRUE,
-           bias_adjust=TRUE, bias_nsim=11,
+           bias_adjust=TRUE, bias_nsim=5,
            case_folder=case_folder, om_dir=om.paths[spp],
            em_dir=em.paths[spp], case_files=case_files,
            call_change_data=TRUE)
+}
 
-get_results_all(user=expand_scenarios(cases=list(D=99, F=1), species=species))
+get_results_all(user=expand_scenarios(cases=list(D=c(2,99), F=c(101, 102)), species=species))
+saveRDS(read.csv('ss3sim_scalar.csv'), file='results/bias_adjust_scalar.RData')
+saveRDS(read.csv('ss3sim_ts.csv'), file='results/bias_adjust_ts.RData')
 
 cod.out <- SS_output('D99-F1-cod/1/em', forecast=FALSE, covar=FALSE,
                  NoCompOK=TRUE, ncols=250, verbose=FALSE)
