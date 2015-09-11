@@ -9,10 +9,10 @@ for(spp in species){
     scenarios <- expand_scenarios(cases=list(D=c(2,3), F=1, I=0,
                                   B=B.binning), species=spp)
     run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
-               parallel=TRUE, parallel_iterations=TRUE,
+               parallel=TRUE, parallel_iterations=FALSE,
                case_folder=case_folder, om_dir=om.paths[spp],
                em_dir=em.paths[spp], case_files=case_files,
-               bias_adjust=FALSE, bias_nsim=10,
+               bias_adjust=TRUE, bias_nsim=20,
                ## admb_options= " -maxfn 1 -phase 50",
                call_change_data=TRUE)
 }
@@ -21,10 +21,10 @@ for(spp in species){
     scenarios <- expand_scenarios(cases=list(D=c(5,6), F=1, I=0,
                                   B=B.binning), species=spp)
     run_ss3sim(iterations=1:Nsim, scenarios=scenarios,
-               parallel=TRUE, parallel_iterations=TRUE,
+               parallel=TRUE, parallel_iterations=FALSE,
                case_folder=case_folder, om_dir=om.paths[spp],
                em_dir=em.paths[spp], case_files=case_files,
-               bias_adjust=FALSE, bias_nsim=10,
+               bias_adjust=TRUE, bias_nsim=20,
                ## admb_options= " -maxfn 1 -phase 50",
                call_change_data=TRUE)
 }
