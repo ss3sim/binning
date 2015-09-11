@@ -39,6 +39,6 @@ source("make_plots.R")
 source("make_tables.R")
 ## use a minimum number of converged iterations for plotting scenario
 ## relative errors
-pct.converged.min <- .25
+pct.converged.min <- .5
 source("make_figures.R")
 

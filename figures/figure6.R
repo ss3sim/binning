@@ -1,8 +1,9 @@
 ## performance tradeoffs
 
 ## manipulate the existing long data frame into what we want for plotting
-d <- droplevels(subset(binning.long.figure, binmatch=="pbin=1cm" & data
-                        %in% c("Rich:C+L", "Rich:A+L") & pct.converged > pct.converged.min))
+d <- droplevels(subset(binning.long.figure, binmatch=="pbin=1cm" &
+                           data %in% c("Rich:C+L", "Rich:A+L") &
+                           pct.converged > pct.converged.min))
 d <- ddply(d, .(species, dbin, data, variable), summarize,
             MARE=median(abs(value)),
             MRE=median(value),
@@ -48,16 +49,16 @@ par(mar=c(0,0,0,0), tck=-0.03, oma=c(2.5,2.5,.5,.5),
     col.axis=col.label, xpd=FALSE)
 k <- 1
 for(j in seq_along(myvariables)){
-    pch.cex <- .6*seq_along(d.temp$binwidth)
     plot(0,0, type='n', xlim=c(.27,1.05), ylim=c(-.16, .16), axes=FALSE, ann=FALSE)
     abline(h=0, col=col.border, lty=2, lwd=.75)
     ## only make plots if had enough converged iterations
-    for(dd in levels(d.temp$data)){
-        d.temp <- d[d$species==species[i] & d$variable==myvariables[j] & d$data==dd,]
-
-        with(d.temp, lines(x=relative.runtime, y=MRE, pch=16, col=gray(.5), lwd=1.5))
-        with(d.temp, points(x=relative.runtime, y=MRE, pch=16, cex=pch.cex,
-                            col=rgb(0,0,0,.5)))
+    for(dd in 2:1){
+        pch.cex <- .6*seq_along(d.temp$binwidth)
+        d.temp <- d[d$species==species[i] & d$variable==myvariables[j] &
+                        d$data==levels(d$data)[dd],]
+        with(d.temp, lines(x=relative.runtime, y=MRE, col=c(1,gray(.5))[dd], lwd=1.5))
+        with(d.temp, points(x=relative.runtime, y=MRE, pch=c(1, 16)[dd], cex=pch.cex,
+                            col=c(1,gray(.5))[dd]))
     }
     print.letter(paste0("(", letters[k], ")"), xy=xy, cex=.8); k <- k+1
     mtext(myvariables.labels[j], side=3, line=-1.65, cex=par()$cex.lab)
@@ -69,9 +70,11 @@ for(j in seq_along(myvariables)){
     box(col=col.border)
 }
 plot(0,0, type='n', xlim=c(.27,1.05), ylim=c(-.17,.17), axes=FALSE, ann=FALSE)
-legend("center", legend=c(1,2,5,10), pch=16, pt.cex=pch.cex,
-       bty='n', horiz=TRUE, cex=.9, adj=0, xjust=3, col=rgb(0,0,0,.5),
+legend("bottom", legend=c(1,2,5,10), pch=16, pt.cex=pch.cex,
+       bty='n', horiz=TRUE, cex=.8, adj=0, xjust=1,  col=rgb(0,0,0,.5),
        title='Bin Width (cm)')
+legend('center', legend=c('Age', 'CAAL'), pch=c(1, 16), pt.cex=1, ncol=2,
+       bty='n', cex=.8, title='Data Type', col=c(1, gray(.5)))
 ##    box(col=col.border)
 mtext("Relative Run Time", side=1, line=1.25, cex=par()$cex.lab, outer=TRUE)
 mtext(paste("Median Relative Error:", species.labels[i]), side=2, line=1, cex=par()$cex.lab, outer=TRUE)

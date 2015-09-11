@@ -68,7 +68,7 @@ for(i in seq_along(mydata)){
             axis(1, at=c(1,2,5,10), col=col.tick, mgp=par()$mgp, tck=par()$tck)
         if(j==1){
             ## mtext(mydata.labels[i], side=2, line=.9, cex=.7)
-            axis(2, col=col.tick, at=re.at.bin, mgp=par()$mgp, tck=par()$tck)
+            axis(2, col=col.tick, at=re.at, mgp=par()$mgp, tck=par()$tck)
         }
         box(col=col.border)
     }
