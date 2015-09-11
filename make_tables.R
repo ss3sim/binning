@@ -18,9 +18,22 @@ mare.table.wide <- reshape2::dcast(mare.table.long,
                               value.var='mare')
 write.csv(mare.table.wide, 'results/table_mares.csv')
 
+## tried a quick test of plotting age vs CAAL but didn't really help understand
+## datatype <- rep("Age", nrow(mare.table.long))
+## datatype[grep("C", as.character(mare.table.long$data))] <- "CAAL"
+## dataquant <- rep("Rich", nrow(mare.table.long))
+## dataquant[grep("Poor", as.character(mare.table.long$data))] <- "Limited"
+## mare.table.long$datatype <- datatype
+## mare.table.long$dataquant <- dataquant
+## mare.table.data <- reshape2::dcast(mare.table.long,
+##                               formula=species+data.binwidth+variable+binmatch+dataquant~datatype,
+##                               value.var='mare')
+## mare.table.data <- subset(mare.table.data, binmatch=='No Match' | data.binwidth==1)
+## ggplot(mare.table.data, aes(Age, CAAL, color=data.binwidth))+geom_point() + facet_grid(species~dataquant+variable)
+
 ## table of converged binning scenarios
 write.table(dcast(binning.counts, value.var='pct.converged',
-                formula=species+data~B),
+                formula=species+data+binmatch~data.binwidth),
             file="results/table_binning_convergence.csv",
             sep=",", row.names=FALSE)
 
