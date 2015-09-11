@@ -61,7 +61,6 @@ get_om_values <- function(species, binwidth, F_case="F1", k=NULL,
 ## sigmar.list <- list('cod'=.4, 'flatfish'=.7, 'yellow-long'=.5)
 ## Turn off sigma to see underlying average patterns
 sigmar.list <- list('cod'=.0001, 'flatfish'=.0001, 'yellow-long'=.0001)
-scalars <- c("SSB_MSY", "TotYield_MSY", "SSB_Unfished", "depletion")
 F.cases <- "F1"
 scalar_re <- function(x) {(x - x[1]) / x[1]}
 

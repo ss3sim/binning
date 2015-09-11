@@ -4,7 +4,7 @@
 ### ------------------------------------------------------------
 ## Step 0: Prepare the R workspace and generate case files
 cores <- 5   # parallel cores
-devtools::install_github("ss3sim/ss3sim")
+## devtools::install_github("ss3sim/ss3sim")
 ## devtools::install_github('r4ss/r4ss')
 ## sample sizes
 Nsim.datapoor <- 400
@@ -22,6 +22,7 @@ source("startup.R")
 
 ### ------------------------------------------------------------
 ## Step 1: Run the OM tests for pop bins
+scalars <- c("SSB_MSY", "TotYield_MSY", "SSB_Unfished", "depletion")
 source("run_popbin_scenarios.R")
 
 ### ------------------------------------------------------------
@@ -38,6 +39,6 @@ source("make_plots.R")
 source("make_tables.R")
 ## use a minimum number of converged iterations for plotting scenario
 ## relative errors
-pct.converged.min <- .5
+pct.converged.min <- .25
 source("make_figures.R")
 

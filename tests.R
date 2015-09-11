@@ -169,12 +169,29 @@ get_results_all(user=expand_scenarios(cases=list(D=c(2,99), F=c(101, 102)), spec
 saveRDS(read.csv('ss3sim_scalar.csv'), file='results/bias_adjust_scalar.RData')
 saveRDS(read.csv('ss3sim_ts.csv'), file='results/bias_adjust_ts.RData')
 
-cod.out <- SS_output('D99-F1-cod/1/em', forecast=FALSE, covar=FALSE,
-                 NoCompOK=TRUE, ncols=250, verbose=FALSE)
-SS_plots(replist=cod.out, png=TRUE, uncertainty=FALSE, html=FALSE)
-flatfish.out <- SS_output('D99-F1-flatfish/1/em', forecast=FALSE, covar=FALSE,
-                 NoCompOK=TRUE, ncols=250, verbose=FALSE)
-SS_plots(replist=flatfish.out, png=TRUE, uncertainty=FALSE, html=FALSE)
-yellow.out <- SS_output('D99-F1-yellow-long/1/em', forecast=FALSE, covar=FALSE,
-                 NoCompOK=TRUE, ncols=250, verbose=FALSE)
-SS_plots(replist=yellow.out, png=TRUE, uncertainty=FALSE, html=FALSE)
+## cod.out <- SS_output('D99-F1-cod/1/em', forecast=FALSE, covar=FALSE,
+##                  NoCompOK=TRUE, ncols=250, verbose=FALSE)
+## SS_plots(replist=cod.out, png=TRUE, uncertainty=FALSE, html=FALSE)
+## flatfish.out <- SS_output('D99-F1-flatfish/1/em', forecast=FALSE, covar=FALSE,
+##                  NoCompOK=TRUE, ncols=250, verbose=FALSE)
+## SS_plots(replist=flatfish.out, png=TRUE, uncertainty=FALSE, html=FALSE)
+## yellow.out <- SS_output('D99-F1-yellow-long/1/em', forecast=FALSE, covar=FALSE,
+##                  NoCompOK=TRUE, ncols=250, verbose=FALSE)
+## SS_plots(replist=yellow.out, png=TRUE, uncertainty=FALSE, html=FALSE)
+
+biasadjust.sc <- readRDS('results/bias_adjust_scalar.RData')
+biasadjust.sc <- calculate_re(biasadjust.sc)
+levels(biasadjust.sc$F) <- c("No Bias Adjust", "Bias Adjust")
+scalars <- c("CV_young_Fem_GP_1_re",  "CV_old_Fem_GP_1_re",
+           "CV_young_Fem_GP_1_re", "depletion_re", "L_at_Amax_Fem_GP_1_re",
+           "L_at_Amin_Fem_GP_1_re", "SSB_MSY_re")
+bsc <- melt(biasadjust.sc, id.vars=c('species', 'D', 'F'), measure.vars=scalars)
+g <- plot_scalar_boxplot(bsc, x="variable", y="value",
+                    horiz="species", vert='D', vert2='F', print=FALSE)
+g+ylim(-.1, .1) + geom_hline(xintercept=0, col='red')
+
+biasadjust.ts <- readRDS('results/bias_adjust_ts.RData')
+biasadjust.ts <- calculate_re(biasadjust.ts)
+levels(biasadjust.ts$F) <- c("No Bias Adjust", "Bias Adjust")
+plot_ts_boxplot(biasadjust.ts, y='SpawnBio_re', horiz='species', vert2='F',
+                vert='D', re=TRUE)

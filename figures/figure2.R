@@ -34,13 +34,13 @@ add.lines <- function(x, low, mid, high){
     lines(x, low, col = col1, lwd = 1, lty = "dashed")
 }
 ## read in the data once
-flatfish <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-flatfish-1", "om/"), covar=F, forecast=F,
+flatfish <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-flatfish-1"), covar=F, forecast=F,
                            ncols=300, readwt=FALSE, printstats=FALSE,
                                          verbose=FALSE, NoCompOK=TRUE))
-cod <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-cod-1", "om/"), covar=F, forecast=F,
+cod <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-cod-1"), covar=F, forecast=F,
                            ncols=300, readwt=FALSE, printstats=FALSE,
                                          verbose=FALSE, NoCompOK=TRUE))
-yellow <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-yellow-1", "om/"), covar=F, forecast=F,
+yellow <- extract.data(r4ss::SS_output(file.path("example_models/B0-D2-F1-I0-yellow-long-1"), covar=F, forecast=F,
                            ncols=300, readwt=FALSE, printstats=FALSE,
                                          verbose=FALSE, NoCompOK=TRUE))
 replist.list <- list(cod,flatfish, yellow)
@@ -51,7 +51,7 @@ make.file(file.type, filename="figures/figure2_expdesign", width=width,
 col1 <- 'black'
 par(mar=c(2,.5,.5,.75), tck=-0.015, oma=c(.5,2,0,0),
     mgp=c(.5, .075,0), mfcol=c(1,1), cex.lab=.9, cex.axis=.9,
-    col.axis=col.label, xpd=TRUE)
+    col.axis=col.label)
 bin.widths <- list(c(2,5,10,20), c(2,5,10,20), c(2,5,10,20))
 n.contours <- 6
 ## cols.palette <- RColorBrewer::brewer.pal(n.contours, "Blues")
@@ -84,41 +84,50 @@ with(replist.list[[i]],{
     if(i==1) mtext("Length (cm)", side=2, line=1,cex=par()$cex.lab)
     mtext(c("Cod","Flatfish", "Rockfish")[i], side=3, line=-1.6, cex=par()$cex.lab*1.1)
 })}
+## Add the exploitation cases. Note that I'm using cod here and shifting
+## the x-axis labels out of convenience
 cex.fishery <- 1.25
 cex.survey <- 1
-## add data rich
-plot(x=25:100, ylim=c(1,4.5), axes=FALSE, ann=FALSE, xlim=c(25,100))
+## add fishing pattern for cod, scaled to fmsy
+fmsy <- 0.121066666666667               # from fmsytable in ss3models/extra
+fvals <- ss3sim:::get_args("cases/F1-cod.txt")
+fvals$fvals <- fvals$fvals/fmsy
+plot(fvals$years[25:100], fvals$fvals[25:100], type='n', axes=FALSE,
+     ann=FALSE)
+abline(h=1, col=gray(.5), lwd=.5)
+lines(fvals$years[25:100], fvals$fvals[25:100],lwd=1.5)
+axis(1, at=seq(25,100, by=25), labels=seq(25,100, by=25)-25, col=col.border, mgp=par()$mgp, tck=par()$tck)
+axis(2, at=c(0,1), labels=c(0, expression(F[MSY])))
+box(col=col.border)
 print.letter(paste0("(",letters[k], ")"), xy=xy2);k <<- k+1
+mtext("Year of Fishing", side=1, line=1,cex=par()$cex.lab)
+mtext("Fishing Effort (F)", side=2, line=.95 ,cex=par()$cex.lab)
+## add data cases
+zz <- 2
+plot(x=25:100, ylim=c(1,4.5), axes=FALSE, ann=FALSE, xlim=c(25,100))
 lcomp2 <- ss3sim:::get_args("cases/lcomp2-cod.txt")
-with(lcomp2, points(years[[1]], y=rep(2, len=length(years[[1]])), cex=cex.fishery))
-with(lcomp2, points(years[[2]], y=rep(2.25, len=length(years[[2]])), cex=cex.survey, pch=16))
+with(lcomp2, points(years[[1]], y=rep(1+zz, len=length(years[[1]])), cex=cex.fishery))
+with(lcomp2, points(years[[2]], y=rep(1.25+zz, len=length(years[[2]])), cex=cex.survey, pch=16))
 index2 <- ss3sim:::get_args("cases/index2-cod.txt")
-with(index2, points(years[[1]], y=rep(3, len=length(years[[1]])), cex=cex.survey,pch=16))
+with(index2, points(years[[1]], y=rep(1.75+zz, len=length(years[[1]])), cex=cex.survey,pch=16))
 agecomp2 <- ss3sim:::get_args("cases/agecomp2-cod.txt")
-with(agecomp2, points(years[[1]], y=rep(1, len=length(years[[1]])), cex=cex.fishery))
-with(agecomp2, points(years[[2]], y=rep(1.25, len=length(years[[2]])), cex=cex.survey, pch=16))
-points(x=25:100, y=rep(3.75, len=76), cex=cex.fishery)
-axis(1, at=seq(25,100, by=25), col=col.border, mgp=par()$mgp, tck=par()$tck)
-text(x=90, y=c(1.5,2.5,3.25,4), labels=c("Lengths", "Ages", "Index", "Catches"))
-mtext("Data Rich", side=3, line=-1.6, cex=1)
-box(col=col.border)
-## add data poor
-mtext("Year", side=1, line=1,cex=par()$cex.lab)
-mtext("Data Type", side=2, line=.75 ,cex=par()$cex.lab)
-plot(x=25:100, ylim=c(1,4.5), axes=FALSE, ann=FALSE, xlim=c(25,100))
-print.letter(paste0("(",letters[k], ")"), xy=xy2);k <<- k+1
+axis(1, at=seq(25,100, by=25), labels=seq(25,100, by=25)-25, col=col.border, mgp=par()$mgp, tck=par()$tck)
+text(x=90, y=c(1.5,2)+zz, labels=c("Lengths & Ages", "Index"))
 lcomp5 <- ss3sim:::get_args("cases/lcomp5-cod.txt")
-with(lcomp5, points(years[[1]], y=rep(2, len=length(years[[1]])), cex=cex.fishery))
-with(lcomp5, points(years[[2]], y=rep(2.25, len=length(years[[2]])), cex=cex.survey, pch=16))
+with(lcomp5, points(years[[1]], y=rep(1, len=length(years[[1]])), cex=cex.fishery))
+with(lcomp5, points(years[[2]], y=rep(1.25, len=length(years[[2]])), cex=cex.survey, pch=16))
 index5 <- ss3sim:::get_args("cases/index5-cod.txt")
-with(index5, points(years[[1]], y=rep(3, len=length(years[[1]])),pch=16, cex=cex.survey))
+with(index5, points(years[[1]], y=rep(1.75, len=length(years[[1]])), cex=cex.survey,pch=16))
 agecomp5 <- ss3sim:::get_args("cases/agecomp5-cod.txt")
-with(agecomp5, points(years[[1]], y=rep(1, len=length(years[[1]])), cex=cex.fishery))
-with(agecomp5, points(years[[2]], y=rep(1.25, len=length(years[[2]])), cex=cex.survey, pch=16))
-points(x=25:100, y=rep(3.75, len=76), cex=cex.fishery)
-axis(1, at=seq(25,100, by=25), col=col.border, mgp=par()$mgp, tck=par()$tck)
-text(x=90, y=c(1.5,2.5,3.25,4), labels=c("Lengths", "Ages", "Index", "Catches"))
+axis(1, at=seq(25,100, by=25), labels=seq(25,100, by=25)-25, col=col.border, mgp=par()$mgp, tck=par()$tck)
+text(x=90, y=c(1.5,2), labels=c("Lengths & Ages", "Index"))
+abline(h=1+3.5/2, col=gray(.8))
+print.letter(paste0("(",letters[k], ")"), xy=xy2);k <<- k+1
+legend('bottomleft', legend=c('Survey Samples', 'Fishery Samples'),
+       pch=c(16, 1), box.col=col.border, box.lwd=.5,
+       pt.cex=c(cex.survey, cex.fishery))
+mtext("Year of Fishing", side=1, line=1,cex=par()$cex.lab)
+text("Data Limited", x=75/2+25, pos=1, y= 2.6, cex=1.25)
+text("Data Rich", x=75/2+25, pos=1, y= 2.6+zz, cex=1.25)
 box(col=col.border)
-mtext("Year", side=1, line=1,cex=par()$cex.lab)
-mtext("Data Limited", side=3, line=-1.6, cex=1)
 dev.off()

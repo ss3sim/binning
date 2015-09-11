@@ -67,7 +67,7 @@ m <- c(rep(1, 3), rep(2, 5))
 layout(m)
 z <- region_lit_wide[,-1] %>% as.matrix
 fable(y = region_lit_wide$region, x = names(region_lit_wide)[-1], z = z, text_cex = 0.9)
-mtext("Length Bin Width (cm)", side=3, line=1.5, cex=.9)
+mtext("Length Data Bin Width (cm)", side=3, line=1.5, cex=.9)
 z <- taxa_lit_wide[,-1] %>% as.matrix
 fable(y = taxa_lit_wide$species_type, x = names(taxa_lit_wide)[-1], z = z,
       text_cex = 0.9, print_labels=FALSE)

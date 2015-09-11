@@ -2,7 +2,7 @@
 ## making figures and tables.
 
 ## Load the results from section 1
-Linf.df <- data.frame(species=factor(c('cod', 'flatfish', 'yellow')), Linf=c(132,47,62))
+Linf.df <- data.frame(species=factor(c('cod', 'flatfish', 'yellow-long')), Linf=c(132,47,62))
 popbins.binwidth.scalars <- readRDS(file='results/popbins.binwidth.scalars.RData')
 popbins.binwidth.ts <- readRDS(file='results/popbins.binwidth.ts.RData')
 popbins.minsize <- readRDS(file='results/popbins.minsize.RData')
@@ -24,18 +24,18 @@ bin.cases.df <-
                      dbin=paste0("dbin=",c(1,2,5,10,20, 2,5,10,20)),
                      pbin=paste0("pbin=", c(1,1,1,1,1, 2,5,10,20)),
                      B=paste0("B",B.binning)),
-          data.frame(species=c('yellow'),
+          data.frame(species=c('yellow-long'),
                      dbin=paste0("dbin=",c(1,2,5,10,20, 2,5,10,20)),
                      pbin=paste0("pbin=", c(1,1,1,1,1, 2,5,10,20)),
                      B=paste0("B",B.binning)))
 data.cases.df <-
     data.frame(D=paste0("D",D.binning), data=c("Rich:A+L", "Rich:C+L", "Poor:A+L", "Poor:C+L"))
 tcomp.cases.df <-
-    data.frame(species=rep(c('cod','flatfish','yellow'),each=4),
+    data.frame(species=rep(c('cod','flatfish','yellow-long'),each=4),
                tvalue=paste0("tcomp=", c(-1, 1e-3, 0.01, 0.05)),
                I=paste0("I",11:14))
 robust.cases.df <-
-    data.frame(species=rep(c('cod','flatfish','yellow'),each=4),
+    data.frame(species=rep(c('cod','flatfish','yellow-long'),each=4),
                rvalue=paste0("robust=", c(1e-10,1e-5,1e-3,0.01)),
                I=paste0("I", 21:24))
 ## reorder for plotting
@@ -69,11 +69,16 @@ binning$RecrDist_GP_1_re <- NULL
 binning <- binning[,-which(apply(binning, 2, function(x) all(x==0)))]
 binning.unfiltered <- binning           # before subetting by convergence
 binning <- droplevels(subset(binning, converged=="yes"))
-binning.counts <- ddply(binning, .(data,data.binwidth, binmatch,species), summarize,
+binning.counts <- ddply(binning, .(data, data.binwidth, binmatch,species), summarize,
                           replicates=length(scenario),
                           pct.converged=100*unique(pct.converged),
                         median.iterations=median(Niterations),
                         median.runtime=median(runtime))
+binning.counts.normalized <- ddply(binning.counts, .(species, data), mutate,
+                                  runtime.normalized=median.runtime/median.runtime[which(data.binwidth==1)],
+                                  iterations.normalized=median.iterations/median.iterations[which(data.binwidth==1)])
+binning.counts.normalized$match <- factor(binning.counts.normalized$binmatch)
+levels(binning.counts.normalized$match) <- c("No", "Yes")
 binning.runtime <- ddply(binning, .(data,B, species), summarize,
                          binmatch=binmatch[1],
                          dbin=dbin[1], pbin=pbin[1],
@@ -103,7 +108,7 @@ binning.long.management$variable <- gsub("_re", "", binning.long.management$vari
 figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
 binning.long.figure <- droplevels(subset(binning.long, variable %in% figure.names))
 binning.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", binning.long.figure$variable)
-## This is my crazy way to get B0 on the x axis
+## ## This is my crazy way to get B0 on the x axis
 temp <- dcast(binning.long.growth, value.var='value',
                              formula=species+data+variable+replicate~B)
 binning.long.growth2 <-
@@ -196,155 +201,155 @@ binning.stuck$variable <- gsub("Size|_Fem_GP_1", "", binning.stuck$variable)
 ### ------------------------------------------------------------
 
 
-### ------------------------------------------------------------
-### Step 3: Load and prep the tail compression and robustification data
-## tail compression
-tcomp <- readRDS("results/results_tcomp.sc.RData")
-## process the main results
-tcomp$params_on_bound_om <- NULL
-tcomp$log_max_grad <- log(tcomp$max_grad)
-tcomp$converged <- ifelse(tcomp$max_grad<.1 & tcomp$params_on_bound_em==0, "yes", "no")
-tcomp <- calculate_re(tcomp, add=TRUE)
-tcomp$runtime <- tcomp$RunTime
-tcomp <- merge(tcomp, tcomp.cases.df, by=c("species", "I"))
-tcomp <- merge(tcomp, data.cases.df, by=c("D"))
-## Drop fixed params (columns of zeroes)
-tcomp$RecrDist_GP_1_re <- NULL
-tcomp <- tcomp[,-which(apply(tcomp, 2, function(x) all(x==0)))]
-tcomp <- ddply(tcomp, "scenario", mutate, pct.converged=mean(converged=="yes"))
-tcomp.unfiltered <- tcomp
-tcomp <- droplevels(subset(tcomp, converged=="yes"))
-tcomp.counts <- ddply(tcomp, .(tvalue, B, species, data), summarize,
-                          replicates=length(scenario),
-                          pct.converged=100*unique(pct.converged),
-                        median.iterations=median(Niterations),
-                        median.runtime=median(runtime))
-re.names <- names(tcomp)[grep("_re", names(tcomp))]
-tcomp.long <-
-    melt(tcomp, measure.vars=re.names, id.vars=
-             c("species","replicate", "data", "B", "pct.converged",
-               "tvalue", "log_max_grad", "params_on_bound_em",
-               "runtime"))
-growth.names <- re.names[grep("GP_", re.names)]
-tcomp.long.growth <- droplevels(subset(tcomp.long, variable %in% growth.names))
-tcomp.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", tcomp.long.growth$variable)
-selex.names <- re.names[grep("Sel_", re.names)]
-tcomp.long.selex <- droplevels(subset(tcomp.long, variable %in% selex.names))
-tcomp.long.selex$variable <- gsub("ery|ey|Size|_re", "", tcomp.long.selex$variable)
-tcomp.long.selex$variable <- gsub("_", ".", tcomp.long.selex$variable)
-management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
-tcomp.long.management <- droplevels(subset(tcomp.long, variable %in% management.names))
-tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable)
-figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
-tcomp.long.figure <- droplevels(subset(tcomp.long, variable %in% figure.names))
-tcomp.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", tcomp.long.figure$variable)
-## This is a crazy way to get which params get stuck for which scenarios
-library("magrittr")
-x.low <- paste(tcomp.unfiltered$params_stuck_low_em, collapse = ";") %>%
-  strsplit(";")
-x.low <- unique(x.low[[1]])
-x.low <- x.low[-which(x.low == "NA")]
-stuck.low <- matrix(ncol = length(x.low), nrow = nrow(tcomp.unfiltered)) %>%
-  as.data.frame %>%
-  setNames(x.low)
-for (i in seq_along(x.low)) {
-  stuck.low[,i] <- grepl(x.low[i], tcomp.unfiltered$params_stuck_low_em)}
-tcomp.stuck.low <- cbind(tcomp.unfiltered[, c("species", "D", "I")], stuck.low)
-tcomp.stuck.low <- melt(tcomp.stuck.low, id.vars=c("species", "D","I"))
-tcomp.stuck.low <- ddply(tcomp.stuck.low, .(species, D, I, variable), summarize, pct.stuck=mean(value))
-tcomp.stuck.low$which.bound <- "low"
-x.high <- paste(tcomp.unfiltered$params_stuck_high_em, collapse = ";") %>%
-  strsplit(";")
-x.high <- unique(x.high[[1]])
-x.high <- x.high[-which(x.high == "NA")]
-stuck.high <- matrix(ncol = length(x.high), nrow = nrow(tcomp.unfiltered)) %>%
-  as.data.frame %>%
-  setNames(x.high)
-for (i in seq_along(x.high)) {
-  stuck.high[,i] <- grepl(x.high[i], tcomp.unfiltered$params_stuck_high_em)}
-tcomp.stuck.high <- cbind(tcomp.unfiltered[, c("species", "D", "I")], stuck.high)
-tcomp.stuck.high <- melt(tcomp.stuck.high, id.vars=c("species", "D","I"))
-tcomp.stuck.high <- ddply(tcomp.stuck.high, .(species, D, I, variable), summarize, pct.stuck=mean(value))
-tcomp.stuck.high$which.bound <- "high"
-tcomp.stuck <- subset(rbind(tcomp.stuck.low, tcomp.stuck.high), pct.stuck>0)
-tcomp.stuck$variable <- gsub("Size|_Fem_GP_1", "", tcomp.stuck$variable)
+## ### ------------------------------------------------------------
+## ### Step 3: Load and prep the tail compression and robustification data
+## ## tail compression
+## tcomp <- readRDS("results/results_tcomp.sc.RData")
+## ## process the main results
+## tcomp$params_on_bound_om <- NULL
+## tcomp$log_max_grad <- log(tcomp$max_grad)
+## tcomp$converged <- ifelse(tcomp$max_grad<.1 & tcomp$params_on_bound_em==0, "yes", "no")
+## tcomp <- calculate_re(tcomp, add=TRUE)
+## tcomp$runtime <- tcomp$RunTime
+## tcomp <- merge(tcomp, tcomp.cases.df, by=c("species", "I"))
+## tcomp <- merge(tcomp, data.cases.df, by=c("D"))
+## ## Drop fixed params (columns of zeroes)
+## tcomp$RecrDist_GP_1_re <- NULL
+## tcomp <- tcomp[,-which(apply(tcomp, 2, function(x) all(x==0)))]
+## tcomp <- ddply(tcomp, "scenario", mutate, pct.converged=mean(converged=="yes"))
+## tcomp.unfiltered <- tcomp
+## tcomp <- droplevels(subset(tcomp, converged=="yes"))
+## tcomp.counts <- ddply(tcomp, .(tvalue, B, species, data), summarize,
+##                           replicates=length(scenario),
+##                           pct.converged=100*unique(pct.converged),
+##                         median.iterations=median(Niterations),
+##                         median.runtime=median(runtime))
+## re.names <- names(tcomp)[grep("_re", names(tcomp))]
+## tcomp.long <-
+##     melt(tcomp, measure.vars=re.names, id.vars=
+##              c("species","replicate", "data", "B", "pct.converged",
+##                "tvalue", "log_max_grad", "params_on_bound_em",
+##                "runtime"))
+## growth.names <- re.names[grep("GP_", re.names)]
+## tcomp.long.growth <- droplevels(subset(tcomp.long, variable %in% growth.names))
+## tcomp.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", tcomp.long.growth$variable)
+## selex.names <- re.names[grep("Sel_", re.names)]
+## tcomp.long.selex <- droplevels(subset(tcomp.long, variable %in% selex.names))
+## tcomp.long.selex$variable <- gsub("ery|ey|Size|_re", "", tcomp.long.selex$variable)
+## tcomp.long.selex$variable <- gsub("_", ".", tcomp.long.selex$variable)
+## management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
+## tcomp.long.management <- droplevels(subset(tcomp.long, variable %in% management.names))
+## tcomp.long.management$variable <- gsub("_re", "", tcomp.long.management$variable)
+## figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
+## tcomp.long.figure <- droplevels(subset(tcomp.long, variable %in% figure.names))
+## tcomp.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", tcomp.long.figure$variable)
+## ## This is a crazy way to get which params get stuck for which scenarios
+## library("magrittr")
+## x.low <- paste(tcomp.unfiltered$params_stuck_low_em, collapse = ";") %>%
+##   strsplit(";")
+## x.low <- unique(x.low[[1]])
+## x.low <- x.low[-which(x.low == "NA")]
+## stuck.low <- matrix(ncol = length(x.low), nrow = nrow(tcomp.unfiltered)) %>%
+##   as.data.frame %>%
+##   setNames(x.low)
+## for (i in seq_along(x.low)) {
+##   stuck.low[,i] <- grepl(x.low[i], tcomp.unfiltered$params_stuck_low_em)}
+## tcomp.stuck.low <- cbind(tcomp.unfiltered[, c("species", "D", "I")], stuck.low)
+## tcomp.stuck.low <- melt(tcomp.stuck.low, id.vars=c("species", "D","I"))
+## tcomp.stuck.low <- ddply(tcomp.stuck.low, .(species, D, I, variable), summarize, pct.stuck=mean(value))
+## tcomp.stuck.low$which.bound <- "low"
+## x.high <- paste(tcomp.unfiltered$params_stuck_high_em, collapse = ";") %>%
+##   strsplit(";")
+## x.high <- unique(x.high[[1]])
+## x.high <- x.high[-which(x.high == "NA")]
+## stuck.high <- matrix(ncol = length(x.high), nrow = nrow(tcomp.unfiltered)) %>%
+##   as.data.frame %>%
+##   setNames(x.high)
+## for (i in seq_along(x.high)) {
+##   stuck.high[,i] <- grepl(x.high[i], tcomp.unfiltered$params_stuck_high_em)}
+## tcomp.stuck.high <- cbind(tcomp.unfiltered[, c("species", "D", "I")], stuck.high)
+## tcomp.stuck.high <- melt(tcomp.stuck.high, id.vars=c("species", "D","I"))
+## tcomp.stuck.high <- ddply(tcomp.stuck.high, .(species, D, I, variable), summarize, pct.stuck=mean(value))
+## tcomp.stuck.high$which.bound <- "high"
+## tcomp.stuck <- subset(rbind(tcomp.stuck.low, tcomp.stuck.high), pct.stuck>0)
+## tcomp.stuck$variable <- gsub("Size|_Fem_GP_1", "", tcomp.stuck$variable)
 
-robust <- readRDS("results/results_robust.sc.RData")
-## process the main results
-robust$params_on_bound_om <- NULL
-robust$log_max_grad <- log(robust$max_grad)
-robust$converged <- ifelse(robust$max_grad<.1 & robust$params_on_bound_em==0, "yes", "no")
-robust <- calculate_re(robust, add=TRUE)
-robust$runtime <- robust$RunTime
-robust <- merge(robust, robust.cases.df, by=c("species", "I"))
-robust <- merge(robust, data.cases.df, by=c("D"))
-## Drop fixed params (columns of zeroes)
-robust$RecrDist_GP_1_re <- NULL
-robust <- robust[,-which(apply(robust, 2, function(x) all(x==0)))]
-robust <- ddply(robust, "scenario", mutate, pct.converged=mean(converged=="yes"))
-robust.unfiltered <- robust
-robust <- droplevels(subset(robust, converged=="yes"))
-robust.counts <- ddply(robust, .(rvalue, B, species, data), summarize,
-                          replicates=length(scenario),
-                          pct.converged=100*unique(pct.converged),
-                        median.iterations=median(Niterations),
-                        median.runtime=median(runtime))
-re.names <- names(robust)[grep("_re", names(robust))]
-robust.long <-
-    melt(robust, measure.vars=re.names, id.vars=
-             c("species","replicate", "data", "B", "pct.converged",
-               "rvalue", "log_max_grad", "params_on_bound_em",
-               "runtime"))
-growth.names <- re.names[grep("GP_", re.names)]
-robust.long.growth <- droplevels(subset(robust.long, variable %in% growth.names))
-robust.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", robust.long.growth$variable)
-selex.names <- re.names[grep("Sel_", re.names)]
-robust.long.selex <- droplevels(subset(robust.long, variable %in% selex.names))
-robust.long.selex$variable <- gsub("ery|ey|Size|_re", "", robust.long.selex$variable)
-robust.long.selex$variable <- gsub("_", ".", robust.long.selex$variable)
-management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
-robust.long.management <- droplevels(subset(robust.long, variable %in% management.names))
-robust.long.management$variable <- gsub("_re", "", robust.long.management$variable)
-figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
-robust.long.figure <- droplevels(subset(robust.long, variable %in% figure.names))
-robust.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", robust.long.figure$variable)
-## This is a crazy way to get which params get stuck for which scenarios
-library("magrittr")
-x.low <- paste(robust.unfiltered$params_stuck_low_em, collapse = ";") %>%
-  strsplit(";")
-x.low <- unique(x.low[[1]])
-x.low <- x.low[-which(x.low == "NA")]
-stuck.low <- matrix(ncol = length(x.low), nrow = nrow(robust.unfiltered)) %>%
-  as.data.frame %>%
-  setNames(x.low)
-for (i in seq_along(x.low)) {
-  stuck.low[,i] <- grepl(x.low[i], robust.unfiltered$params_stuck_low_em)}
-robust.stuck.low <- cbind(robust.unfiltered[, c("species", "D", "I")], stuck.low)
-robust.stuck.low <- melt(robust.stuck.low, id.vars=c("species", "D","I"))
-robust.stuck.low <- ddply(robust.stuck.low, .(species, D, I, variable), summarize, pct.stuck=mean(value))
-robust.stuck.low$which.bound <- "low"
-x.high <- paste(robust.unfiltered$params_stuck_high_em, collapse = ";") %>%
-  strsplit(";")
-x.high <- unique(x.high[[1]])
-x.high <- x.high[-which(x.high == "NA")]
-stuck.high <- matrix(ncol = length(x.high), nrow = nrow(robust.unfiltered)) %>%
-  as.data.frame %>%
-  setNames(x.high)
-for (i in seq_along(x.high)) {
-  stuck.high[,i] <- grepl(x.high[i], robust.unfiltered$params_stuck_high_em)}
-robust.stuck.high <- cbind(robust.unfiltered[, c("species", "D", "I")], stuck.high)
-robust.stuck.high <- melt(robust.stuck.high, id.vars=c("species", "D","I"))
-robust.stuck.high <- ddply(robust.stuck.high, .(species, D, I, variable), summarize, pct.stuck=mean(value))
-robust.stuck.high$which.bound <- "high"
-robust.stuck <- subset(rbind(robust.stuck.low, robust.stuck.high), pct.stuck>0)
-robust.stuck$variable <- gsub("Size|_Fem_GP_1", "", robust.stuck$variable)
-## End tcomp and robust
-### ------------------------------------------------------------
+## robust <- readRDS("results/results_robust.sc.RData")
+## ## process the main results
+## robust$params_on_bound_om <- NULL
+## robust$log_max_grad <- log(robust$max_grad)
+## robust$converged <- ifelse(robust$max_grad<.1 & robust$params_on_bound_em==0, "yes", "no")
+## robust <- calculate_re(robust, add=TRUE)
+## robust$runtime <- robust$RunTime
+## robust <- merge(robust, robust.cases.df, by=c("species", "I"))
+## robust <- merge(robust, data.cases.df, by=c("D"))
+## ## Drop fixed params (columns of zeroes)
+## robust$RecrDist_GP_1_re <- NULL
+## robust <- robust[,-which(apply(robust, 2, function(x) all(x==0)))]
+## robust <- ddply(robust, "scenario", mutate, pct.converged=mean(converged=="yes"))
+## robust.unfiltered <- robust
+## robust <- droplevels(subset(robust, converged=="yes"))
+## robust.counts <- ddply(robust, .(rvalue, B, species, data), summarize,
+##                           replicates=length(scenario),
+##                           pct.converged=100*unique(pct.converged),
+##                         median.iterations=median(Niterations),
+##                         median.runtime=median(runtime))
+## re.names <- names(robust)[grep("_re", names(robust))]
+## robust.long <-
+##     melt(robust, measure.vars=re.names, id.vars=
+##              c("species","replicate", "data", "B", "pct.converged",
+##                "rvalue", "log_max_grad", "params_on_bound_em",
+##                "runtime"))
+## growth.names <- re.names[grep("GP_", re.names)]
+## robust.long.growth <- droplevels(subset(robust.long, variable %in% growth.names))
+## robust.long.growth$variable <- gsub("_Fem_GP_1_re|_re", "", robust.long.growth$variable)
+## selex.names <- re.names[grep("Sel_", re.names)]
+## robust.long.selex <- droplevels(subset(robust.long, variable %in% selex.names))
+## robust.long.selex$variable <- gsub("ery|ey|Size|_re", "", robust.long.selex$variable)
+## robust.long.selex$variable <- gsub("_", ".", robust.long.selex$variable)
+## management.names <- c("SSB_MSY_re", "depletion_re", "SSB_Unfished_re")
+## robust.long.management <- droplevels(subset(robust.long, variable %in% management.names))
+## robust.long.management$variable <- gsub("_re", "", robust.long.management$variable)
+## figure.names <- c(growth.names, "SSB_MSY_re", "depletion_re")
+## robust.long.figure <- droplevels(subset(robust.long, variable %in% figure.names))
+## robust.long.figure$variable <- gsub("_Fem_GP_1_re|_re", "", robust.long.figure$variable)
+## ## This is a crazy way to get which params get stuck for which scenarios
+## library("magrittr")
+## x.low <- paste(robust.unfiltered$params_stuck_low_em, collapse = ";") %>%
+##   strsplit(";")
+## x.low <- unique(x.low[[1]])
+## x.low <- x.low[-which(x.low == "NA")]
+## stuck.low <- matrix(ncol = length(x.low), nrow = nrow(robust.unfiltered)) %>%
+##   as.data.frame %>%
+##   setNames(x.low)
+## for (i in seq_along(x.low)) {
+##   stuck.low[,i] <- grepl(x.low[i], robust.unfiltered$params_stuck_low_em)}
+## robust.stuck.low <- cbind(robust.unfiltered[, c("species", "D", "I")], stuck.low)
+## robust.stuck.low <- melt(robust.stuck.low, id.vars=c("species", "D","I"))
+## robust.stuck.low <- ddply(robust.stuck.low, .(species, D, I, variable), summarize, pct.stuck=mean(value))
+## robust.stuck.low$which.bound <- "low"
+## x.high <- paste(robust.unfiltered$params_stuck_high_em, collapse = ";") %>%
+##   strsplit(";")
+## x.high <- unique(x.high[[1]])
+## x.high <- x.high[-which(x.high == "NA")]
+## stuck.high <- matrix(ncol = length(x.high), nrow = nrow(robust.unfiltered)) %>%
+##   as.data.frame %>%
+##   setNames(x.high)
+## for (i in seq_along(x.high)) {
+##   stuck.high[,i] <- grepl(x.high[i], robust.unfiltered$params_stuck_high_em)}
+## robust.stuck.high <- cbind(robust.unfiltered[, c("species", "D", "I")], stuck.high)
+## robust.stuck.high <- melt(robust.stuck.high, id.vars=c("species", "D","I"))
+## robust.stuck.high <- ddply(robust.stuck.high, .(species, D, I, variable), summarize, pct.stuck=mean(value))
+## robust.stuck.high$which.bound <- "high"
+## robust.stuck <- subset(rbind(robust.stuck.low, robust.stuck.high), pct.stuck>0)
+## robust.stuck$variable <- gsub("Size|_Fem_GP_1", "", robust.stuck$variable)
+## ## End tcomp and robust
+## ### ------------------------------------------------------------
 
 
-## Verify that these particular replicates are the same since they should
-## be
-print("these should be the same:")
-print(rbind(binning[binning$scenario=='B0-D2-F1-I0-cod' & binning$replicate == 1,  c("depletion_em", "depletion_om")],
-tcomp[tcomp$scenario=='B0-D2-F1-I11-cod' & tcomp$replicate == 1, c("depletion_em", "depletion_om")],
-robust[robust$scenario=='B0-D2-F1-I21-cod' & robust$replicate == 1,  c("depletion_em", "depletion_om")]))
+## ## Verify that these particular replicates are the same since they should
+## ## be
+## print("these should be the same:")
+## print(rbind(binning[binning$scenario=='B0-D2-F1-I0-cod' & binning$replicate == 1,  c("depletion_em", "depletion_om")],
+## tcomp[tcomp$scenario=='B0-D2-F1-I11-cod' & tcomp$replicate == 1, c("depletion_em", "depletion_om")],
+## robust[robust$scenario=='B0-D2-F1-I21-cod' & robust$replicate == 1,  c("depletion_em", "depletion_om")]))

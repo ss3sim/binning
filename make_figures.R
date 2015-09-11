@@ -29,7 +29,6 @@ make.file <- function(type=c("png","pdf", "none"), filename,
     else if(dev.cur()==1) dev.new(width=width, height=height)
 }
 
-file.type <- 'pdf'
 
 ## These are fine tune adjustments for the y limits and MARE placement on
 ## the figures.
@@ -37,11 +36,14 @@ mare.adj.rbtc <- .725
 mare.offset.rbtc <- .16
 re.lim.rbtc <- c(-.95,.95)
 re.at.rbtc <- c(-.75,0, .75)
-mare.adj.bin <- .4
-mare.offset.bin <- .07
-re.lim.bin <- c(-.5,.5)
-re.at.bin <- c(-.25,0, .25)
+mare.adj.bin <- .23
+mare.offset.bin <- .04
+re.lim.bin.rich <- c(-.52,.52)
+re.at.bin.rich <- c(-.5,0, .5)
+re.lim.bin.limited <- c(-.52,.52)
+re.at.bin.limited <- c(-.5,0, .5)
 
+file.type <- 'png'
 ## 1. image plot / figure/table of lit. review
 source("figures/figure1.R")
 ## 2. experimental design
@@ -50,36 +52,11 @@ source("figures/figure2.R")
 source("figures/figure3.R")
 ## 4. estimation bin results
 source('figures/figure4.R')
-## 5. run time and accuracy for binning scenarios
+## 5. performance: runtime, iterations, convergence etc.
 source('figures/figure5.R')
-## 6. robustifation errors
+## 6. run time and accuracy for binning scenarios
 source('figures/figure6.R')
-## 7. tail compression errors
-source('figures/figure7.R')
 
-## Make supplementary figures
-binning.counts2 <- binning.counts
-binning.counts2$data.case <- as.factor(ifelse(as.numeric(binning.counts$data) < 3,
-                                    "Data Rich", "Data Limited"))
-binning.counts2$data.type <- as.factor(ifelse(as.numeric(binning.counts$data) %in% c(1,3), "Age Comps", "CAAL"))
-binning.counts2$match <- factor(binning.counts2$binmatch)
-levels(binning.counts2$match) <- c("No", "Yes")
-levels(binning.counts2$species) <- c("Cod", "Flatfish", "Rockfish")
-binning.counts2 <- ddply(binning.counts2, .(species, data.case, data.type), mutate,
-      runtime.normalized=median.runtime/median.runtime[which(data.binwidth==1)],
-                         iterations.normalized=median.iterations/median.iterations[which(data.binwidth==1)])
-g <- ggplot(binning.counts2, aes(x=data.binwidth, y=iterations.normalized, lty=match, group=binmatch))+
-    geom_line()+ facet_grid(species~data.case+data.type, scales='free') +
-    theme_bw() + xlab("Data Binwidth (cm)")+ylab("Normalized Median Iterations") + theme(legend.position="none")
-ggsave(paste0("figures/figureS9_iterations.", file.type), g, width=9, height=5, dpi=500)
-g <- ggplot(binning.counts2, aes(x=data.binwidth, y=(runtime.normalized), lty=match, group=binmatch))+
-    geom_line()+ facet_grid(species~data.case+data.type, scales='free') +
-    theme_bw() + xlab("Data Binwidth (cm)")+ylab("Normalized Median Runtime") + theme(legend.position="none")
-ggsave(paste0("figures/figureS4_runtime.", file.type), g, width=9, height=5, dpi=500)
-g <- ggplot(binning.counts2, aes(x=data.binwidth, y=(pct.converged), lty=match, group=binmatch))+
-    geom_line()+ facet_grid(species~data.case+data.type, scales='free') + ylim(0,100)+
-    theme_bw() + xlab("Data Binwidth (cm)")+ylab("Convergece Rate") + theme(legend.position="none")
-ggsave(paste0("figures/figureS3_convergence.", file.type), g, width=9, height=5, dpi=500)
 
 
 ## ## Some old code from playing with figures for convergence of rbtc. Not

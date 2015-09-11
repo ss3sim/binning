@@ -7,7 +7,8 @@ library(ggplot2)
 library(plyr)
 
 ### ------------------------------------------------------------
-## First section is popbin effect
+## First section is popbin effect. The 'scalars' object is a vector of
+## parameters to save, see main.R for it's definition.
 p <- popbins.binwidth.scalars[,c("species", "binwidth", 'F', paste0(scalars, "_RE"))] %>%
         melt(id.vars=c('species','F', "binwidth")) %>%
   ggplot(aes(x=binwidth, y=value, colour=variable)) + geom_line() +
@@ -113,6 +114,30 @@ ggsave("plots/binning_median_runtime.png", g, width=ggwidth, height=ggheight)
 g <- ggplot(binning.stuck, aes(data.binwidth, pct.stuck, color=which.bound))+geom_point(lwd=1.5)+
     facet_grid(species+data+binmatch~variable) + ylim(0,1)
 ggsave("plots/binning_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
+## is the max gradient OK?
+xx <- binning.unfiltered
+levels(xx$species) <- c('cod', 'flatfish', 'rockfish')
+xx$model.binwidth <- as.numeric(gsub('pbin=', '', x=xx$pbin))
+g <- ggplot(xx, aes(log_max_grad, SSB_MSY_re, color=model.binwidth))+
+    geom_point(alpha=.5)+
+    facet_grid(data~species)  + ylim(-2,2) + geom_vline(xintercept=log(.1)) +
+        theme_bw()
+ggsave('plots/gradient_checks.png', g, width=9, height=5)
+
+
+## distribution of relative errors for one binning case
+xx <- binning.long.growth
+levels(xx$species) <- c('cod', 'flatfish', 'rockfish')
+for(var in unique(binning.long.growth$variable )){
+g <- ggplot(subset(xx, variable==var & B=='B0' & dbin=='dbin=1'), aes(value))+geom_histogram() +
+    facet_grid(species~data, scales='free') +
+        ggtitle('Relative Errors for 1cm data and model bins') +
+            geom_vline(yintercept=0, color='red') + theme_bw() +
+                ylab(paste('Relative Error for:', var))
+ggsave(paste0('plots/binning_histogram_', var, '.png'), g, width=9, height=6)
+}
+
+
 
 ## ## quick plots of bias adjustment
 ## ggplot(subset(bias.all.long, species=='flatfish'), aes(x=data, y=value))+geom_point() +
@@ -120,74 +145,74 @@ ggsave("plots/binning_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
 ## ggplot(scenarios.converged, aes(B, pct.converged))+geom_point()+facet_grid(species~data)
 
 
-##### For tail compression
-for(spp in species){
-    g <- plot_scalar_boxplot(subset(tcomp.long.growth, species==spp ),
-               x="tvalue", y='value', vert='data', vert2="B",
-               rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
-                   theme(axis.text.x=element_text(angle=90))
-    ggsave(paste0("plots/tcomp_growth_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_scalar_boxplot(subset(tcomp.long.selex, species==spp ),
-               x="tvalue", y='value', vert='data', vert2="B",
-               rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
-                   theme(axis.text.x=element_text(angle=90))
-    ggsave(paste0("plots/tcomp_selex_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_scalar_boxplot(subset(tcomp.long.management, species==spp ),
-               x="tvalue", y='value', vert='data', vert2="B",
-               rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
-                   theme(axis.text.x=element_text(angle=90))
-    ggsave(paste0("plots/tcomp_management_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-}
-g <- ggplot(tcomp.unfiltered,
-      aes(x=tvalue, y=log_max_grad, color=runtime,
-          size=params_on_bound_em,))+
-              geom_jitter()+ facet_grid(species~data)+
-                  geom_hline(yintercept=log(.01), col='red')+
-                      theme(axis.text.x=element_text(angle=90))
-ggsave("plots/tcomp_convergence.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(tcomp.counts, aes(x=tvalue, y=pct.converged))+facet_grid(species~data+B)+
-   geom_bar(stat='identity', aes(fill=pct.converged)) +  theme(axis.text.x=element_text(angle=90))
-ggsave("plots/tcomp_convergence_counts.png", g, width=1.25*ggwidth, height=ggheight)
-g <- ggplot(tcomp.stuck, aes(I, pct.stuck, group=which.bound, color=which.bound))+geom_line(lwd=1.5)+
-    facet_grid(species+D~variable) + ylim(0,1)
-ggsave("plots/tcomp_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
-### end of  compression plots
-### ------------------------------------------------------------
+## ##### For tail compression
+## for(spp in species){
+##     g <- plot_scalar_boxplot(subset(tcomp.long.growth, species==spp ),
+##                x="tvalue", y='value', vert='data', vert2="B",
+##                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
+##                    theme(axis.text.x=element_text(angle=90))
+##     ggsave(paste0("plots/tcomp_growth_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
+##     g <- plot_scalar_boxplot(subset(tcomp.long.selex, species==spp ),
+##                x="tvalue", y='value', vert='data', vert2="B",
+##                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
+##                    theme(axis.text.x=element_text(angle=90))
+##     ggsave(paste0("plots/tcomp_selex_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
+##     g <- plot_scalar_boxplot(subset(tcomp.long.management, species==spp ),
+##                x="tvalue", y='value', vert='data', vert2="B",
+##                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
+##                    theme(axis.text.x=element_text(angle=90))
+##     ggsave(paste0("plots/tcomp_management_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
+## }
+## g <- ggplot(tcomp.unfiltered,
+##       aes(x=tvalue, y=log_max_grad, color=runtime,
+##           size=params_on_bound_em,))+
+##               geom_jitter()+ facet_grid(species~data)+
+##                   geom_hline(yintercept=log(.01), col='red')+
+##                       theme(axis.text.x=element_text(angle=90))
+## ggsave("plots/tcomp_convergence.png",g, width=ggwidth, height=ggheight)
+## g <- ggplot(tcomp.counts, aes(x=tvalue, y=pct.converged))+facet_grid(species~data+B)+
+##    geom_bar(stat='identity', aes(fill=pct.converged)) +  theme(axis.text.x=element_text(angle=90))
+## ggsave("plots/tcomp_convergence_counts.png", g, width=1.25*ggwidth, height=ggheight)
+## g <- ggplot(tcomp.stuck, aes(I, pct.stuck, group=which.bound, color=which.bound))+geom_line(lwd=1.5)+
+##     facet_grid(species+D~variable) + ylim(0,1)
+## ggsave("plots/tcomp_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
+## ### end of  compression plots
+## ### ------------------------------------------------------------
 
 
-##### For robustification constant
-for(spp in species){
-    g <- plot_scalar_boxplot(subset(robust.long.growth, species==spp ),
-               x="rvalue", y='value', vert='data', vert2="B",
-               rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
-                   theme(axis.text.x=element_text(angle=90))
-    ggsave(paste0("plots/robust_growth_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_scalar_boxplot(subset(robust.long.selex, species==spp ),
-               x="rvalue", y='value', vert='data', vert2="B",
-               rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
-                   theme(axis.text.x=element_text(angle=90))
-    ggsave(paste0("plots/robust_selex_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-    g <- plot_scalar_boxplot(subset(robust.long.management, species==spp ),
-               x="rvalue", y='value', vert='data', vert2="B",
-               rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
-                   theme(axis.text.x=element_text(angle=90))
-    ggsave(paste0("plots/robust_management_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
-}
-g <- ggplot(robust.unfiltered,
-      aes(x=rvalue, y=log_max_grad, color=runtime,
-          size=params_on_bound_em,))+
-              geom_jitter()+ facet_grid(species~data)+
-                  geom_hline(yintercept=log(.01), col='red')+
-                      theme(axis.text.x=element_text(angle=90))
-ggsave("plots/robust_convergence.png",g, width=ggwidth, height=ggheight)
-g <- ggplot(robust.counts, aes(x=rvalue, y=pct.converged))+facet_grid(species~data+B)+
-   geom_bar(stat='identity', aes(fill=pct.converged)) +  theme(axis.text.x=element_text(angle=90))
-ggsave("plots/robust_convergence_counts.png", g, width=1.25*ggwidth, height=ggheight)
-g <- ggplot(robust.stuck, aes(I, pct.stuck, group=which.bound, color=which.bound))+geom_line(lwd=1.5)+
-    facet_grid(species+D~variable) + ylim(0,1)
-ggsave("plots/robust_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
-### end of  robust plots
-### ------------------------------------------------------------
+## ##### For robustification constant
+## for(spp in species){
+##     g <- plot_scalar_boxplot(subset(robust.long.growth, species==spp ),
+##                x="rvalue", y='value', vert='data', vert2="B",
+##                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
+##                    theme(axis.text.x=element_text(angle=90))
+##     ggsave(paste0("plots/robust_growth_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
+##     g <- plot_scalar_boxplot(subset(robust.long.selex, species==spp ),
+##                x="rvalue", y='value', vert='data', vert2="B",
+##                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
+##                    theme(axis.text.x=element_text(angle=90))
+##     ggsave(paste0("plots/robust_selex_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
+##     g <- plot_scalar_boxplot(subset(robust.long.management, species==spp ),
+##                x="rvalue", y='value', vert='data', vert2="B",
+##                rel=TRUE, horiz="variable", print=FALSE) + ggtitle(spp)+
+##                    theme(axis.text.x=element_text(angle=90))
+##     ggsave(paste0("plots/robust_management_errors_",spp,".png"),g, width=ggwidth, height=ggheight)
+## }
+## g <- ggplot(robust.unfiltered,
+##       aes(x=rvalue, y=log_max_grad, color=runtime,
+##           size=params_on_bound_em,))+
+##               geom_jitter()+ facet_grid(species~data)+
+##                   geom_hline(yintercept=log(.01), col='red')+
+##                       theme(axis.text.x=element_text(angle=90))
+## ggsave("plots/robust_convergence.png",g, width=ggwidth, height=ggheight)
+## g <- ggplot(robust.counts, aes(x=rvalue, y=pct.converged))+facet_grid(species~data+B)+
+##    geom_bar(stat='identity', aes(fill=pct.converged)) +  theme(axis.text.x=element_text(angle=90))
+## ggsave("plots/robust_convergence_counts.png", g, width=1.25*ggwidth, height=ggheight)
+## g <- ggplot(robust.stuck, aes(I, pct.stuck, group=which.bound, color=which.bound))+geom_line(lwd=1.5)+
+##     facet_grid(species+D~variable) + ylim(0,1)
+## ggsave("plots/robust_stuck_params.png", g, width=1.25*ggwidth, height=ggheight)
+## ### end of  robust plots
+## ### ------------------------------------------------------------
 
 
 
