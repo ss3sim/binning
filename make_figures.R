@@ -38,8 +38,8 @@ re.lim.rbtc <- c(-.95,.95)
 re.at.rbtc <- c(-.75,0, .75)
 mare.adj.bin <- .23
 mare.offset.bin <- .04
-re.lim.bin.rich <- c(-.52,.52)
-re.at.bin.rich <- c(-.5,0, .5)
+re.lim.bin.rich <- c(-.43,.43)
+re.at.bin.rich <- c(-.4, -.2, 0, .2, .4)
 re.lim.bin.limited <- c(-.52,.52)
 re.at.bin.limited <- c(-.5,0, .5)
 

@@ -48,7 +48,7 @@ for(d in dcases){
     with(xx, points(data.binwidth, runtime.normalized, pch=21, bg='white', cex=cex.pch))
     if(youtside){
         axis(2, at=c(0, .5,1), col=col.tick, mgp=c(3,.3,0), tck=par()$tck)
-        mtext("Runtime", side=2, line=1.5, cex=par()$cex.lab)
+        mtext("Run Time", side=2, line=1.5, cex=par()$cex.lab)
     }
     box(col=col.border)
 }
@@ -86,7 +86,7 @@ for(d in dcases){
     with(xx, points(data.binwidth, runtime.normalized/iterations.normalized, pch=21, bg='white', cex=cex.pch))
     if(youtside){
         axis(2, at=c(0, .5, 1), col=col.tick, mgp=c(3,.3,0), tck=par()$tck)
-        mtext("Runtime/Iterations", side=2, line=1.5, cex=par()$cex.lab)
+        mtext("Run Time/Iterations", side=2, line=1.5, cex=par()$cex.lab)
     }
     axis(1, at=c(1,2,5,10,20), col=col.tick, mgp=par()$mgp, tck=par()$tck)
     box(col=col.border)

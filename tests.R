@@ -181,17 +181,24 @@ saveRDS(read.csv('ss3sim_ts.csv'), file='results/bias_adjust_ts.RData')
 
 biasadjust.sc <- readRDS('results/bias_adjust_scalar.RData')
 biasadjust.sc <- calculate_re(biasadjust.sc)
-levels(biasadjust.sc$F) <- c("No Bias Adjust", "Bias Adjust")
+levels(biasadjust.sc$F) <- c("No.Bias.Adjust", "Bias.Adjust")
 scalars <- c("CV_young_Fem_GP_1_re",  "CV_old_Fem_GP_1_re",
-           "CV_young_Fem_GP_1_re", "depletion_re", "L_at_Amax_Fem_GP_1_re",
+           "depletion_re", "L_at_Amax_Fem_GP_1_re",
            "L_at_Amin_Fem_GP_1_re", "SSB_MSY_re")
-bsc <- melt(biasadjust.sc, id.vars=c('species', 'D', 'F'), measure.vars=scalars)
-g <- plot_scalar_boxplot(bsc, x="variable", y="value",
-                    horiz="species", vert='D', vert2='F', print=FALSE)
-g+ylim(-.1, .1) + geom_hline(xintercept=0, col='red')
-
-biasadjust.ts <- readRDS('results/bias_adjust_ts.RData')
-biasadjust.ts <- calculate_re(biasadjust.ts)
-levels(biasadjust.ts$F) <- c("No Bias Adjust", "Bias Adjust")
-plot_ts_boxplot(biasadjust.ts, y='SpawnBio_re', horiz='species', vert2='F',
-                vert='D', re=TRUE)
+bsc <- melt(biasadjust.sc, id.vars=c('replicate','species', 'D', 'F'), measure.vars=scalars)
+## ggplot(bsc, aes(variable, y=value)) + facet_grid(species~D+F) +
+##     ylim(-.5, .5) + geom_hline(xintercept=0, col='red') +
+##         geom_violin() + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+bsc.wide <- reshape2::dcast(bsc, species+variable+D+replicate~F,
+                            value.var='value')
+levels(bsc.wide$D) <- c("Data rich (D2)", "Extreme data")
+g <- ggplot(bsc.wide, aes(No.Bias.Adjust, (Bias.Adjust-No.Bias.Adjust),
+                     color=species))+geom_point(alpha=.5) +
+                         ggtitle('Effect of bias adjustment on RE')+
+                         facet_grid(D~variable, scales='free_x')
+ggsave('plots/bias_adjust_effect.png', g, width=9, height=6)
+## biasadjust.ts <- readRDS('results/bias_adjust_ts.RData')
+## biasadjust.ts <- calculate_re(biasadjust.ts)
+## levels(biasadjust.ts$F) <- c("No Bias Adjust", "Bias Adjust")
+## plot_ts_boxplot(biasadjust.ts, y='SpawnBio_re', horiz='species', vert2='F',
+##                 vert='D', re=TRUE)
