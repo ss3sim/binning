@@ -12,7 +12,7 @@ for(spp in species){
                parallel=TRUE, parallel_iterations=FALSE,
                case_folder=case_folder, om_dir=om.paths[spp],
                em_dir=em.paths[spp], case_files=case_files,
-               bias_adjust=TRUE, bias_nsim=20,
+               bias_adjust=TRUE, bias_nsim=10,
                ## admb_options= " -maxfn 1 -phase 50",
                call_change_data=TRUE)
 }
@@ -35,8 +35,8 @@ scenarios.binning.all <-
 get_results_all(user=scenarios.binning.all, parallel=TRUE, over=TRUE)
 xx <- read.csv("ss3sim_scalar.csv")
 saveRDS(xx, file="results/results_binning.sc.RData")
-xx <- read.csv("ss3sim_ts.csv")
-saveRDS(xx, file="results/results_binning.ts.RData")
+## xx <- read.csv("ss3sim_ts.csv")
+## saveRDS(xx, file="results/results_binning.ts.RData")
 ## file.remove(c('ss3sim_ts.csv', 'ss3sim_scalar.csv'))
 ## unlink(scen.all, TRUE)
 rm(xx, scenarios, Nsim, case_files)
