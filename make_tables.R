@@ -1,5 +1,16 @@
-## Source thsi file to make the tables, note it creates csv files in the
-## results folder
+## Source thsi file to make the tables, note it creates csv files in the#
+# results folder
+
+## look at convergence rates of the bias adjustment runs
+table.bias.converged <- ddply(subset(binning.unfiltered, replicate==1,
+                                 select=c('scenario', 'binmatch', 'data',
+                                 'data.binwidth', 'pbin', 'species',
+                                 'bias.converged', 'bias.tried')), .(scenario), mutate, converged=bias.converged/bias.tried*100)
+reshape2::dcast(table.bias.converged,
+                formula=species+data+data.binwidth~binmatch, value.var='converged')
+ggplot(table.bias.converged, aes(data.binwidth, converged,
+                                 group=binmatch, color=binmatch))+geom_line()+ facet_grid(data~species)
+
 
 ## table of MARES since now dropped from the paper
 mare.table.long <- ddply(binning.long.figure, .(species,data,binmatch,variable, data.binwidth),
