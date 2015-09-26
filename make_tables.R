@@ -18,16 +18,20 @@ mare.table.long <- ddply(binning.long.figure, .(species,data,binmatch,variable, 
             median_ = median(value, na.rm = TRUE),
             l2      = quantile(value, 0.25, na.rm = TRUE),
             u2      = quantile(value, 0.75, na.rm = TRUE),
-           mare    = 100 * round(median(abs(value), na.rm = TRUE), 3),
+            mare    = 100 * round(median(abs(value), na.rm = TRUE), 3),
+                 mre= 100*round(median(value, na.rm=TRUE),3),
            pct.converged=pct.converged[1],
            count = length(value))
 ## cast it into wide for easier reading
-mare.table.long$binmatch <- ifelse(mare.table.long$binmatch=='pbin=1cm', 'Match', 'No Match')
-str(mare.table.long)
+mare.table.long$binmatch <- ifelse(mare.table.long$binmatch!='pbin=1cm', 'Match', 'No Match')
 mare.table.wide <- reshape2::dcast(mare.table.long,
                               formula=species+data+variable+binmatch~data.binwidth,
                               value.var='mare')
 write.csv(mare.table.wide, 'results/table_mares.csv')
+mre.table.wide <- reshape2::dcast(mare.table.long,
+                              formula=species+data+variable+binmatch~data.binwidth,
+                              value.var='mre')
+write.csv(mre.table.wide, 'results/table_mres.csv')
 
 ## tried a quick test of plotting age vs CAAL but didn't really help understand
 ## datatype <- rep("Age", nrow(mare.table.long))
