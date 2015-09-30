@@ -3,6 +3,27 @@
 
 stop("don't source this file")
 
+## look at convergence rates of the bias adjustment runs
+table.bias.converged <- ddply(subset(binning.unfiltered, replicate==1,
+                                 select=c('scenario', 'binmatch', 'data',
+                                 'data.binwidth', 'pbin', 'species',
+                                 'bias.converged', 'bias.tried')), .(scenario), mutate, converged=bias.converged/bias.tried*100)
+converged.df <- merge(binning.counts, table.bias.converged,
+              by=c("species", "data.binwidth", "data", "binmatch"))
+
+g <- ggplot(converged.df, aes(pct.converged, converged)) +
+    geom_point(pch=1, alpha=.7) + geom_abline(1)+
+ ylim(0,100)+xlim(0,100) + xlab("% Converged Replicates") +
+     ylab("% Converged Bias Adjustment Replicates") + theme_bw()
+ggsave("plots/convergence_comparison.png", g, width=7, height=5)
+
+## reshape2::dcast(table.bias.converged,
+##                 formula=species+data+data.binwidth~binmatch, value.var='converged')
+## ggplot(table.bias.converged, aes(data.binwidth, converged,
+##                                  group=binmatch, color=binmatch))+geom_line()+ facet_grid(data~species)
+
+
+
 ## Is the burnin long enough?
 ## binning.ts <- readRDS("results/results_binning.ts.RData")
 ## ## binning.ts <- merge(binning.ts, subset(binning.unfiltered, select=c("ID",'converged')), by="ID")
