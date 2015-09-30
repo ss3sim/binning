@@ -1,169 +1,169 @@
 "","species","data","variable","binmatch","1","2","5","10","20"
-"1","cod","Rich:A+L","CV_old","Match",3.9,4,4.4,5.7,5.7
-"2","cod","Rich:A+L","CV_old","No Match",NA,3.9,4.4,5.2,15.1
-"3","cod","Rich:A+L","CV_young","Match",1.5,1.6,1.9,7,15.5
-"4","cod","Rich:A+L","CV_young","No Match",NA,1.6,3,8.6,18.8
-"5","cod","Rich:A+L","depletion","Match",9.6,9.5,9.5,9.4,9.7
-"6","cod","Rich:A+L","depletion","No Match",NA,9.5,9.2,5.3,9.6
-"7","cod","Rich:A+L","L_at_Amax","Match",0.7,0.7,0.7,0.8,1
-"8","cod","Rich:A+L","L_at_Amax","No Match",NA,0.7,0.7,1,3
-"9","cod","Rich:A+L","L_at_Amin","Match",0.6,0.6,0.7,0.8,1.3
-"10","cod","Rich:A+L","L_at_Amin","No Match",NA,0.6,3.2,9.6,19.1
-"11","cod","Rich:A+L","SSB_MSY","Match",5,5,5.1,5.2,5.2
-"12","cod","Rich:A+L","SSB_MSY","No Match",NA,5.1,5.1,5.8,5.2
-"13","cod","Rich:A+L","VonBert_K","Match",1.2,1.2,1.3,1.6,2.2
-"14","cod","Rich:A+L","VonBert_K","No Match",NA,1.2,2.4,5.2,12.8
-"15","cod","Rich:C+L","CV_old","Match",1.2,1.1,1.1,2.8,2.1
-"16","cod","Rich:C+L","CV_old","No Match",NA,1.8,8.5,14.6,32.6
-"17","cod","Rich:C+L","CV_young","Match",1.1,1.1,1.6,8.9,7.2
-"18","cod","Rich:C+L","CV_young","No Match",NA,1.1,2.2,30.3,69.4
-"19","cod","Rich:C+L","depletion","Match",9.4,9.3,9.6,9.7,10.6
-"20","cod","Rich:C+L","depletion","No Match",NA,9.3,11.1,23.2,26.2
-"21","cod","Rich:C+L","L_at_Amax","Match",0.3,0.3,0.3,0.3,1.4
-"22","cod","Rich:C+L","L_at_Amax","No Match",NA,0.3,0.3,0.8,4.2
-"23","cod","Rich:C+L","L_at_Amin","Match",0.5,0.5,0.8,1.4,10.9
-"24","cod","Rich:C+L","L_at_Amin","No Match",NA,0.5,1,12.1,25.4
-"25","cod","Rich:C+L","SSB_MSY","Match",5,5,4.9,4.9,5.2
-"26","cod","Rich:C+L","SSB_MSY","No Match",NA,5.2,4.5,5.3,4.2
-"27","cod","Rich:C+L","VonBert_K","Match",0.7,0.6,0.7,0.7,5.3
-"28","cod","Rich:C+L","VonBert_K","No Match",NA,1.4,5.4,16.6,7.2
-"29","cod","Poor:A+L","CV_old","Match",25.9,26.7,26.6,27.8,30.9
-"30","cod","Poor:A+L","CV_old","No Match",NA,26.6,26.2,24.5,31.6
-"31","cod","Poor:A+L","CV_young","Match",10.6,11,13,27.7,48.4
-"32","cod","Poor:A+L","CV_young","No Match",NA,10.9,13.4,29.9,60.1
-"33","cod","Poor:A+L","depletion","Match",18.4,18,17.9,17.2,19
-"34","cod","Poor:A+L","depletion","No Match",NA,18.2,17.1,15.5,18.9
-"35","cod","Poor:A+L","L_at_Amax","Match",4.3,4.1,4,4.4,5.1
-"36","cod","Poor:A+L","L_at_Amax","No Match",NA,4.1,4.1,4.6,5
-"37","cod","Poor:A+L","L_at_Amin","Match",4.6,4.6,5.3,7.2,9.9
-"38","cod","Poor:A+L","L_at_Amin","No Match",NA,4.6,5.6,11.5,23.4
-"39","cod","Poor:A+L","SSB_MSY","Match",5.9,6,5.9,6.1,6.9
-"40","cod","Poor:A+L","SSB_MSY","No Match",NA,5.9,6,6.1,8.7
-"41","cod","Poor:A+L","VonBert_K","Match",8,8.4,8.8,11.1,13.1
-"42","cod","Poor:A+L","VonBert_K","No Match",NA,8.1,9.3,12.6,16.3
-"43","cod","Poor:C+L","CV_old","Match",7.3,7.4,7.6,8.8,11.9
-"44","cod","Poor:C+L","CV_old","No Match",NA,7.3,9.6,15.1,43.4
-"45","cod","Poor:C+L","CV_young","Match",7.2,7.5,7.5,12.3,19.2
-"46","cod","Poor:C+L","CV_young","No Match",NA,7.4,7.6,32.6,45.4
-"47","cod","Poor:C+L","depletion","Match",19.6,20.1,19.7,19.7,20.6
-"48","cod","Poor:C+L","depletion","No Match",NA,20.4,21,27,38.8
-"49","cod","Poor:C+L","L_at_Amax","Match",1.9,1.9,2,2,2.4
-"50","cod","Poor:C+L","L_at_Amax","No Match",NA,1.9,1.9,1.9,5.1
-"51","cod","Poor:C+L","L_at_Amin","Match",3.4,3.6,3.7,3.5,6.7
-"52","cod","Poor:C+L","L_at_Amin","No Match",NA,3.8,4,12.1,21.8
-"53","cod","Poor:C+L","SSB_MSY","Match",6.2,6.2,6.2,5.9,6.1
-"54","cod","Poor:C+L","SSB_MSY","No Match",NA,6,5.7,5.7,5.5
-"55","cod","Poor:C+L","VonBert_K","Match",4.2,4.4,4.4,4.6,6
-"56","cod","Poor:C+L","VonBert_K","No Match",NA,4.5,5.4,15,14.1
-"57","flatfish","Rich:A+L","CV_old","Match",3.1,3.1,3.3,3.6,5.3
-"58","flatfish","Rich:A+L","CV_old","No Match",NA,3.1,3.4,3.5,5.2
-"59","flatfish","Rich:A+L","CV_young","Match",4.9,5.1,5.5,8.1,14.4
-"60","flatfish","Rich:A+L","CV_young","No Match",NA,5,6.3,9.9,44.2
-"61","flatfish","Rich:A+L","depletion","Match",12.2,12.4,12.9,12.9,12.3
-"62","flatfish","Rich:A+L","depletion","No Match",NA,12.5,13,12.6,13.1
-"63","flatfish","Rich:A+L","L_at_Amax","Match",1.2,1.3,1.3,1.5,2.8
-"64","flatfish","Rich:A+L","L_at_Amax","No Match",NA,1.2,1.3,1.3,3.5
-"65","flatfish","Rich:A+L","L_at_Amin","Match",1.9,1.7,2,3.2,4.2
-"66","flatfish","Rich:A+L","L_at_Amin","No Match",NA,1.8,5.8,20.5,53
-"67","flatfish","Rich:A+L","SSB_MSY","Match",7.2,7.3,7.4,7,8.2
-"68","flatfish","Rich:A+L","SSB_MSY","No Match",NA,7.3,7.4,7.3,8.6
-"69","flatfish","Rich:A+L","VonBert_K","Match",2.9,3.2,3.4,4,7.8
-"70","flatfish","Rich:A+L","VonBert_K","No Match",NA,3.3,3.9,6.5,16.3
-"71","flatfish","Rich:C+L","CV_old","Match",1.6,1.4,1.7,2.3,6.7
-"72","flatfish","Rich:C+L","CV_old","No Match",NA,2.5,10.5,26.8,NA
-"73","flatfish","Rich:C+L","CV_young","Match",2.4,2.6,5,14.1,6.5
-"74","flatfish","Rich:C+L","CV_young","No Match",NA,3.4,16.4,22.1,NA
-"75","flatfish","Rich:C+L","depletion","Match",12.4,13,12.9,13.5,13.1
-"76","flatfish","Rich:C+L","depletion","No Match",NA,12.3,12.3,16.3,NA
-"77","flatfish","Rich:C+L","L_at_Amax","Match",0.5,0.4,0.6,0.6,2.9
-"78","flatfish","Rich:C+L","L_at_Amax","No Match",NA,0.5,2.4,5.9,NA
-"79","flatfish","Rich:C+L","L_at_Amin","Match",1.5,1.7,2.9,6.4,9.2
-"80","flatfish","Rich:C+L","L_at_Amin","No Match",NA,2.3,10.2,9.8,NA
-"81","flatfish","Rich:C+L","SSB_MSY","Match",7.1,7.3,8.2,8,11.2
-"82","flatfish","Rich:C+L","SSB_MSY","No Match",NA,7.9,9.7,20.3,NA
-"83","flatfish","Rich:C+L","VonBert_K","Match",1.6,1.7,1.8,2.2,4.5
-"84","flatfish","Rich:C+L","VonBert_K","No Match",NA,2.4,5.4,13.9,NA
-"85","flatfish","Poor:A+L","CV_old","Match",21.3,23.2,22.6,26.6,28.5
-"86","flatfish","Poor:A+L","CV_old","No Match",NA,23.4,21.2,21.3,36.8
-"87","flatfish","Poor:A+L","CV_young","Match",39.7,43.1,41.9,45.5,49.5
-"88","flatfish","Poor:A+L","CV_young","No Match",NA,42.2,41.3,43.7,50.8
-"89","flatfish","Poor:A+L","depletion","Match",21.7,21.7,20.6,23.1,18.1
-"90","flatfish","Poor:A+L","depletion","No Match",NA,21.8,21,21.6,26.6
-"91","flatfish","Poor:A+L","L_at_Amax","Match",8.3,8.9,8.2,9.4,11.5
-"92","flatfish","Poor:A+L","L_at_Amax","No Match",NA,9,7.7,6.4,17.4
-"93","flatfish","Poor:A+L","L_at_Amin","Match",16.9,17,19.6,21.1,25.8
-"94","flatfish","Poor:A+L","L_at_Amin","No Match",NA,15.9,17.4,23.1,33.2
-"95","flatfish","Poor:A+L","SSB_MSY","Match",17,17.5,16.4,17.8,19.7
-"96","flatfish","Poor:A+L","SSB_MSY","No Match",NA,18.2,15.8,15.6,23.5
-"97","flatfish","Poor:A+L","VonBert_K","Match",23.2,24.3,23.5,26.9,38.1
-"98","flatfish","Poor:A+L","VonBert_K","No Match",NA,23.2,23.9,18.1,33.7
-"99","flatfish","Poor:C+L","CV_old","Match",9.7,9.8,10.3,11.4,15.6
-"100","flatfish","Poor:C+L","CV_old","No Match",NA,9.7,12.5,24.7,51.5
-"101","flatfish","Poor:C+L","CV_young","Match",19.4,20.4,20.1,26.6,35.9
-"102","flatfish","Poor:C+L","CV_young","No Match",NA,20.1,25.4,37.5,63.8
-"103","flatfish","Poor:C+L","depletion","Match",24.3,24.1,24.7,25.8,23.7
-"104","flatfish","Poor:C+L","depletion","No Match",NA,23.6,25.2,27.8,45.3
-"105","flatfish","Poor:C+L","L_at_Amax","Match",3,3.1,3.1,3.1,3.8
-"106","flatfish","Poor:C+L","L_at_Amax","No Match",NA,3.2,3.1,7.3,19.6
-"107","flatfish","Poor:C+L","L_at_Amin","Match",11.3,12.3,13.4,16.4,21.7
-"108","flatfish","Poor:C+L","L_at_Amin","No Match",NA,12.6,17.9,23.8,46.2
-"109","flatfish","Poor:C+L","SSB_MSY","Match",11,10.9,11,11.6,12.6
-"110","flatfish","Poor:C+L","SSB_MSY","No Match",NA,10.9,11.8,19.6,26.6
-"111","flatfish","Poor:C+L","VonBert_K","Match",10.3,9.9,11.9,11.7,16.9
-"112","flatfish","Poor:C+L","VonBert_K","No Match",NA,10.9,13,14,20.4
-"113","yellow-long","Rich:A+L","CV_old","Match",6,6,5.8,7,14.4
-"114","yellow-long","Rich:A+L","CV_old","No Match",NA,5.9,5.2,6.7,21.8
-"115","yellow-long","Rich:A+L","CV_young","Match",8.2,8.3,7.8,9.3,14.8
-"116","yellow-long","Rich:A+L","CV_young","No Match",NA,8.8,11.1,20.1,193
-"117","yellow-long","Rich:A+L","depletion","Match",8.5,8.6,8.7,8.8,8.9
-"118","yellow-long","Rich:A+L","depletion","No Match",NA,8.6,8.5,8.7,14.5
-"119","yellow-long","Rich:A+L","L_at_Amax","Match",1.6,1.5,1.6,2.1,4.2
-"120","yellow-long","Rich:A+L","L_at_Amax","No Match",NA,1.5,1.5,3.2,11.6
-"121","yellow-long","Rich:A+L","L_at_Amin","Match",1.9,1.9,1.7,1.9,2.3
-"122","yellow-long","Rich:A+L","L_at_Amin","No Match",NA,1.8,4,22.2,53.8
-"123","yellow-long","Rich:A+L","SSB_MSY","Match",6.2,6.1,6.4,6.3,7
-"124","yellow-long","Rich:A+L","SSB_MSY","No Match",NA,6.1,6.5,6.7,32
-"125","yellow-long","Rich:A+L","VonBert_K","Match",3.6,3.6,3.9,4.4,9.9
-"126","yellow-long","Rich:A+L","VonBert_K","No Match",NA,3.6,4.1,16.3,28.1
-"127","yellow-long","Rich:C+L","CV_old","Match",1.6,1.6,1.6,2.9,10.8
-"128","yellow-long","Rich:C+L","CV_old","No Match",NA,1.6,4.3,35.6,83.5
-"129","yellow-long","Rich:C+L","CV_young","Match",2.1,3,9.1,14.8,3.7
-"130","yellow-long","Rich:C+L","CV_young","No Match",NA,8.3,40,34.5,97
-"131","yellow-long","Rich:C+L","depletion","Match",8.4,8.3,8.9,11.1,14
-"132","yellow-long","Rich:C+L","depletion","No Match",NA,9.1,9.2,18.5,54.9
-"133","yellow-long","Rich:C+L","L_at_Amax","Match",0.6,0.6,0.6,0.7,3.1
-"134","yellow-long","Rich:C+L","L_at_Amax","No Match",NA,0.6,1.9,6.3,23.4
-"135","yellow-long","Rich:C+L","L_at_Amin","Match",0.9,1.4,5.4,9.8,8.8
-"136","yellow-long","Rich:C+L","L_at_Amin","No Match",NA,4.9,19.1,11.7,26.5
-"137","yellow-long","Rich:C+L","SSB_MSY","Match",5.8,6.1,6.9,9.3,26.4
-"138","yellow-long","Rich:C+L","SSB_MSY","No Match",NA,5.8,6.6,7.8,4.6
-"139","yellow-long","Rich:C+L","VonBert_K","Match",1.8,1.8,1.9,2.4,4.8
-"140","yellow-long","Rich:C+L","VonBert_K","No Match",NA,1.8,1.9,5.8,25.2
-"141","yellow-long","Poor:A+L","CV_old","Match",28.6,30.3,29.7,32.9,32.1
-"142","yellow-long","Poor:A+L","CV_old","No Match",NA,30.8,30.1,31.1,58.6
-"143","yellow-long","Poor:A+L","CV_young","Match",46.9,54.1,54.6,60.1,67.5
-"144","yellow-long","Poor:A+L","CV_young","No Match",NA,54.7,54.9,51.8,144
-"145","yellow-long","Poor:A+L","depletion","Match",19.6,19.1,19.8,21.5,25
-"146","yellow-long","Poor:A+L","depletion","No Match",NA,20.6,19.5,18.4,20.3
-"147","yellow-long","Poor:A+L","L_at_Amax","Match",9.3,9.1,8.8,9.8,14.2
-"148","yellow-long","Poor:A+L","L_at_Amax","No Match",NA,9.1,9.2,8.1,16.6
-"149","yellow-long","Poor:A+L","L_at_Amin","Match",14,17.2,14.7,17.1,26.9
-"150","yellow-long","Poor:A+L","L_at_Amin","No Match",NA,17.3,15.8,28.5,50.2
-"151","yellow-long","Poor:A+L","SSB_MSY","Match",18,20.2,17.5,18.6,24.1
-"152","yellow-long","Poor:A+L","SSB_MSY","No Match",NA,18.4,18.3,15.1,24.2
-"153","yellow-long","Poor:A+L","VonBert_K","Match",23,22.6,20.1,24.2,39.2
-"154","yellow-long","Poor:A+L","VonBert_K","No Match",NA,22.7,21.4,25.1,35.2
-"155","yellow-long","Poor:C+L","CV_old","Match",11.1,11.4,12.4,14.8,25.3
-"156","yellow-long","Poor:C+L","CV_old","No Match",NA,11.5,12.2,36.1,74.2
-"157","yellow-long","Poor:C+L","CV_young","Match",15.1,14.9,17.8,24.5,29
-"158","yellow-long","Poor:C+L","CV_young","No Match",NA,17.4,41.7,33.5,99.9
-"159","yellow-long","Poor:C+L","depletion","Match",20.2,20.5,19.6,21.2,22.1
-"160","yellow-long","Poor:C+L","depletion","No Match",NA,20.2,20.6,29.1,57
-"161","yellow-long","Poor:C+L","L_at_Amax","Match",3.5,3.4,3.4,3.9,5.9
-"162","yellow-long","Poor:C+L","L_at_Amax","No Match",NA,3.5,3.5,6.8,24.5
-"163","yellow-long","Poor:C+L","L_at_Amin","Match",6.8,7.4,9.5,12.5,14.2
-"164","yellow-long","Poor:C+L","L_at_Amin","No Match",NA,8.7,19.1,11.4,36.7
-"165","yellow-long","Poor:C+L","SSB_MSY","Match",12.3,12.2,12.4,13,13.9
-"166","yellow-long","Poor:C+L","SSB_MSY","No Match",NA,11.4,10.7,10.2,11.7
-"167","yellow-long","Poor:C+L","VonBert_K","Match",10.1,10.5,10.5,12.2,18.2
-"168","yellow-long","Poor:C+L","VonBert_K","No Match",NA,10.8,11.1,13,24.4
+"1","cod","Rich:A+L","CV_old","Match",NA,3.9,4.4,5.2,15.1
+"2","cod","Rich:A+L","CV_old","No Match",3.9,4,4.4,5.7,5.7
+"3","cod","Rich:A+L","CV_young","Match",NA,1.6,3,8.6,18.8
+"4","cod","Rich:A+L","CV_young","No Match",1.5,1.6,1.9,7,15.5
+"5","cod","Rich:A+L","depletion","Match",NA,9.5,9.2,5.3,9.6
+"6","cod","Rich:A+L","depletion","No Match",9.6,9.5,9.5,9.4,9.7
+"7","cod","Rich:A+L","L_at_Amax","Match",NA,0.7,0.7,1,3
+"8","cod","Rich:A+L","L_at_Amax","No Match",0.7,0.7,0.7,0.8,1
+"9","cod","Rich:A+L","L_at_Amin","Match",NA,0.6,3.2,9.6,19.1
+"10","cod","Rich:A+L","L_at_Amin","No Match",0.6,0.6,0.7,0.8,1.3
+"11","cod","Rich:A+L","SSB_MSY","Match",NA,5.1,5.1,5.8,5.2
+"12","cod","Rich:A+L","SSB_MSY","No Match",5,5,5.1,5.2,5.2
+"13","cod","Rich:A+L","VonBert_K","Match",NA,1.2,2.4,5.2,12.8
+"14","cod","Rich:A+L","VonBert_K","No Match",1.2,1.2,1.3,1.6,2.2
+"15","cod","Rich:C+L","CV_old","Match",NA,1.8,8.5,14.6,32.6
+"16","cod","Rich:C+L","CV_old","No Match",1.2,1.1,1.1,2.8,2.1
+"17","cod","Rich:C+L","CV_young","Match",NA,1.1,2.2,30.3,69.4
+"18","cod","Rich:C+L","CV_young","No Match",1.1,1.1,1.6,8.9,7.2
+"19","cod","Rich:C+L","depletion","Match",NA,9.3,11.1,23.2,26.2
+"20","cod","Rich:C+L","depletion","No Match",9.4,9.3,9.6,9.7,10.6
+"21","cod","Rich:C+L","L_at_Amax","Match",NA,0.3,0.3,0.8,4.2
+"22","cod","Rich:C+L","L_at_Amax","No Match",0.3,0.3,0.3,0.3,1.4
+"23","cod","Rich:C+L","L_at_Amin","Match",NA,0.5,1,12.1,25.4
+"24","cod","Rich:C+L","L_at_Amin","No Match",0.5,0.5,0.8,1.4,10.9
+"25","cod","Rich:C+L","SSB_MSY","Match",NA,5.2,4.5,5.3,4.2
+"26","cod","Rich:C+L","SSB_MSY","No Match",5,5,4.9,4.9,5.2
+"27","cod","Rich:C+L","VonBert_K","Match",NA,1.4,5.4,16.6,7.2
+"28","cod","Rich:C+L","VonBert_K","No Match",0.7,0.6,0.7,0.7,5.3
+"29","cod","Poor:A+L","CV_old","Match",NA,26.6,26.2,24.5,31.6
+"30","cod","Poor:A+L","CV_old","No Match",25.9,26.7,26.6,27.8,30.9
+"31","cod","Poor:A+L","CV_young","Match",NA,10.9,13.4,29.9,60.1
+"32","cod","Poor:A+L","CV_young","No Match",10.6,11,13,27.7,48.4
+"33","cod","Poor:A+L","depletion","Match",NA,18.2,17.1,15.5,18.9
+"34","cod","Poor:A+L","depletion","No Match",18.4,18,17.9,17.2,19
+"35","cod","Poor:A+L","L_at_Amax","Match",NA,4.1,4.1,4.6,5
+"36","cod","Poor:A+L","L_at_Amax","No Match",4.3,4.1,4,4.4,5.1
+"37","cod","Poor:A+L","L_at_Amin","Match",NA,4.6,5.6,11.5,23.4
+"38","cod","Poor:A+L","L_at_Amin","No Match",4.6,4.6,5.3,7.2,9.9
+"39","cod","Poor:A+L","SSB_MSY","Match",NA,5.9,6,6.1,8.7
+"40","cod","Poor:A+L","SSB_MSY","No Match",5.9,6,5.9,6.1,6.9
+"41","cod","Poor:A+L","VonBert_K","Match",NA,8.1,9.3,12.6,16.3
+"42","cod","Poor:A+L","VonBert_K","No Match",8,8.4,8.8,11.1,13.1
+"43","cod","Poor:C+L","CV_old","Match",NA,7.3,9.6,15.1,43.4
+"44","cod","Poor:C+L","CV_old","No Match",7.3,7.4,7.6,8.8,11.9
+"45","cod","Poor:C+L","CV_young","Match",NA,7.4,7.6,32.6,45.4
+"46","cod","Poor:C+L","CV_young","No Match",7.2,7.5,7.5,12.3,19.2
+"47","cod","Poor:C+L","depletion","Match",NA,20.4,21,27,38.8
+"48","cod","Poor:C+L","depletion","No Match",19.6,20.1,19.7,19.7,20.6
+"49","cod","Poor:C+L","L_at_Amax","Match",NA,1.9,1.9,1.9,5.1
+"50","cod","Poor:C+L","L_at_Amax","No Match",1.9,1.9,2,2,2.4
+"51","cod","Poor:C+L","L_at_Amin","Match",NA,3.8,4,12.1,21.8
+"52","cod","Poor:C+L","L_at_Amin","No Match",3.4,3.6,3.7,3.5,6.7
+"53","cod","Poor:C+L","SSB_MSY","Match",NA,6,5.7,5.7,5.5
+"54","cod","Poor:C+L","SSB_MSY","No Match",6.2,6.2,6.2,5.9,6.1
+"55","cod","Poor:C+L","VonBert_K","Match",NA,4.5,5.4,15,14.1
+"56","cod","Poor:C+L","VonBert_K","No Match",4.2,4.4,4.4,4.6,6
+"57","flatfish","Rich:A+L","CV_old","Match",NA,3.1,3.4,3.5,5.2
+"58","flatfish","Rich:A+L","CV_old","No Match",3.1,3.1,3.3,3.6,5.3
+"59","flatfish","Rich:A+L","CV_young","Match",NA,5,6.3,9.9,44.2
+"60","flatfish","Rich:A+L","CV_young","No Match",4.9,5.1,5.5,8.1,14.4
+"61","flatfish","Rich:A+L","depletion","Match",NA,12.5,13,12.6,13.1
+"62","flatfish","Rich:A+L","depletion","No Match",12.2,12.4,12.9,12.9,12.3
+"63","flatfish","Rich:A+L","L_at_Amax","Match",NA,1.2,1.3,1.3,3.5
+"64","flatfish","Rich:A+L","L_at_Amax","No Match",1.2,1.3,1.3,1.5,2.8
+"65","flatfish","Rich:A+L","L_at_Amin","Match",NA,1.8,5.8,20.5,53
+"66","flatfish","Rich:A+L","L_at_Amin","No Match",1.9,1.7,2,3.2,4.2
+"67","flatfish","Rich:A+L","SSB_MSY","Match",NA,7.3,7.4,7.3,8.6
+"68","flatfish","Rich:A+L","SSB_MSY","No Match",7.2,7.3,7.4,7,8.2
+"69","flatfish","Rich:A+L","VonBert_K","Match",NA,3.3,3.9,6.5,16.3
+"70","flatfish","Rich:A+L","VonBert_K","No Match",2.9,3.2,3.4,4,7.8
+"71","flatfish","Rich:C+L","CV_old","Match",NA,2.5,10.5,26.8,NA
+"72","flatfish","Rich:C+L","CV_old","No Match",1.6,1.4,1.7,2.3,6.7
+"73","flatfish","Rich:C+L","CV_young","Match",NA,3.4,16.4,22.1,NA
+"74","flatfish","Rich:C+L","CV_young","No Match",2.4,2.6,5,14.1,6.5
+"75","flatfish","Rich:C+L","depletion","Match",NA,12.3,12.3,16.3,NA
+"76","flatfish","Rich:C+L","depletion","No Match",12.4,13,12.9,13.5,13.1
+"77","flatfish","Rich:C+L","L_at_Amax","Match",NA,0.5,2.4,5.9,NA
+"78","flatfish","Rich:C+L","L_at_Amax","No Match",0.5,0.4,0.6,0.6,2.9
+"79","flatfish","Rich:C+L","L_at_Amin","Match",NA,2.3,10.2,9.8,NA
+"80","flatfish","Rich:C+L","L_at_Amin","No Match",1.5,1.7,2.9,6.4,9.2
+"81","flatfish","Rich:C+L","SSB_MSY","Match",NA,7.9,9.7,20.3,NA
+"82","flatfish","Rich:C+L","SSB_MSY","No Match",7.1,7.3,8.2,8,11.2
+"83","flatfish","Rich:C+L","VonBert_K","Match",NA,2.4,5.4,13.9,NA
+"84","flatfish","Rich:C+L","VonBert_K","No Match",1.6,1.7,1.8,2.2,4.5
+"85","flatfish","Poor:A+L","CV_old","Match",NA,23.4,21.2,21.3,36.8
+"86","flatfish","Poor:A+L","CV_old","No Match",21.3,23.2,22.6,26.6,28.5
+"87","flatfish","Poor:A+L","CV_young","Match",NA,42.2,41.3,43.7,50.8
+"88","flatfish","Poor:A+L","CV_young","No Match",39.7,43.1,41.9,45.5,49.5
+"89","flatfish","Poor:A+L","depletion","Match",NA,21.8,21,21.6,26.6
+"90","flatfish","Poor:A+L","depletion","No Match",21.7,21.7,20.6,23.1,18.1
+"91","flatfish","Poor:A+L","L_at_Amax","Match",NA,9,7.7,6.4,17.4
+"92","flatfish","Poor:A+L","L_at_Amax","No Match",8.3,8.9,8.2,9.4,11.5
+"93","flatfish","Poor:A+L","L_at_Amin","Match",NA,15.9,17.4,23.1,33.2
+"94","flatfish","Poor:A+L","L_at_Amin","No Match",16.9,17,19.6,21.1,25.8
+"95","flatfish","Poor:A+L","SSB_MSY","Match",NA,18.2,15.8,15.6,23.5
+"96","flatfish","Poor:A+L","SSB_MSY","No Match",17,17.5,16.4,17.8,19.7
+"97","flatfish","Poor:A+L","VonBert_K","Match",NA,23.2,23.9,18.1,33.7
+"98","flatfish","Poor:A+L","VonBert_K","No Match",23.2,24.3,23.5,26.9,38.1
+"99","flatfish","Poor:C+L","CV_old","Match",NA,9.7,12.5,24.7,51.5
+"100","flatfish","Poor:C+L","CV_old","No Match",9.7,9.8,10.3,11.4,15.6
+"101","flatfish","Poor:C+L","CV_young","Match",NA,20.1,25.4,37.5,63.8
+"102","flatfish","Poor:C+L","CV_young","No Match",19.4,20.4,20.1,26.6,35.9
+"103","flatfish","Poor:C+L","depletion","Match",NA,23.6,25.2,27.8,45.3
+"104","flatfish","Poor:C+L","depletion","No Match",24.3,24.1,24.7,25.8,23.7
+"105","flatfish","Poor:C+L","L_at_Amax","Match",NA,3.2,3.1,7.3,19.6
+"106","flatfish","Poor:C+L","L_at_Amax","No Match",3,3.1,3.1,3.1,3.8
+"107","flatfish","Poor:C+L","L_at_Amin","Match",NA,12.6,17.9,23.8,46.2
+"108","flatfish","Poor:C+L","L_at_Amin","No Match",11.3,12.3,13.4,16.4,21.7
+"109","flatfish","Poor:C+L","SSB_MSY","Match",NA,10.9,11.8,19.6,26.6
+"110","flatfish","Poor:C+L","SSB_MSY","No Match",11,10.9,11,11.6,12.6
+"111","flatfish","Poor:C+L","VonBert_K","Match",NA,10.9,13,14,20.4
+"112","flatfish","Poor:C+L","VonBert_K","No Match",10.3,9.9,11.9,11.7,16.9
+"113","yellow-long","Rich:A+L","CV_old","Match",NA,5.9,5.2,6.7,21.8
+"114","yellow-long","Rich:A+L","CV_old","No Match",6,6,5.8,7,14.4
+"115","yellow-long","Rich:A+L","CV_young","Match",NA,8.8,11.1,20.1,193
+"116","yellow-long","Rich:A+L","CV_young","No Match",8.2,8.3,7.8,9.3,14.8
+"117","yellow-long","Rich:A+L","depletion","Match",NA,8.6,8.5,8.7,14.5
+"118","yellow-long","Rich:A+L","depletion","No Match",8.5,8.6,8.7,8.8,8.9
+"119","yellow-long","Rich:A+L","L_at_Amax","Match",NA,1.5,1.5,3.2,11.6
+"120","yellow-long","Rich:A+L","L_at_Amax","No Match",1.6,1.5,1.6,2.1,4.2
+"121","yellow-long","Rich:A+L","L_at_Amin","Match",NA,1.8,4,22.2,53.8
+"122","yellow-long","Rich:A+L","L_at_Amin","No Match",1.9,1.9,1.7,1.9,2.3
+"123","yellow-long","Rich:A+L","SSB_MSY","Match",NA,6.1,6.5,6.7,32
+"124","yellow-long","Rich:A+L","SSB_MSY","No Match",6.2,6.1,6.4,6.3,7
+"125","yellow-long","Rich:A+L","VonBert_K","Match",NA,3.6,4.1,16.3,28.1
+"126","yellow-long","Rich:A+L","VonBert_K","No Match",3.6,3.6,3.9,4.4,9.9
+"127","yellow-long","Rich:C+L","CV_old","Match",NA,1.6,4.3,35.6,83.5
+"128","yellow-long","Rich:C+L","CV_old","No Match",1.6,1.6,1.6,2.9,10.8
+"129","yellow-long","Rich:C+L","CV_young","Match",NA,8.3,40,34.5,97
+"130","yellow-long","Rich:C+L","CV_young","No Match",2.1,3,9.1,14.8,3.7
+"131","yellow-long","Rich:C+L","depletion","Match",NA,9.1,9.2,18.5,54.9
+"132","yellow-long","Rich:C+L","depletion","No Match",8.4,8.3,8.9,11.1,14
+"133","yellow-long","Rich:C+L","L_at_Amax","Match",NA,0.6,1.9,6.3,23.4
+"134","yellow-long","Rich:C+L","L_at_Amax","No Match",0.6,0.6,0.6,0.7,3.1
+"135","yellow-long","Rich:C+L","L_at_Amin","Match",NA,4.9,19.1,11.7,26.5
+"136","yellow-long","Rich:C+L","L_at_Amin","No Match",0.9,1.4,5.4,9.8,8.8
+"137","yellow-long","Rich:C+L","SSB_MSY","Match",NA,5.8,6.6,7.8,4.6
+"138","yellow-long","Rich:C+L","SSB_MSY","No Match",5.8,6.1,6.9,9.3,26.4
+"139","yellow-long","Rich:C+L","VonBert_K","Match",NA,1.8,1.9,5.8,25.2
+"140","yellow-long","Rich:C+L","VonBert_K","No Match",1.8,1.8,1.9,2.4,4.8
+"141","yellow-long","Poor:A+L","CV_old","Match",NA,30.8,30.1,31.1,58.6
+"142","yellow-long","Poor:A+L","CV_old","No Match",28.6,30.3,29.7,32.9,32.1
+"143","yellow-long","Poor:A+L","CV_young","Match",NA,54.7,54.9,51.8,144
+"144","yellow-long","Poor:A+L","CV_young","No Match",46.9,54.1,54.6,60.1,67.5
+"145","yellow-long","Poor:A+L","depletion","Match",NA,20.6,19.5,18.4,20.3
+"146","yellow-long","Poor:A+L","depletion","No Match",19.6,19.1,19.8,21.5,25
+"147","yellow-long","Poor:A+L","L_at_Amax","Match",NA,9.1,9.2,8.1,16.6
+"148","yellow-long","Poor:A+L","L_at_Amax","No Match",9.3,9.1,8.8,9.8,14.2
+"149","yellow-long","Poor:A+L","L_at_Amin","Match",NA,17.3,15.8,28.5,50.2
+"150","yellow-long","Poor:A+L","L_at_Amin","No Match",14,17.2,14.7,17.1,26.9
+"151","yellow-long","Poor:A+L","SSB_MSY","Match",NA,18.4,18.3,15.1,24.2
+"152","yellow-long","Poor:A+L","SSB_MSY","No Match",18,20.2,17.5,18.6,24.1
+"153","yellow-long","Poor:A+L","VonBert_K","Match",NA,22.7,21.4,25.1,35.2
+"154","yellow-long","Poor:A+L","VonBert_K","No Match",23,22.6,20.1,24.2,39.2
+"155","yellow-long","Poor:C+L","CV_old","Match",NA,11.5,12.2,36.1,74.2
+"156","yellow-long","Poor:C+L","CV_old","No Match",11.1,11.4,12.4,14.8,25.3
+"157","yellow-long","Poor:C+L","CV_young","Match",NA,17.4,41.7,33.5,99.9
+"158","yellow-long","Poor:C+L","CV_young","No Match",15.1,14.9,17.8,24.5,29
+"159","yellow-long","Poor:C+L","depletion","Match",NA,20.2,20.6,29.1,57
+"160","yellow-long","Poor:C+L","depletion","No Match",20.2,20.5,19.6,21.2,22.1
+"161","yellow-long","Poor:C+L","L_at_Amax","Match",NA,3.5,3.5,6.8,24.5
+"162","yellow-long","Poor:C+L","L_at_Amax","No Match",3.5,3.4,3.4,3.9,5.9
+"163","yellow-long","Poor:C+L","L_at_Amin","Match",NA,8.7,19.1,11.4,36.7
+"164","yellow-long","Poor:C+L","L_at_Amin","No Match",6.8,7.4,9.5,12.5,14.2
+"165","yellow-long","Poor:C+L","SSB_MSY","Match",NA,11.4,10.7,10.2,11.7
+"166","yellow-long","Poor:C+L","SSB_MSY","No Match",12.3,12.2,12.4,13,13.9
+"167","yellow-long","Poor:C+L","VonBert_K","Match",NA,10.8,11.1,13,24.4
+"168","yellow-long","Poor:C+L","VonBert_K","No Match",10.1,10.5,10.5,12.2,18.2

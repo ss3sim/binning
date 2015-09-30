@@ -70,14 +70,17 @@ for(i in seq_along(mydata)){
             ## mtext(mydata.labels[i], side=2, line=.9, cex=.7)
             axis(2, col=col.tick, at=re.at, mgp=par()$mgp, tck=par()$tck)
         }
+        if(i==1 & j==1)
+            legend("top", cex=.75,
+                   legend=c("=1cm", "=Data width"), col=c(1,gray(.5)), lwd=.85,
+                   bty='n', lty=c(1,1), pch=16, title='Model width')
         box(col=col.border)
     }
 }
-mtext("Age Compositions", side=2, line=.9, cex=.6, outer=TRUE, at=.75)
-mtext("Conditional Age-at-length", side=2, line=.9, cex=.6, outer=TRUE, at=.25)
+mtext("Age Comps", side=2, line=.9, cex=.6, outer=TRUE, at=.75)
+mtext("CAAL", side=2, line=.9, cex=.6, outer=TRUE, at=.25)
 mtext("Data Bin Width (cm)", side=1, line=1.1, cex=par()$cex.lab, outer=TRUE)
 mtext("Relative Error", side=2, line=1.7, cex=par()$cex.lab, outer=TRUE)
 dev.off()
-
 }
 }
