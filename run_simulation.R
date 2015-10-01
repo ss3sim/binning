@@ -36,6 +36,6 @@ source("make_tables.R")
 ## use a minimum number of converged iterations for plotting scenario
 ## relative errors
 pct.converged.min <- .5
-file.type <- 'png'
+file.type <- 'pdf'
 source("make_figures.R")
 
