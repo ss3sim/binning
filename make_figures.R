@@ -43,7 +43,6 @@ re.at.bin.rich <- c(-.4, -.2, 0, .2, .4)
 re.lim.bin.limited <- c(-.52,.52)
 re.at.bin.limited <- c(-.5,0, .5)
 
-file.type <- 'png'
 ## 1. image plot / figure/table of lit. review
 source("figures/figure1.R")
 ## 2. experimental design
