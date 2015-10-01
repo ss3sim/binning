@@ -43,10 +43,13 @@ write.table(dcast(binning.counts, value.var='pct.converged',
 
 ## table of run time
 binning.runtime.table <- dcast(binning.runtime, value.var='median.runtime', formula=species+data~B)
+write.table(x=binning.runtime.table,
+            file='results/table_binning_runtime.csv', sep=',',
+            row.names=FALSE)
 ## divide by B0 to standardize across species and scenarios
 binning.runtime.table[,-(1:2)] <- 100*round(binning.runtime.table[,-(1:2)]/binning.runtime.table[,3],2)
 write.table(x=binning.runtime.table,
-            file='results/table_binning_runtime.csv', sep=',',
+            file='results/table_binning_runtime_normalized.csv', sep=',',
             row.names=FALSE)
 
 
