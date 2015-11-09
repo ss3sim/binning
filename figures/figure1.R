@@ -16,10 +16,18 @@ region_lit_wide[is.na(region_lit_wide)] <- 0
 taxa_lit_wide <- reshape2::dcast(taxa_lit, species_type ~ bin_width_cm,
   value.var = "num")
 taxa_lit_wide[is.na(taxa_lit_wide)] <- 0
+## manually take out the Greater Amberjack that had 4.8cm widths, we're not
+## sure about this
+taxa_lit_wide <- taxa_lit_wide[,-7]
 region_order <- c("Australia", "Atlantic", "Caribbean", "Gulf of Mexico",
   "South Atlantic", "West Coast")
 region_lit_wide <- region_lit_wide[order(region_order, region_lit_wide$region), ]
 region_lit_wide$region[-1] <- paste("US", region_lit_wide$region[-1])
+## manually take out the Greater Amberjack that had 4.8cm widths, we're not
+## sure about this
+region_lit_wide <- region_lit_wide[,-7]
+
+
 fable <- function(x, y, z, xlab = "", ylab = "",
                   col_breaks = seq(0.5, 4, length.out = 13), log_colours = TRUE,
                   text_cex = 1, print_labels=TRUE) {
