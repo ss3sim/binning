@@ -1,13 +1,12 @@
 The effect of discretizing length on growth estimation in integrated age-structured stock assessments
 =======================
 
+Monnahan, C.C., Ono, K., Anderson, S.C., Rudd, M.B., Hicks, A.C., Hurtado-Ferro, F., Johnson, K.F., Kuriyama, P.T., Licandeo, R.R., Stawitz, C.C., Taylor, I.G., and Valero, J.L. 2016. The effect of length bin width on growth estimation in integrated age-structured stock assessments. Fisheries Research 180:103-112.
+
 This folder contains:
 
-- Models, case files, results, plots and figures from the study.
+- Models, case files, results, plots, and figures from the study.
 - The code necessary to reproduce the study.
-
-Current contributors: Cole Monnahan, Kotaro Ono, Merrill Rudd, Sean
-Anderson, et al.
 
 To reproduce this study:
 
